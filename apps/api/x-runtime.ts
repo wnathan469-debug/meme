@@ -1,3 +1,4 @@
+import { DemoConversationProvider } from "../../packages/connectors/x/demo-conversations";
 /** Composition only: no HTTP listener, no background collection, no paid startup probe. */
 import Redis from "ioredis";
 import { SafeStreamTransport } from "../../packages/shared/stream-http";
@@ -22,7 +23,7 @@ export interface XRuntime {
 export async function createXRuntime(config: XConfig): Promise<XRuntime> {
   if (config.mode === "demo")
     return {
-      provider: new DemoXProvider(),
+      provider: new DemoConversationProvider(),
       status: "demo",
       close: async () => undefined,
     };
@@ -60,7 +61,7 @@ export async function createXRuntime(config: XConfig): Promise<XRuntime> {
     });
     pool.on("error", () => {});
     const schema = await pool.query(
-      "SELECT 1 FROM memeradar.schema_migrations WHERE version='0006_x_collection_state'",
+      "SELECT 1 FROM memeradar.schema_migrations WHERE version='0007_conversation_views'",
     );
     if (schema.rowCount !== 1) throw new Error();
   } catch {

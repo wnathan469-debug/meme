@@ -1,3 +1,5 @@
+import { Conversations } from "./Conversations";
+import { demoConversationId } from "../../../packages/conversations/demo-data";
 import { People } from "./People";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
@@ -35,12 +37,14 @@ type Page =
   | "alerts"
   | "sources"
   | "settings"
-  | "people";
+  | "people"
+  | "conversations";
 const navigation: { id: Page; icon: string; label: string }[] = [
   { id: "dashboard", icon: "◈", label: "Tableau de bord" },
   { id: "events", icon: "◎", label: "Événements" },
   { id: "tokens", icon: "⬡", label: "Tokens détectés" },
   { id: "alerts", icon: "♧", label: "Alertes" },
+  { id: "conversations", icon: "◌", label: "Conversations" },
   { id: "people", icon: "♙", label: "Personnes suivies" },
   { id: "sources", icon: "◫", label: "Sources" },
   { id: "settings", icon: "⚙", label: "Paramètres" },
@@ -55,6 +59,7 @@ function readRoute() {
     confidence: params.get("confidence") ?? "Tous",
     event: params.get("event"),
     token: params.get("token"),
+    conversation: params.get("conversation"),
   };
 }
 function Badge({
@@ -459,17 +464,19 @@ function App() {
               <p className="subtitle">
                 {route.page === "dashboard"
                   ? "Les tendances se propagent. Gardez une trace des faits."
-                  : route.page === "people"
-                    ? "Suivez des identités, conservez vos notes privées et distinguez les observations."
-                    : route.page === "events"
-                      ? "De l’actualité aux associations : retracez chaque source."
-                      : route.page === "tokens"
-                        ? "Une identité, des preuves et des limites pour chaque token."
-                        : route.page === "alerts"
-                          ? "Des déclenchements documentés, sans recommandations financières."
-                          : route.page === "sources"
-                            ? "Comprenez la couverture et la provenance des données."
-                            : "Personnalisez votre observatoire sur cet appareil."}
+                  : route.page === "conversations"
+                    ? "Reliez les réponses et gardez les limites de couverture visibles."
+                    : route.page === "people"
+                      ? "Suivez des identités, conservez vos notes privées et distinguez les observations."
+                      : route.page === "events"
+                        ? "De l’actualité aux associations : retracez chaque source."
+                        : route.page === "tokens"
+                          ? "Une identité, des preuves et des limites pour chaque token."
+                          : route.page === "alerts"
+                            ? "Des déclenchements documentés, sans recommandations financières."
+                            : route.page === "sources"
+                              ? "Comprenez la couverture et la provenance des données."
+                              : "Personnalisez votre observatoire sur cet appareil."}
               </p>
             </div>
             <Badge tone="demo">Environnement fictif</Badge>
@@ -966,6 +973,12 @@ function App() {
                 ))}
               </div>
             </>
+          )}
+          {route.page === "conversations" && (
+            <Conversations
+              key={route.conversation}
+              id={route.conversation ?? demoConversationId}
+            />
           )}
           {route.page === "people" && <People />}
           {route.page === "settings" && (

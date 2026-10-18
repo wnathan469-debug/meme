@@ -1,3 +1,5 @@
+import { PgConversationRepository } from "../../packages/db/conversation-repository";
+import { ConversationService } from "../../packages/conversations/service";
 import { PgPeopleRepository } from "../../packages/db/people-repository";
 import { PeopleService } from "../../packages/people/service";
 import { PeopleCollector } from "../../packages/people/collector";
@@ -65,6 +67,16 @@ export async function createXWorker(config: XConfig, ownerId: string) {
     { ...config.collection, maxResults: config.maxResults },
   );
   return {
+    conversations: new ConversationService(
+      runtime.provider,
+      new PgConversationRepository(
+        pool,
+        ownerId,
+        runtime.provider.dataOrigin,
+        repository,
+      ),
+      config,
+    ),
     peopleDetails: (id: string) => peopleRepository.detail(id),
     people: new PeopleService(peopleRepository, runtime.provider),
     peopleCollector,

@@ -28,5 +28,10 @@
     "version": "0006_x_collection_state",
     "upSha256": "2d77d5c3030db157f9cf6f663c1aa683de9f0178af71b8cf1a3539d97ede80d8",
     "downSha256": "1e8424a6dc9781ffe527095d81f5392be295a5a16fd1304ebdb1e3f8c1c8a2f3"
+  },
+  {
+    "version": "0007_conversation_views",
+    "upSha256": "edcdd5ad475ec139b5623de88581201c6160bf9383b94de8c5bcef3b24e094d0",
+    "downSha256": "ecd7a945545eb5d61eae3266777f36e55fb34ca518a22b19a565c34a5c89d376"
   }
 ]

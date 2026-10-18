@@ -529,6 +529,14 @@ function PersonObservations({ person }: { person: RecordPerson }) {
           <span>
             Publication fictive : https://demo.memeradar.invalid/post/{p.id}
           </span>
+          {(p.conversationId === "DEMO_POST_ROOT" ||
+            p.references.some((r) => r.id === "DEMO_POST_ROOT")) && (
+            <p>
+              <a href="#page=conversations&conversation=DEMO_POST_ROOT">
+                Voir la conversation
+              </a>
+            </p>
+          )}
         </div>
       ))}
       {!visible.length && (

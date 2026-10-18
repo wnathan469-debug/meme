@@ -27,6 +27,7 @@
     "tests/integration/*.ts",
     "packages/db/*.ts",
     "packages/collection",
+    "packages/conversations",
     "packages/people",
     "apps/worker"
   ]

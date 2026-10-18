@@ -246,6 +246,56 @@ export const chains = memeradar.table("chains", {
   explorerUrl: httpUrl("explorer_url").notNull(),
   enabled: boolean("enabled").default(sql.raw("false")).notNull(),
 });
+export const conversationAuthors = memeradar.table("conversation_authors", {
+  id: uuid("id").default(sql.raw("gen_random_uuid()")).primaryKey(),
+  dataOrigin: dataOrigin("data_origin").notNull(),
+  knowledgeKind: knowledgeKind("knowledge_kind")
+    .default(sql.raw("'OBSERVED'::memeradar.knowledge_kind"))
+    .notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true, mode: "date" })
+    .default(sql.raw("now()"))
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" })
+    .default(sql.raw("now()"))
+    .notNull(),
+  ownerUserId: uuid("owner_user_id").notNull(),
+  viewId: uuid("view_id").notNull(),
+  xUserId: text("x_user_id").notNull(),
+  username: text("username").notNull(),
+  displayName: text("display_name").notNull(),
+  observedAt: timestamp("observed_at", {
+    withTimezone: true,
+    mode: "date",
+  }).notNull(),
+});
+export const conversationViews = memeradar.table("conversation_views", {
+  id: uuid("id").default(sql.raw("gen_random_uuid()")).primaryKey(),
+  dataOrigin: dataOrigin("data_origin").notNull(),
+  knowledgeKind: knowledgeKind("knowledge_kind")
+    .default(sql.raw("'OBSERVED'::memeradar.knowledge_kind"))
+    .notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true, mode: "date" })
+    .default(sql.raw("now()"))
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" })
+    .default(sql.raw("now()"))
+    .notNull(),
+  ownerUserId: uuid("owner_user_id").notNull(),
+  conversationId: text("conversation_id").notNull(),
+  ruleId: uuid("rule_id").notNull(),
+  reportedReplyCount: rawQuantity("reported_reply_count"),
+  reportedAt: timestamp("reported_at", { withTimezone: true, mode: "date" }),
+  windowSeconds: integer("window_seconds"),
+  outsideWindow: boolean("outside_window").default(sql.raw("false")).notNull(),
+  quotesAvailable: boolean("quotes_available")
+    .default(sql.raw("false"))
+    .notNull(),
+  lastFetchedAt: timestamp("last_fetched_at", {
+    withTimezone: true,
+    mode: "date",
+  }),
+  lastError: text("last_error"),
+});
 export const conversations = memeradar.table("conversations", {
   id: uuid("id").default(sql.raw("gen_random_uuid()")).primaryKey(),
   dataOrigin: dataOrigin("data_origin").notNull(),
@@ -1453,6 +1503,8 @@ export const schemaTables = {
   attentionSnapshots,
   auditLog,
   chains,
+  conversationAuthors,
+  conversationViews,
   conversations,
   entities,
   eventItems,

@@ -167,12 +167,14 @@ export class XApiClient implements XProvider {
       url.searchParams.set(key, value);
     return url;
   }
-  private fields(): Record<string, string> {
+  private fields(minimalUsers = false): Record<string, string> {
     return {
       [this.config.postFieldsParameter]:
         "id,text,author_id,created_at,conversation_id,referenced_tweets,public_metrics,entities,lang",
       expansions: "author_id",
-      "user.fields": "id,name,username,protected,public_metrics,verified_type",
+      "user.fields": minimalUsers
+        ? "id,name,username"
+        : "id,name,username,protected,public_metrics,verified_type",
     };
   }
   private pageParameters(options: PageOptions = {}): {
@@ -429,10 +431,20 @@ export class XApiClient implements XProvider {
       feature,
       "posts",
     );
+    const minimalUsers =
+      endpoint === "conversation" ||
+      endpoint === "quotes" ||
+      feature === "conversations";
     const users = (value.includes?.users ?? []).map((user) =>
-      normalizeUser(user, "REAL", at),
+      normalizeUser(
+        minimalUsers
+          ? { id: user.id, username: user.username, name: user.name }
+          : user,
+        "REAL",
+        at,
+      ),
     );
-    this.remember(users);
+    if (!minimalUsers) this.remember(users);
     const data = (value.data ?? []).map((post) =>
       normalizePost(post, "REAL", at),
     );
@@ -478,7 +490,11 @@ export class XApiClient implements XProvider {
     const { params, size } = this.pageParameters(options);
     return this.postsPage(
       endpoint,
-      this.postUrl(endpoint, {}, { ...this.fields(), ...params, query }),
+      this.postUrl(
+        endpoint,
+        {},
+        { ...this.fields(endpoint === "conversation"), ...params, query },
+      ),
       size,
       options.feature ??
         (endpoint === "conversation" ? "conversations" : "watch"),
@@ -507,13 +523,23 @@ export class XApiClient implements XProvider {
       options,
     );
   }
-  async getPostsByIds(ids: string[]): Promise<XPage<XPost>> {
+  async getPostsByIds(
+    ids: string[],
+    options: Pick<PageOptions, "feature"> = {},
+  ): Promise<XPage<XPost>> {
     this.ids(ids);
     return this.postsPage(
       "posts",
-      this.postUrl("posts", {}, { ...this.fields(), ids: ids.join(",") }),
+      this.postUrl(
+        "posts",
+        {},
+        {
+          ...this.fields(options.feature === "conversations"),
+          ids: ids.join(","),
+        },
+      ),
       ids.length,
-      "watch",
+      options.feature ?? "watch",
     );
   }
   async getQuotePosts(
@@ -529,7 +555,11 @@ export class XApiClient implements XProvider {
     }
     return this.postsPage(
       "quotes",
-      this.postUrl("quotes", { id: postId }, { ...this.fields(), ...params }),
+      this.postUrl(
+        "quotes",
+        { id: postId },
+        { ...this.fields(true), ...params },
+      ),
       size,
       options.feature ?? "conversations",
     );

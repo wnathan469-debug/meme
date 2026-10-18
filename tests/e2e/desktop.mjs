@@ -124,6 +124,23 @@ try {
   await page
     .getByText("Note locale persistante du test Electron", { exact: true })
     .waitFor();
+  await page.goto(
+    "memeradar://app/index.html#page=conversations&conversation=DEMO_POST_ROOT",
+  );
+  await page
+    .getByRole("button", { name: "Préparer le chargement", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Confirmer le chargement démo", exact: true })
+    .click();
+  const conversationCoverage = page.getByRole("region", {
+    name: "Couverture de la conversation",
+    exact: true,
+  });
+  assert.match(await conversationCoverage.textContent(), /29,17 %/);
+  await page.screenshot({
+    path: path.join(root, "tests/e2e/desktop-conversation.png"),
+  });
   console.log(
     "PASS: Electron sandbox, IPC validation, persistent preferences across restart, clipboard, deep link and blocked main/renderer network.",
   );

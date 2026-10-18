@@ -235,6 +235,7 @@ export class PgXCollectionRepository implements CollectionRepository {
     mode: CollectionMode,
     now: number,
     leaseMs: number,
+    afterPersist?: (client: PoolClient) => Promise<void>,
   ): Promise<IngestResult> {
     if (
       page.dataOrigin !== this.origin ||
@@ -420,6 +421,8 @@ export class PgXCollectionRepository implements CollectionRepository {
           page.problems.length,
         ],
       );
+      // Trusted private hook: conversation display metadata commits with the page and cursor.
+      if (afterPersist) await afterPersist(client);
       return {
         newPosts,
         duplicates,

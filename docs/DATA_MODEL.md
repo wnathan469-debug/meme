@@ -96,3 +96,7 @@ Ces vérifications valident le schéma et le mécanisme de migration ; elles ne 
 ## Évolution V2 — phase 3
 
 La migration additive 0006 ajoute l'état de reprise des collecteurs, baux clôturés par jeton, dates de coupure/état partiel et empreintes de texte/référence d'auteur non observé. Toujours 55 tables applicatives. Les migrations 0001–0005 restent immuables ; le lanceur et les tests couvrent maintenant la suite jusqu'à 0006 et le snapshot ORM correspondant. Voir V2_PHASE3.md pour la transaction d'ingestion, le devis de recherche et les limites du rattrapage.
+
+## Évolution V2 — phase 5
+
+La migration additive 0007 ajoute `conversation_views` et `conversation_authors`, soit 57 tables applicatives. Le compteur et la fenêtre sont propres à la vue du propriétaire ; le compteur partagé de la table historique `conversations` ne sert pas à annoncer sa couverture. Les auteurs ordinaires ont seulement une identité d’affichage dans cette conversation, sans fiche de profil globale créée automatiquement. Les FK incluent origine et propriétaire ; les deux tables ont une RLS forcée. SQL 0001–0006 immuable, manifeste étendu et ORM/snapshot régénérés puis comparés. Retour arrière refusé lorsque les nouvelles tables sont utilisées. Voir [V2_PHASE5.md](V2_PHASE5.md).

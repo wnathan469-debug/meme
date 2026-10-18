@@ -74,7 +74,10 @@ export interface XProvider {
     query: string,
     options?: PageOptions,
   ): Promise<XPage<XPost>>;
-  getPostsByIds(ids: string[]): Promise<XPage<XPost>>;
+  getPostsByIds(
+    ids: string[],
+    options?: Pick<PageOptions, "feature">,
+  ): Promise<XPage<XPost>>;
   getUserByUsername(username: string): Promise<XUser | null>;
   getUsersByIds(ids: string[]): Promise<XUser[]>;
   getUserPosts(userId: string, options?: PageOptions): Promise<XPage<XPost>>;

@@ -229,3 +229,140 @@ test("personnes : confirmation, note échappée, pause, catégories, persistance
   await expect(page.getByText(note, { exact: true })).toHaveCount(0);
   expect(external).toEqual([]);
 });
+
+test("conversation démo : confirmation, 35/120, parents manquants, citations et erreurs sans réseau", async ({
+  page,
+}) => {
+  const external: string[] = [];
+  page.on("request", (request) => {
+    if (
+      !request.url().startsWith("http://127.0.0.1:5173") &&
+      !request.url().startsWith("data:")
+    )
+      external.push(request.url());
+  });
+  await page.goto("/#page=people");
+  await page
+    .getByLabel("Identifiant X ou URL de profil")
+    .fill("demo_analyste_julie");
+  await page
+    .getByRole("button", { name: "Vérifier le compte", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Confirmer l’ajout", exact: true })
+    .click();
+  await page
+    .getByRole("link", { name: "Voir la conversation", exact: true })
+    .first()
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "Conversations", exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("region", { name: "Réponses récupérées", exact: true }),
+  ).toHaveCount(0);
+  await page
+    .getByRole("button", { name: "Préparer le chargement", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Annuler le chargement", exact: true })
+    .click();
+  await expect(
+    page.getByRole("region", { name: "Réponses récupérées", exact: true }),
+  ).toHaveCount(0);
+  await page
+    .getByRole("button", { name: "Préparer le chargement", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Confirmer le chargement démo", exact: true })
+    .focus();
+  await page.keyboard.press("Enter");
+  const coverage = page.getByRole("region", {
+    name: "Couverture de la conversation",
+    exact: true,
+  });
+  await expect(coverage.getByRole("status")).toContainText(
+    "35 réponses récupérées sur environ 120",
+  );
+  await expect(coverage).toContainText("29,17 %");
+  const replies = page.getByRole("region", {
+    name: "Réponses récupérées",
+    exact: true,
+  });
+  await expect(replies.locator("article")).toHaveCount(35);
+  await expect(
+    replies.getByText(
+      "Réponse à une publication non récupérée (maillon manquant).",
+      { exact: true },
+    ),
+  ).toHaveCount(2);
+  const quotes = page.getByRole("region", {
+    name: "Citations récupérées",
+    exact: true,
+  });
+  await expect(
+    quotes.getByText("[DÉMO] Citation fictive de cette annonce.", {
+      exact: true,
+    }),
+  ).toBeVisible();
+  await expect(
+    replies.getByText("[DÉMO] Citation fictive de cette annonce.", {
+      exact: true,
+    }),
+  ).toHaveCount(0);
+  await page
+    .getByRole("button", { name: "Liste chronologique", exact: true })
+    .click();
+  await expect(replies.locator("article")).toHaveCount(35);
+  await page
+    .getByLabel("Réponses contenant une adresse candidate", { exact: true })
+    .check();
+  await expect(replies.locator("article")).toHaveCount(9);
+  await expect(coverage.getByRole("status")).toContainText(
+    "35 réponses récupérées",
+  );
+  await page
+    .getByLabel("Réponses contenant une adresse candidate", { exact: true })
+    .uncheck();
+  await page
+    .getByLabel("Rechercher dans la conversation", { exact: true })
+    .fill("introuvable");
+  await expect(replies).toContainText(
+    "ne prouve pas l’absence d’autres commentaires",
+  );
+  await page
+    .getByLabel("Rechercher dans la conversation", { exact: true })
+    .fill("");
+  await page
+    .getByLabel("Simuler un état", { exact: true })
+    .selectOption("window");
+  await expect(coverage).toContainText("fenêtre temporelle accessible");
+  await page
+    .getByLabel("Simuler un état", { exact: true })
+    .selectOption("unknown_count");
+  await expect(coverage).toContainText("Couverture observée : inconnue");
+  await page
+    .getByLabel("Simuler un état", { exact: true })
+    .selectOption("rate_limit");
+  await expect(page.getByRole("alert")).toContainText("429 simulé");
+  await page
+    .getByLabel("Simuler un état", { exact: true })
+    .selectOption("budget");
+  await expect(page.getByRole("alert")).toContainText("Budget épuisé simulé");
+  await page
+    .getByLabel("Simuler un état", { exact: true })
+    .selectOption("unavailable");
+  await expect(
+    page.getByText(
+      "Publication racine non récupérée ou indisponible. Les réponses accessibles restent consultables.",
+      { exact: true },
+    ),
+  ).toBeVisible();
+  await page.setViewportSize({ width: 390, height: 844 });
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+  expect(external).toEqual([]);
+});
