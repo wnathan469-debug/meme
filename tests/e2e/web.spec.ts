@@ -136,3 +136,96 @@ test("petit écran, données manquantes et sources exclues", async ({ page }) =>
     ),
   ).toBe(true);
 });
+
+test("personnes : confirmation, note échappée, pause, catégories, persistance et suppression hors réseau", async ({
+  page,
+}) => {
+  const external: string[] = [];
+  page.on("request", (r) => {
+    if (
+      !r.url().startsWith("http://127.0.0.1:5173") &&
+      !r.url().startsWith("data:")
+    )
+      external.push(r.url());
+  });
+  await page.goto("/#page=people");
+  await page.getByLabel("Nom de catégorie", { exact: true }).fill("Experts");
+  await page
+    .getByRole("button", { name: "Créer la catégorie", exact: true })
+    .click();
+  await page
+    .getByLabel("Identifiant X ou URL de profil")
+    .fill("@demo_analyste_julie");
+  await page.getByLabel("Nom personnalisé").fill("Julie suivie");
+  await page
+    .getByLabel("Catégorie", { exact: true })
+    .selectOption({ label: "Experts" });
+  const note =
+    '<img src="https://example.invalid/trap" onerror="window.stolen=true"> note privée';
+  await page.getByLabel("Note privée", { exact: true }).fill(note);
+  await page
+    .getByRole("button", { name: "Vérifier le compte", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "Confirmer le compte", exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Julie suivie", exact: true }),
+  ).toHaveCount(0);
+  await page
+    .getByRole("button", { name: "Confirmer l’ajout", exact: true })
+    .click();
+  await expect(page.getByText(note, { exact: true })).toBeVisible();
+  const observations = page.getByRole("region", {
+    name: "Publications de demo_analyste_julie",
+    exact: true,
+  });
+  await expect(
+    observations.getByText(
+      "[DÉMO] Une annonce entièrement fictive sur Nébula Mobile.",
+      { exact: true },
+    ),
+  ).toBeVisible();
+  await observations.getByLabel("Texte des publications").fill("introuvable");
+  await expect(
+    observations.getByText(
+      "Aucune publication correspondante dans cet instantané.",
+      { exact: true },
+    ),
+  ).toBeVisible();
+  await observations.getByLabel("Texte des publications").fill("");
+  expect(await page.locator('img[src*="trap"]').count()).toBe(0);
+  await page
+    .getByRole("button", { name: "Réactiver demo_analyste_julie", exact: true })
+    .click();
+  await page
+    .getByRole("button", {
+      name: "Mettre en pause demo_analyste_julie",
+      exact: true,
+    })
+    .click();
+  await page.reload();
+  await expect(
+    page.getByRole("heading", { name: "Julie suivie", exact: true }),
+  ).toBeVisible();
+  await expect(page.getByText(note, { exact: true })).toBeVisible();
+  await page
+    .getByRole("button", { name: "Renommer Experts", exact: true })
+    .click();
+  await page.getByLabel("Nom de catégorie", { exact: true }).fill("Analystes");
+  await page
+    .getByRole("button", { name: "Renommer la catégorie", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Supprimer Analystes", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Supprimer demo_analyste_julie", exact: true })
+    .click();
+  await expect(
+    page.getByText("Aucune personne suivie.", { exact: true }),
+  ).toBeVisible();
+  await page.reload();
+  await expect(page.getByText(note, { exact: true })).toHaveCount(0);
+  expect(external).toEqual([]);
+});

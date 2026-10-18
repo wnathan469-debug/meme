@@ -5,11 +5,14 @@ try {
   const config = await loadXConfig(),
     args = process.argv.slice(2);
   if (
-    args.some((arg) => !["--once", "--run"].includes(arg)) ||
+    args.some((arg) => !["--once", "--run", "--people"].includes(arg)) ||
     (args.includes("--once") && args.includes("--run"))
   )
     throw new ProviderError("INVALID_INPUT");
-  if (!args.length || config.collection.mode === "disabled")
+  if (
+    !args.some((arg) => arg === "--once" || arg === "--run") ||
+    config.collection.mode === "disabled"
+  )
     process.stdout.write(
       JSON.stringify({
         collectionMode: config.collection.mode,
@@ -30,16 +33,20 @@ try {
     const stop = () => {
       controller.abort();
       worker.collector.stop();
+      worker.peopleCollector.stop();
     };
     process.once("SIGINT", stop);
     process.once("SIGTERM", stop);
+    const collector = args.includes("--people")
+      ? worker.peopleCollector
+      : worker.collector;
     try {
       if (args.includes("--once")) {
-        const result = await worker.collector.tick();
+        const result = await collector.tick();
         process.stdout.write(
           JSON.stringify({ result, status: worker.collector.status }) + "\n",
         );
-      } else await worker.collector.run(controller.signal);
+      } else await collector.run(controller.signal);
     } finally {
       process.removeListener("SIGINT", stop);
       process.removeListener("SIGTERM", stop);

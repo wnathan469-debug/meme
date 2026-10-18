@@ -111,7 +111,7 @@ export class PgXCollectionRepository implements CollectionRepository {
     return this.tx(async (client) =>
       (
         await client.query(
-          "SELECT * FROM memeradar.x_rules WHERE data_origin=$1 AND owner_user_id=$2 ORDER BY created_at,id",
+          "SELECT * FROM memeradar.x_rules WHERE data_origin=$1 AND owner_user_id=$2 AND COALESCE(expression->>'kind','watch')='watch' ORDER BY created_at,id",
           [this.origin, this.ownerId],
         )
       ).rows.map((row) => this.rule(row)),

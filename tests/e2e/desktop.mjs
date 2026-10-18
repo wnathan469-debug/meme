@@ -93,6 +93,22 @@ try {
   await page.screenshot({
     path: path.join(root, "tests/e2e/desktop-token.png"),
   });
+  await page.goto("memeradar://app/index.html#page=people");
+  await page
+    .getByLabel("Identifiant X ou URL de profil")
+    .fill("demo_analyste_julie");
+  await page
+    .getByLabel("Note privée", { exact: true })
+    .fill("Note locale persistante du test Electron");
+  await page
+    .getByRole("button", { name: "Vérifier le compte", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Confirmer l’ajout", exact: true })
+    .click();
+  await page
+    .getByText("Note locale persistante du test Electron", { exact: true })
+    .waitFor();
   assert.deepEqual(errors, []);
   await app.close();
   app = await launch();
@@ -104,6 +120,10 @@ try {
   await page.screenshot({
     path: path.join(root, "tests/e2e/desktop-dashboard.png"),
   });
+  await page.goto("memeradar://app/index.html#page=people");
+  await page
+    .getByText("Note locale persistante du test Electron", { exact: true })
+    .waitFor();
   console.log(
     "PASS: Electron sandbox, IPC validation, persistent preferences across restart, clipboard, deep link and blocked main/renderer network.",
   );

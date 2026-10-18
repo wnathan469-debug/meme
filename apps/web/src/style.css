@@ -1474,3 +1474,48 @@ footer p {
     padding-bottom: 110px;
   }
 }
+
+.people-page {
+  display: grid;
+  gap: 20px;
+}
+.people-page form {
+  display: grid;
+  gap: 12px;
+}
+.people-page label {
+  display: grid;
+  gap: 6px;
+}
+.people-page input,
+.people-page select,
+.people-page textarea {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+.people-page textarea {
+  min-height: 110px;
+  font: inherit;
+  color: var(--text);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px;
+  resize: vertical;
+}
+.people-page textarea:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+.people-page p,
+.people-page span {
+  overflow-wrap: anywhere;
+}
+.people-page button {
+  padding: 8px 12px;
+  margin: 4px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--panel);
+}

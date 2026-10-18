@@ -1,3 +1,4 @@
+import { People } from "./People";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import {
@@ -28,12 +29,19 @@ import type { SavedState } from "./state";
 import "./style.css";
 
 type Page =
-  "dashboard" | "events" | "tokens" | "alerts" | "sources" | "settings";
+  | "dashboard"
+  | "events"
+  | "tokens"
+  | "alerts"
+  | "sources"
+  | "settings"
+  | "people";
 const navigation: { id: Page; icon: string; label: string }[] = [
   { id: "dashboard", icon: "◈", label: "Tableau de bord" },
   { id: "events", icon: "◎", label: "Événements" },
   { id: "tokens", icon: "⬡", label: "Tokens détectés" },
   { id: "alerts", icon: "♧", label: "Alertes" },
+  { id: "people", icon: "♙", label: "Personnes suivies" },
   { id: "sources", icon: "◫", label: "Sources" },
   { id: "settings", icon: "⚙", label: "Paramètres" },
 ];
@@ -451,15 +459,17 @@ function App() {
               <p className="subtitle">
                 {route.page === "dashboard"
                   ? "Les tendances se propagent. Gardez une trace des faits."
-                  : route.page === "events"
-                    ? "De l’actualité aux associations : retracez chaque source."
-                    : route.page === "tokens"
-                      ? "Une identité, des preuves et des limites pour chaque token."
-                      : route.page === "alerts"
-                        ? "Des déclenchements documentés, sans recommandations financières."
-                        : route.page === "sources"
-                          ? "Comprenez la couverture et la provenance des données."
-                          : "Personnalisez votre observatoire sur cet appareil."}
+                  : route.page === "people"
+                    ? "Suivez des identités, conservez vos notes privées et distinguez les observations."
+                    : route.page === "events"
+                      ? "De l’actualité aux associations : retracez chaque source."
+                      : route.page === "tokens"
+                        ? "Une identité, des preuves et des limites pour chaque token."
+                        : route.page === "alerts"
+                          ? "Des déclenchements documentés, sans recommandations financières."
+                          : route.page === "sources"
+                            ? "Comprenez la couverture et la provenance des données."
+                            : "Personnalisez votre observatoire sur cet appareil."}
               </p>
             </div>
             <Badge tone="demo">Environnement fictif</Badge>
@@ -957,6 +967,7 @@ function App() {
               </div>
             </>
           )}
+          {route.page === "people" && <People />}
           {route.page === "settings" && (
             <div className="settings-grid">
               <section className="panel form-panel">

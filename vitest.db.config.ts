@@ -4,6 +4,7 @@ export default defineConfig({
     include: [
       "tests/integration/v2-database.test.ts",
       "tests/integration/x-collection.test.ts",
+      "tests/integration/people.test.ts",
     ],
     testTimeout: 20000,
     hookTimeout: 30000,
@@ -14,6 +15,8 @@ export default defineConfig({
         "packages/db/migrations.ts",
         "packages/db/x-control-store.ts",
         "packages/db/client.ts",
+        "packages/db/people-repository.ts",
+        "packages/people/{model,service,collector}.ts",
         "packages/db/x-collection-repository.ts",
         "packages/collection/search-service.ts",
       ],

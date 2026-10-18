@@ -1,3 +1,6 @@
+import { PgPeopleRepository } from "../../packages/db/people-repository";
+import { PeopleService } from "../../packages/people/service";
+import { PeopleCollector } from "../../packages/people/collector";
 /** Private operator composition; no HTTP listener or implicit paid startup. */
 import pg from "pg";
 import type { XConfig } from "../../packages/connectors/x/config";
@@ -50,13 +53,28 @@ export async function createXWorker(config: XConfig, ownerId: string) {
     maxResults: config.maxResults,
     streamLockKey: config.namespace,
   });
+  const peopleRepository = new PgPeopleRepository(
+    pool,
+    ownerId,
+    runtime.provider.dataOrigin,
+  );
+  const peopleCollector = new PeopleCollector(
+    runtime.provider,
+    peopleRepository,
+    repository,
+    { ...config.collection, maxResults: config.maxResults },
+  );
   return {
+    peopleDetails: (id: string) => peopleRepository.detail(id),
+    people: new PeopleService(peopleRepository, runtime.provider),
+    peopleCollector,
     collector,
     repository,
     hub,
     search: new XSearchService(runtime.provider, repository, config),
     async close() {
       collector.stop();
+      peopleCollector.stop();
       await runtime.close();
       await pool.end();
     },
