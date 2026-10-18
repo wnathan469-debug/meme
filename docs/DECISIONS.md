@@ -84,3 +84,15 @@ Statut des ADR 001 à 004 : retenu comme base de la phase 2 après validation du
 **Alternatives.** Attendre les quinze phases avant tout paquet ; distribuer une interface nécessitant un serveur/Docker installé sur le PC ; prétendre fournir des analyses réelles avec les fixtures.
 
 **Conséquences.** Premier logiciel local installable, sans secret ou abonnement. Les fonctionnalités effectivement livrées et reportées figurent dans DESKTOP.md et LIMITATIONS.md. Electron est configuré sans Node côté renderer, avec preload restreint et refus des sorties réseau. La validation Linux et la génération du paquet ne remplacent pas un essai Windows natif ni une signature d'éditeur.
+
+## ADR-009 — Évolution V2 progressive et accès X séparé
+
+**Statut.** Proposition soumise à validation de la phase 0 V2 ; aucun code V2 implémenté.
+
+**Contexte.** Le document V2 demande veille X, personnes, conversations et graphiques, tandis que l'édition 0.1.0 est une démonstration Electron autonome sans backend, client HTTP ou connexion à PostgreSQL. L'utilisateur souhaite conserver une installation Windows sans outils de développement.
+
+**Décision proposée.** Conserver Electron/React, préférences et distribution V1. Refactoriser par extraction ciblée, créer un contrat XProvider avec adaptateur DEMO hors ligne et client REAL côté backend privé TypeScript/PostgreSQL/Redis. Sans backend/clé : état non configuré, pas de donnée réelle inventée. Les jetons ne sont jamais transmis au renderer ; les notes privées sont visibles uniquement par leur utilisateur et ne sont jamais envoyées à X ou à un modèle de langage. Ne pas remplacer l'installateur 0.1.0 ni modifier la migration 0001.
+
+**Alternatives.** Réécriture complète ; collecte depuis le renderer avec jeton ; installation manuelle de Postgres/Redis imposée à l'utilisateur ; annoncer du live sur les fixtures. Ces alternatives ne répondent pas au besoin de compatibilité, sécurité ou simplicité d'installation.
+
+**Conséquences.** L'hébergement et le financement du backend live restent à décider avant activation ; la démo ne dépend pas de ce service. Migrations additives, sauvegardes et nouvelle version de préférences ; tests V1 conservés. Les contradictions sur le scénario Tesla et les identifiants fictifs sont explicites dans AUDIT_V2.md et ne justifient aucune suppression silencieuse.

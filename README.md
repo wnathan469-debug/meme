@@ -61,6 +61,10 @@ tests/              Tests métier, sécurité et parcours
 release/            Paquets générés, non versionnés
 ```
 
+## Évolution V2
+
+[Audit V2 et plan de modification](docs/AUDIT_V2.md) : phase 0 réalisée, en attente de validation avant le code. La version Windows 0.1.0 publiée reste inchangée.
+
 ## Documentation et avancement
 
 Phases 1 et 2 validées, phase 3 réalisée et testée. La demande d'une application Windows a ensuite conduit à une édition de bureau démo ; les autres phases serveur/live restent ouvertes.
