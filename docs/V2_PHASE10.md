@@ -77,4 +77,11 @@ Validation locale :
 - `npm run test:desktop` sous Xvfb : notifications Electron conservées après rechargement, lecture et protections réseau/IPC existantes vérifiées.
 - `npm run build`, `npm run typecheck`, `npm run format:check` et `git diff --check` réussis ; `npm audit --omit=dev` : zéro vulnérabilité signalée.
 
-Liens CI Linux et Windows consignés après exécution. Prochaine phase : **11 — Sources et API**, après validation utilisateur.
+Validations GitHub réussies sur le commit **c8e56edabb696d23210bb532319695a6552753df** :
+
+- [Linux — contrats, migration, PostgreSQL, Redis, diagnostics sans appel X et audit](https://github.com/wnathan469-debug/meme/actions/runs/39162472417).
+- [Windows — tests, compilation native, installateur NSIS et ZIP vérifié après extraction](https://github.com/wnathan469-debug/meme/actions/runs/39162472427).
+
+Avec les sept tests Redis, **364 tests TypeScript distincts**, plus les onze parcours navigateur, le parcours Electron et les contrôles SQL V1. L’artefact Windows CI est conservé pendant 14 jours ; fabriquer et vérifier ce paquet ne constitue pas un essai d’installation sur le PC utilisateur. La publication conserve les fichiers immuables de la release publique 0.1.0 : ces anciens téléchargements ne contiennent pas les nouveautés de phase 10.
+
+Prochaine phase : **11 — Sources et API**, après validation utilisateur.
