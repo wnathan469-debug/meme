@@ -26,3 +26,8 @@ Le schéma PostgreSQL serveur est séparé : sa procédure de migration/rollback
 ## Serveur V2 — migrations et reprise
 
 La procédure [V2_PHASE2.md](V2_PHASE2.md) remplace les anciennes commandes de mise à niveau serveur. Utiliser db:migrate après sauvegarde restaurée sur une autre base, collecteurs arrêtés et version de workers cohérente. Un rollback V2 refuse toute perte ; ne pas supprimer les données pour contourner ce refus. PostgreSQL conserve désormais les budgets et le journal, Redis les coordinations temporaires. Sauvegarder les deux selon leurs garanties, ne pas rembourser automatiquement une réservation ambiguë. La base/les services ne sont toujours pas nécessaires à l'installation de la démo Windows.
+
+
+## Worker X privé — phase 3
+
+Migrer à 0006, configurer le rôle/propriétaire serveur et les bornes vérifiées, puis seulement activer X_COLLECTION_MODE. `npm run x:collect` seul reste un diagnostic sans connexion ; `--once` effectue un polling borné et `--run` la boucle configurée. SIGINT/SIGTERM ferment le worker. Ne pas supprimer les réservations ambiguës ni avancer manuellement un curseur après erreur. Les trous sont conservés dans les exécutions interrompues ; un rattrapage borné n'affirme pas l'exhaustivité. La vérification de disponibilité est explicite, pas encore planifiée. Procédure complète et limites : V2_PHASE3.md.

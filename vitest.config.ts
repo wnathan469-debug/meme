@@ -7,7 +7,8 @@ export default defineConfig({
       include: [
         "packages/core/domain.ts",
         "apps/desktop/preferences-v2.cjs",
-        "packages/connectors/x/{client,contracts,control}.ts",
+        "packages/connectors/x/{client,contracts,control,stream-client}.ts",
+        "packages/collection/{collector,contracts,feed,query}.ts",
         "packages/shared/*.ts",
       ],
       thresholds: { lines: 80, functions: 80, statements: 80, branches: 80 },

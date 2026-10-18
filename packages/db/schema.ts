@@ -1143,6 +1143,12 @@ export const xCollectionCheckpoints = memeradar.table(
       mode: "date",
     }),
     leaseUntil: timestamp("lease_until", { withTimezone: true, mode: "date" }),
+    leaseId: uuid("lease_id"),
+    pendingSinceId: text("pending_since_id"),
+    queryHash: text("query_hash"),
+    nextDueAt: timestamp("next_due_at", { withTimezone: true, mode: "date" })
+      .default(sql.raw("now()"))
+      .notNull(),
   },
 );
 export const xCollectionRuns = memeradar.table("x_collection_runs", {
@@ -1170,6 +1176,12 @@ export const xCollectionRuns = memeradar.table("x_collection_runs", {
   errorCount: integer("error_count").default(sql.raw("0")).notNull(),
   estimatedCostMicros: rawQuantity("estimated_cost_micros"),
   errorCode: text("error_code"),
+  partial: boolean("partial").default(sql.raw("false")).notNull(),
+  gapStartedAt: timestamp("gap_started_at", {
+    withTimezone: true,
+    mode: "date",
+  }),
+  gapEndedAt: timestamp("gap_ended_at", { withTimezone: true, mode: "date" }),
 });
 export const xCostReservations = memeradar.table("x_cost_reservations", {
   id: uuid("id").default(sql.raw("gen_random_uuid()")).primaryKey(),
@@ -1310,6 +1322,8 @@ export const xPosts = memeradar.table("x_posts", {
     withTimezone: true,
     mode: "date",
   }),
+  unresolvedAuthorXUserId: text("unresolved_author_x_user_id"),
+  textFingerprint: text("text_fingerprint"),
 });
 export const xReservationBudgets = memeradar.table("x_reservation_budgets", {
   id: uuid("id").default(sql.raw("gen_random_uuid()")).primaryKey(),

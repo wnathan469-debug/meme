@@ -91,3 +91,8 @@ Les jobs de purge, sauvegardes, migrations futures et permissions seront raccord
 PostgreSQL 16, image Docker épinglée par digest dans le script : migration sur base vide, seconde application sans doublon, 51 assertions d'intégrité, refus du rollback non confirmé, rollback confirmé puis réinstallation et mêmes 51 assertions, erreur injectée avant COMMIT sans schéma résiduel, et deux migrateurs concurrents avec une seule version appliquée. Le banc détruit ses conteneurs à la sortie et n'accède à aucun fournisseur.
 
 Ces vérifications valident le schéma et le mécanisme de migration ; elles ne valident pas une application, des appels RPC, une authentification complète ou un installateur de bureau.
+
+
+## Évolution V2 — phase 3
+
+La migration additive 0006 ajoute l'état de reprise des collecteurs, baux clôturés par jeton, dates de coupure/état partiel et empreintes de texte/référence d'auteur non observé. Toujours 55 tables applicatives. Les migrations 0001–0005 restent immuables ; le lanceur et les tests couvrent maintenant la suite jusqu'à 0006 et le snapshot ORM correspondant. Voir V2_PHASE3.md pour la transaction d'ingestion, le devis de recherche et les limites du rattrapage.

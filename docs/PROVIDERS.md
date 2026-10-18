@@ -1,8 +1,8 @@
-# Fournisseur X — socle V2, phases 1 et 2
+# Fournisseur X — socle V2, phases 1 à 3
 
 ## Périmètre et vérification
 
-Le client REST est implémenté et testé sur réponses synthétiques. Il n'est pas encore branché à l'interface Electron. Aucune collecte, connexion X ou dépense réelle n'a été effectuée ; aucun abonnement, accès ou tarif n'est présumé. Le flux persistant et les ordonnanceurs sont la phase 3 V2 ; la configuration de `stream` reste non testée et aucun objet factice ne prétend établir un flux.
+Le client REST est implémenté et testé sur réponses synthétiques. Il n'est pas encore branché à l'interface Electron. Aucune collecte, connexion X ou dépense réelle n'a été effectuée ; aucun abonnement, accès ou tarif n'est présumé. Le flux et les collecteurs de la phase 3 sont implémentés sur contrats simulés, sans droit X ni borne de facturation présumés. Voir [V2_PHASE3.md](V2_PHASE3.md) ; aucune connexion REAL au flux sans enveloppe contractuelle vérifiée.
 
 Vérification des chemins le 18 octobre 2026 : paquet officiel **@xdevplatform/xdk 0.6.6**, code généré `dist/index.cjs`, dont le dépôt déclaré est [xdevplatform/xdk-typescript](https://github.com/xdevplatform/xdk-typescript). Le SDK a été consulté comme référence, pas ajouté aux dépendances. Autre source : [exemples officiels X](https://github.com/xdevplatform/Twitter-API-v2-sample-code/tree/99992dd773dd77f23cb4236edbb66a1210e248d0), `api-index.json`. Certains commentaires d'exemples utilisent « posts » alors que les routes générées utilisent encore `tweets` : le client suit les routes machine vérifiées.
 
@@ -25,7 +25,7 @@ La documentation `docs.x.com/llms.txt` était inaccessible depuis ce cloud (CONN
 
 - `packages/shared/` : transport HTTPS, contrôle DNS/redirections, erreurs, horloge, masquage des secrets, journal technique et reprises bornées.
 - `packages/connectors/x/` : contrats, normalisation, adaptateurs réel et démo, configuration, budgets et registres Redis/mémoire.
-- `apps/api/x-runtime.ts` : composition privée, sans serveur HTTP ni tâche de fond. `MemoryControlStore` est réservé aux tests ; la composition live exige Redis et PostgreSQL migré.
+- `apps/api/x-runtime.ts` : composition privée, sans serveur HTTP ni tâche de fond. `MemoryControlStore` est réservé aux tests ; la composition live exige Redis et PostgreSQL migré à 0006.
 - `.env.example` : chaque variable effectivement lue, unité et valeur par défaut. Ces variables appartiennent au serveur. Aucun préfixe `VITE_`, jeton dans le renderer, clé intégrée à l'installateur ou Docker imposé au PC.
 
 `npm run x:diagnose` affiche la configuration et les capacités, sans connexion Redis ni X. Par défaut, il utilise le fournisseur DEMO. Le fichier `.env` n'est pas automatiquement chargé ; le futur déploiement injectera les variables côté serveur.
@@ -42,7 +42,7 @@ Une réponse valide réduit la réservation au coût calculé. Un échec certain
 
 Les budgets et réservations sont durables dans PostgreSQL ; quotas, délais et coupe-circuits sont partagés par espace de facturation Redis. Tous les workers et fonctionnalités d'un même compte doivent utiliser le même `X_CONTROL_NAMESPACE`. Recherche récente et conversations partagent la même route et le même compteur. Les quotas viennent exclusivement des en-têtes : une absence reste inconnue ; zéro reste épuisé. Les réponses concurrentes ne peuvent pas augmenter le restant de la même fenêtre. Une 429 respecte le plus grand délai de `retry-after` et de la réinitialisation annoncée. Sans en-tête exploitable, une attente locale de 60 secondes est appliquée ; ce n'est pas une affirmation sur le quota X. Si l'attente excède le maximum automatique configuré, l'appel rend une erreur et conserve le délai partagé. Reprises avec gigue bornées, aucune reprise 401/403, coupe-circuit et une seule sonde après ouverture.
 
-PostgreSQL est désormais l'autorité durable pour `provider_budgets`, les réservations et `x_usage_ledger`. Les écritures sont transactionnelles, uniques par origine/espace/requête, et les réservations non réglées ne sont pas remboursées automatiquement. Le runtime refuse l'activation sans base migrée à 0005. Le journal Redis provisoire de la phase 1 n'est plus utilisé par la composition live ; le journal SQL n'est pas tronqué à 10 000 entrées, seule sa lecture actuelle est bornée. Une perte Redis peut perdre les quotas/capacités transitoires mais ne réinitialise pas les budgets. PostgreSQL et Redis doivent rester privés avec persistance et sauvegardes adaptées. Détails de migration, séparation des rôles, limites et tests de restauration : [V2_PHASE2.md](V2_PHASE2.md). Aucun collecteur ni stockage automatique de publications n'est démarré.
+PostgreSQL est désormais l'autorité durable pour `provider_budgets`, les réservations et `x_usage_ledger`. Les écritures sont transactionnelles, uniques par origine/espace/requête, et les réservations non réglées ne sont pas remboursées automatiquement. Le runtime refuse l'activation sans base migrée à 0006. Le journal Redis provisoire de la phase 1 n'est plus utilisé par la composition live ; le journal SQL n'est pas tronqué à 10 000 entrées, seule sa lecture actuelle est bornée. Une perte Redis peut perdre les quotas/capacités transitoires mais ne réinitialise pas les budgets. PostgreSQL et Redis doivent rester privés avec persistance et sauvegardes adaptées. Détails de migration, séparation des rôles, limites et tests de restauration : [V2_PHASE2.md](V2_PHASE2.md). Les collecteurs privés sont livrés mais ne démarrent pas automatiquement ; collecte désactivée par défaut.
 
 ## Transport et données non fiables
 
@@ -53,3 +53,8 @@ Les textes X restent des chaînes non fiables, sans exécution ni rendu HTML. Le
 Les fixtures `tests/fixtures/x/` sont entièrement fabriquées : noms et adresses `.invalid`, IDs numériques de 21 chiffres uniquement pour tester le contrat réseau, jamais utilisés pour joindre X. Les fixtures de l'adaptateur DEMO utilisent exclusivement des IDs `DEMO_*`. Les fautes simulées sont des erreurs typées explicites ; elles ne sont pas présentées comme du réel.
 
 La conformité de stockage, la suppression/indisponibilité périodique et l'attribution dans la nouvelle interface restent à implémenter avant collecte live (collecteurs et interface des phases suivantes). Ce socle ne collecte ni ne redistribue de contenu réel.
+
+
+## Collecte et recherche — phase 3
+
+Worker privé, polling/flux bornés, recherche gratuite locale et devis préalable aux recherches API, pagination/fencing/idempotence et vérification d'indisponibilité sont détaillés dans [V2_PHASE3.md](V2_PHASE3.md). Les quotas d'offre et tarifs restent à vérifier dans le compte X. La limite logicielle de flux ne suffit pas à garantir la facture : sans borne contractuelle vérifiée, le flux REAL n'est pas proposé par le runtime. La démo demeure isolée et n'affiche pas « en direct ». Les nouvelles vues et l'exposition authentifiée ne sont pas livrées dans l'installateur actuel.

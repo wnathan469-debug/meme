@@ -25,6 +25,8 @@
     "scripts/*.ts",
     "tests/contract",
     "tests/integration/*.ts",
-    "packages/db/*.ts"
+    "packages/db/*.ts",
+    "packages/collection",
+    "apps/worker"
   ]
 }

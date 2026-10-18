@@ -14,8 +14,11 @@ export type ErrorCode =
   | "PRICING_UNKNOWN"
   | "STORE_UNAVAILABLE"
   | "PROTECTED_ACCOUNT"
-  | "NOT_FOUND";
+  | "NOT_FOUND"
+  | "COLLECTION_LEASE_LOST";
 const messages: Record<ErrorCode, string> = {
+  COLLECTION_LEASE_LOST:
+    "Collecte reprise par un autre worker ; résultat périmé refusé.",
   NETWORK_DISABLED: "Les appels externes sont désactivés en mode démo.",
   NOT_CONFIGURED: "Accès X non configuré.",
   INVALID_INPUT: "Paramètres de requête invalides.",

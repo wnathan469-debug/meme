@@ -63,6 +63,7 @@ export function validateQuery(
 }
 export class XApiClient implements XProvider {
   readonly dataOrigin = "REAL" as const;
+  stream?: import("./stream-contracts").XStreamProvider;
   private readonly clock: Clock;
   private readonly audit: AuditSink;
   private readonly schemas = providerSchemas("REAL");

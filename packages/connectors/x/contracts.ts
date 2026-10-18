@@ -66,6 +66,7 @@ export interface PageOptions {
   feature?: Feature;
 }
 export interface XProvider {
+  readonly stream?: import("./stream-contracts").XStreamProvider;
   readonly dataOrigin: Origin;
   capabilities(): Promise<XCapabilities>;
   searchRecent(query: string, options?: PageOptions): Promise<XPage<XPost>>;

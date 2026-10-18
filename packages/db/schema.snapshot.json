@@ -2,11 +2,19 @@
   "enums": [
     {
       "name": "confidence_level",
-      "values": ["CONFIRMED", "PLAUSIBLE", "WEAK", "INSUFFICIENT_DATA"]
+      "values": [
+        "CONFIRMED",
+        "PLAUSIBLE",
+        "WEAK",
+        "INSUFFICIENT_DATA"
+      ]
     },
     {
       "name": "data_origin",
-      "values": ["REAL", "DEMO"]
+      "values": [
+        "REAL",
+        "DEMO"
+      ]
     },
     {
       "name": "indicator_kind",
@@ -20,7 +28,11 @@
     },
     {
       "name": "knowledge_kind",
-      "values": ["OBSERVED", "CALCULATED", "INTERPRETED"]
+      "values": [
+        "OBSERVED",
+        "CALCULATED",
+        "INTERPRETED"
+      ]
     },
     {
       "name": "risk_status",
@@ -4747,6 +4759,38 @@
           "default": null,
           "generated": false,
           "primary": false
+        },
+        {
+          "name": "lease_id",
+          "type": "uuid",
+          "nullable": true,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "pending_since_id",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "query_hash",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "next_due_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "default": "now()",
+          "generated": false,
+          "primary": false
         }
       ]
     },
@@ -4876,6 +4920,30 @@
         {
           "name": "error_code",
           "type": "text",
+          "nullable": true,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "partial",
+          "type": "bool",
+          "nullable": false,
+          "default": "false",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "gap_started_at",
+          "type": "timestamptz",
+          "nullable": true,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "gap_ended_at",
+          "type": "timestamptz",
           "nullable": true,
           "default": null,
           "generated": false,
@@ -5450,6 +5518,22 @@
         {
           "name": "availability_checked_at",
           "type": "timestamptz",
+          "nullable": true,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "unresolved_author_x_user_id",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "text_fingerprint",
+          "type": "text",
           "nullable": true,
           "default": null,
           "generated": false,

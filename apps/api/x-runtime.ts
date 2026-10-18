@@ -1,5 +1,7 @@
 /** Composition only: no HTTP listener, no background collection, no paid startup probe. */
 import Redis from "ioredis";
+import { SafeStreamTransport } from "../../packages/shared/stream-http";
+import { XFilteredStream } from "../../packages/connectors/x/stream-client";
 import pg from "pg";
 import { DurableXControlStore } from "../../packages/db/x-control-store";
 import { loadXConfig, type XConfig } from "../../packages/connectors/x/config";
@@ -58,7 +60,7 @@ export async function createXRuntime(config: XConfig): Promise<XRuntime> {
     });
     pool.on("error", () => {});
     const schema = await pool.query(
-      "SELECT 1 FROM memeradar.schema_migrations WHERE version='0005_provider_controls_alerts'",
+      "SELECT 1 FROM memeradar.schema_migrations WHERE version='0006_x_collection_state'",
     );
     if (schema.rowCount !== 1) throw new Error();
   } catch {
@@ -76,8 +78,25 @@ export async function createXRuntime(config: XConfig): Promise<XRuntime> {
     allowedHosts: [new URL(config.baseUrl).hostname],
     timeoutMs: config.timeoutMs,
   });
+  const provider = new XApiClient(config, transport, store);
+  if (
+    config.streaming.billingBoundVerified &&
+    config.streaming.billableMaxPosts !== null &&
+    config.declared.stream !== false
+  )
+    provider.stream = new XFilteredStream(
+      config,
+      config.streaming,
+      new SafeStreamTransport({
+        mode: "live",
+        allowedHosts: [new URL(config.baseUrl).hostname],
+        connectTimeoutMs: config.timeoutMs,
+      }),
+      store,
+      transport,
+    );
   return {
-    provider: new XApiClient(config, transport, store),
+    provider,
     status: "ready",
     close: async () => {
       redis.disconnect();

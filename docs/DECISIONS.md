@@ -116,3 +116,12 @@ Statut des ADR 001 à 004 : retenu comme base de la phase 2 après validation du
 **Persistance.** PostgreSQL prend la responsabilité des budgets/réservations et du journal. Redis conserve les quotas et coordinations temporaires. Un runtime réel exige les deux ; pas de repli moins durable. Intention avant appel, coût connu après règlement, rapprochement des interruptions à ajouter avant déploiement. Aucun import automatique de compteurs externes ni mélange de versions de workers. RLS forcée sur personnes/catégories/règles privées ; rôle applicatif non privilégié et contexte utilisateur transactionnel, authentification serveur encore à livrer.
 
 **Préférences.** Module V1→V2 testé, backup exact et publication exclusive sans écrasement ; activation différée jusqu'à l'interface V2 pour éviter une copie périmée pendant l'usage V1. Aucun secret/REAL introduit par conversion. L'application et l'installateur actuels restent sur leurs préférences V1.
+
+
+## ADR-012 — Collecte clôturée par bail et flux à enveloppe vérifiée
+
+**Décision.** Ajouter 0006 plutôt que réécrire une migration appliquée. Ingestion et curseur dans une même transaction ; jeton de bail et verrou de flux partagé, refus des résultats périmés. Le curseur maximal n'est promu qu'à la fin d'une pagination, et les erreurs conservent les pages déjà enregistrées. Les modes/règles sont fusionnés via jointures, pas par duplication de la publication. Propriétaire/origine filtrent les lectures et notifications.
+
+**Modes.** Polling priorisé ou flux filtré borné et annulable, auto revient à la recherche disponible après échec. Un refus financier arrête aussi le rattrapage. Le flux REAL exige une borne contractuelle maximale de facturation par fenêtre ; sans cela il reste absent, car arrêter après N trames ne prouve pas que X facture au plus N. Les fenêtres ambiguës restent facturées prudemment à leur borne ; aucun tarif ni accès réel validé par les tests simulés.
+
+**Recherche et livraison.** Devis propriétaire éphémère et à usage unique avant recherche payante, coût exact en micro-USD et budget durable toujours obligatoire. Recherche locale SQL paramétrée et filtres URL indépendants du réseau. Les abonnements et la pause du fil sont des services privés en mémoire, à relier à l'interface/transport authentifié dans les étapes prévues ; aucun SSE ou écran fictif annoncé. Disponibilité explicite avec masquage conservateur, planification de conformité/rétention et reprise exhaustive encore à finaliser avant activation réelle.

@@ -23,4 +23,5 @@ jobs:
       - run: npm run test:db:v2
       - run: npm run test:redis
       - run: npm run x:diagnose
+      - run: npm run x:collect
       - run: npm audit --omit=dev --audit-level=moderate

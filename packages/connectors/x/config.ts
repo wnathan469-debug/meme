@@ -46,6 +46,15 @@ export const defaultEndpoints: Record<Exclude<Endpoint, "stream">, string> = {
   quotes: "/tweets/{id}/quote_tweets",
 };
 export interface XConfig {
+  collection: {
+    mode: "auto" | "stream" | "polling" | "disabled";
+    maxPages: number;
+    leaseMs: number;
+    defaultIntervalSeconds: number;
+    highPriorityIntervalSeconds: number;
+    maxReconnects: number;
+  };
+  streaming: import("./stream-client").StreamSettings;
   mode: "demo" | "live";
   enabled: boolean;
   token: Secret | null;
@@ -178,7 +187,51 @@ export async function loadXConfig(
     postFieldsParameter !== "post.fields"
   )
     throw new ProviderError("INVALID_INPUT");
+  const collectionMode = env.X_COLLECTION_MODE ?? "disabled";
+  if (!["auto", "stream", "polling", "disabled"].includes(collectionMode))
+    throw new ProviderError("INVALID_INPUT");
+  const streamPath = env.X_STREAM_PATH ?? "/tweets/search/stream",
+    rulesPath = env.X_STREAM_RULES_PATH ?? "/tweets/search/stream/rules";
+  if (
+    [streamPath, rulesPath].some(
+      (p) => !/^\/[a-z0-9_/-]+$/.test(p) || p.includes(".."),
+    )
+  )
+    throw new ProviderError("INVALID_INPUT");
   return {
+    collection: {
+      mode: collectionMode as "auto" | "stream" | "polling" | "disabled",
+      maxPages: numeric(env, "X_COLLECTION_MAX_PAGES", 3, 1, 100),
+      leaseMs: numeric(env, "X_COLLECTION_LEASE_MS", 120000, 1000, 3600000),
+      defaultIntervalSeconds: numeric(
+        env,
+        "X_POLL_INTERVAL_SECONDS_DEFAULT",
+        300,
+        1,
+        86400,
+      ),
+      highPriorityIntervalSeconds: numeric(
+        env,
+        "X_POLL_INTERVAL_SECONDS_HIGH_PRIORITY",
+        60,
+        1,
+        86400,
+      ),
+      maxReconnects: numeric(env, "X_STREAM_MAX_RECONNECTS", 3, 0, 10),
+    },
+    streaming: {
+      path: streamPath,
+      rulesPath,
+      maxRules: numeric(env, "X_STREAM_MAX_RULES", 10, 1, 1000),
+      windowMs: numeric(env, "X_STREAM_WINDOW_MS", 60000, 1000, 600000),
+      idleMs: numeric(env, "X_STREAM_IDLE_TIMEOUT_MS", 30000, 100, 600000),
+      maxPosts: numeric(env, "X_STREAM_MAX_POSTS", 100, 1, 1000),
+      billableMaxPosts: env.X_STREAM_BILLABLE_MAX_POSTS
+        ? numeric(env, "X_STREAM_BILLABLE_MAX_POSTS", 0, 1, 1000000)
+        : null,
+      billingBoundVerified: bool("X_STREAM_BILLING_BOUND_VERIFIED"),
+      tagPrefix: "mr:" + namespace + ":",
+    },
     postFieldsParameter,
     mode: mode as "demo" | "live",
     enabled: bool("X_API_ENABLED"),

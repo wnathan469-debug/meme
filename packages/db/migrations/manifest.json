@@ -23,5 +23,10 @@
     "version": "0005_provider_controls_alerts",
     "upSha256": "35add69b9544882012479f5dc776917969a85faeb42911750618e8fddef92a2b",
     "downSha256": "410f2cbeff93157939ca5f98043c11079b8699a2c002dadc05a2664ed16f4c79"
+  },
+  {
+    "version": "0006_x_collection_state",
+    "upSha256": "2d77d5c3030db157f9cf6f663c1aa683de9f0178af71b8cf1a3539d97ede80d8",
+    "downSha256": "1e8424a6dc9781ffe527095d81f5392be295a5a16fd1304ebdb1e3f8c1c8a2f3"
   }
 ]

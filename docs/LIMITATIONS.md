@@ -37,3 +37,8 @@ Client REST X et adaptateur DEMO implémentés séparément, sans branchement à
 ## Persistance V2 — phase 2
 
 Migrations 0002–0005, schéma ORM de requêtes, budgets/journal PostgreSQL et conversion de préférences sont implémentés et testés. Ils ne constituent pas un backend hébergé, des collecteurs, une nouvelle interface ou un paquet V2 publié. Le runtime privé exige maintenant PostgreSQL et Redis. Les checkpoints/status ont leur schéma mais attendent les collecteurs ; rétention, rapprochement des appels interrompus, rôles/identités déployés et administration des plafonds restent à finaliser avant activation réelle. Les FK/check/index/RLS sont maintenus en SQL, sans duplication DDL dans Drizzle. La conversion des préférences est prête et sera activée avec l'interface V2. Voir [V2_PHASE2.md](V2_PHASE2.md).
+
+
+## Collecte V2 — phase 3
+
+Polling, flux filtré borné, déduplication et services de recherche/filtres sont implémentés et testés sur données fictives. Ils ne sont pas branchés à une nouvelle interface ni à un endpoint public authentifié. Aucun droit, facture ou fonctionnement réseau X réel validé. Le flux REAL exige une borne contractuelle de facturation ; sinon auto utilise le polling autorisé. Hub privé en mémoire, devis locaux au processus, rattrapage limité à la fenêtre API et aux pages configurées ; rétention/conformité non planifiées automatiquement. Les services de personnes et conversations suivront. Voir V2_PHASE3.md ; aucun nouveau paquet V2 publié.

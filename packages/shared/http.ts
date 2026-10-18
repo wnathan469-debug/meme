@@ -15,6 +15,8 @@ export interface WireRequest {
   addresses: string[];
   signal: AbortSignal;
   maxBytes: number;
+  method?: "GET" | "POST";
+  body?: string;
 }
 export type Wire = (request: WireRequest) => Promise<HttpReply>;
 export type Resolver = (hostname: string) => Promise<string[]>;
@@ -81,6 +83,8 @@ export const pinnedWire: Wire = async ({
   addresses,
   signal,
   maxBytes,
+  method = "GET",
+  body,
 }) => {
   const agent = new Agent({
     connect: {
@@ -93,7 +97,8 @@ export const pinnedWire: Wire = async ({
   try {
     sent = true;
     const response = await request(url, {
-      method: "GET",
+      method,
+      body,
       dispatcher: agent,
       headers,
       signal,
@@ -157,8 +162,18 @@ export class SafeHttpTransport implements JsonTransport {
     initialUrl: URL,
     initialHeaders: Record<string, string>,
   ): Promise<HttpReply> {
+    return this.send(initialUrl, initialHeaders, "GET");
+  }
+  async send(
+    initialUrl: URL,
+    initialHeaders: Record<string, string>,
+    method: "GET" | "POST",
+    body?: string,
+  ): Promise<HttpReply> {
     if (this.options.mode === "demo")
       throw new ProviderError("NETWORK_DISABLED");
+    if (body !== undefined && Buffer.byteLength(body) > 65536)
+      throw new ProviderError("INVALID_INPUT");
     const signal = AbortSignal.timeout(this.options.timeoutMs ?? 10000);
     let url = new URL(initialUrl);
     const originalOrigin = url.origin;
@@ -194,6 +209,8 @@ export class SafeHttpTransport implements JsonTransport {
         },
         addresses,
         signal,
+        method,
+        body,
         maxBytes: this.options.maxBytes ?? 2_000_000,
       });
       if (
@@ -202,6 +219,8 @@ export class SafeHttpTransport implements JsonTransport {
       )
         throw new ProviderError("INVALID_RESPONSE", false, 0, true);
       if ([301, 302, 303, 307, 308].includes(reply.status)) {
+        if (method !== "GET")
+          throw new ProviderError("UNSAFE_URL", false, 0, true);
         if (!reply.headers.location || hop === (this.options.maxRedirects ?? 3))
           throw new ProviderError("UNSAFE_URL", false, 0, true);
         try {

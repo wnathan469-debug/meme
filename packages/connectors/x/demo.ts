@@ -1,3 +1,4 @@
+import { demoStream } from "./demo-stream";
 import type { Clock } from "../../shared/runtime";
 import { systemClock } from "../../shared/runtime";
 import { ProviderError } from "../../shared/errors";
@@ -68,7 +69,10 @@ export type DemoFault =
 export class DemoXProvider implements XProvider {
   readonly dataOrigin = "DEMO" as const;
   private fault: DemoFault = "none";
-  constructor(private readonly clock: Clock = systemClock) {}
+  readonly stream: import("./stream-contracts").XStreamProvider;
+  constructor(private readonly clock: Clock = systemClock) {
+    this.stream = demoStream(this, clock);
+  }
   simulate(fault: DemoFault): void {
     this.fault = fault;
   }
@@ -134,12 +138,18 @@ export class DemoXProvider implements XProvider {
     options: PageOptions = {},
   ): Promise<XPage<XPost>> {
     if (!query.trim()) throw new ProviderError("INVALID_INPUT");
+    const since = options.sinceId
+      ? rawPosts.findIndex((p) => p.id === options.sinceId)
+      : -1;
+    if (options.sinceId && since < 0) throw new ProviderError("INVALID_INPUT");
     return this.page(
       rawPosts
-        .filter((post) =>
-          post.text
-            .toLocaleLowerCase("fr")
-            .includes(query.toLocaleLowerCase("fr")),
+        .filter(
+          (post, index) =>
+            index > since &&
+            post.text
+              .toLocaleLowerCase("fr")
+              .includes(query.toLocaleLowerCase("fr")),
         )
         .map((post) => post.id),
       options,
