@@ -119,3 +119,8 @@ Migration 0010 : 66 tables applicatives plus le registre ; côté de prix/fourni
 ## Évolution V2 — phase 9
 
 Schéma inchangé : 66 tables applicatives, migrations 0001–0010 inchangées. risk_findings conserve les observations publiques normalisées sous evidence.phase9, avec source, URL, observation/récupération, couverture, échéance et limites ; checker_version sépare les sources par SHA-256. Acquisitions identiques idempotentes, conflit de contenu à même clé refusé. Lecture par token/chaîne/origine et instant, maximum 100 groupes de source/contrôle, dépassement explicite. Retour V1 conserve ces preuves. Voir [phase 9](V2_PHASE9.md).
+
+
+## Évolution V2 — phase 10
+
+Migration 0011 : 67 tables applicatives et onze versions ; alert_runtime_states lie règle, propriétaire et origine avec JSON borné et RLS forcée. alert_rules reçoit un type SQL additionnel transaction_activity et une clé propriétaire composite ; historique/livraisons/anciens états de sujet reçoivent des politiques de propriétaire, la politique existante des règles est conservée. alerts et notification_deliveries conservent les décisions et livraisons in-app idempotentes. Rollback refuse les données phase 10 ; anciens SQL immuables, ORM/snapshot régénérés. Voir [phase 10](V2_PHASE10.md).

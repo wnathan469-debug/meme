@@ -1,3 +1,4 @@
+import { AlertsV2 } from "./AlertsV2";
 import { OpenChart } from "./TokenLink";
 import { SocialProofs } from "./SocialProofs";
 import { EVENT_TITLE as V2_EVENT_TITLE } from "../../../packages/events/model";
@@ -871,6 +872,7 @@ function App() {
           )}
           {route.page === "alerts" && (
             <>
+              <AlertsV2 />
               <EventAlertDrafts />
               <div className="tabs">
                 <button

@@ -14,6 +14,7 @@ export default defineConfig({
         "packages/events/model.ts",
         "packages/social/*.ts",
         "packages/risks/{model,adapters,goplus}.ts",
+        "packages/alerts/{model,engine}.ts",
         "packages/charts/{decimal,model,service}.ts",
         "packages/connectors/market/*.ts",
         "packages/shared/*.ts",

@@ -10,6 +10,7 @@ export default defineConfig({
       "tests/integration/social.test.ts",
       "tests/integration/charts.test.ts",
       "tests/integration/risks.test.ts",
+      "tests/integration/alerts.test.ts",
     ],
     testTimeout: 20000,
     hookTimeout: 30000,
@@ -26,6 +27,7 @@ export default defineConfig({
         "packages/db/social-repository.ts",
         "packages/db/chart-repository.ts",
         "packages/db/risk-repository.ts",
+        "packages/db/alert-repository.ts",
         "packages/db/social-visibility.ts",
         // Pure graph/filter/coverage functions have their own unit coverage target.
         "packages/conversations/service.ts",

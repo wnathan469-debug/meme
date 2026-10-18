@@ -1,0 +1,20 @@
+BEGIN;
+SET LOCAL search_path=memeradar,public;
+SET LOCAL row_security=off;
+LOCK TABLE alert_rules,alerts,alert_runtime_states IN ACCESS EXCLUSIVE MODE;
+DO $$ BEGIN
+ IF EXISTS(SELECT 1 FROM alert_runtime_states) OR EXISTS(SELECT 1 FROM alert_rules WHERE conditions->>'engine'='phase10' OR type='transaction_activity') THEN RAISE EXCEPTION 'Rollback refused: phase 10 alert rules/history are in use'; END IF;
+END $$;
+DROP TABLE alert_runtime_states;
+DROP POLICY notification_owner ON notification_deliveries;
+ALTER TABLE notification_deliveries NO FORCE ROW LEVEL SECURITY;
+ALTER TABLE notification_deliveries DISABLE ROW LEVEL SECURITY;
+DROP POLICY alert_subject_owner ON alert_subject_states;
+ALTER TABLE alert_subject_states NO FORCE ROW LEVEL SECURITY;
+ALTER TABLE alert_subject_states DISABLE ROW LEVEL SECURITY;
+DROP POLICY alerts_owner ON alerts;
+ALTER TABLE alerts NO FORCE ROW LEVEL SECURITY;
+ALTER TABLE alerts DISABLE ROW LEVEL SECURITY;
+ALTER TABLE alert_rules DROP CONSTRAINT alert_rules_owner_key, DROP CONSTRAINT alert_rules_type_check;
+ALTER TABLE alert_rules ADD CONSTRAINT alert_rules_type_check CHECK(type IN ('news','token_link','attention_acceleration','liquidity_change','wallet_movement','risk_signal','source_degradation','x_keyword','tracked_person_post','conversation_activity','provider_budget','provider_disconnect'));
+COMMIT;

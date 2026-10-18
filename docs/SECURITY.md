@@ -57,3 +57,8 @@ Graphique chargé localement sans iframe/CDN. Source REAL exacte HTTPS api.gecko
 ## Phase 9 — contrôles de risque
 
 Évaluations séparées par chaîne/adresse/origine, preuves bornées, TTL/échéance, contradictions et inconnues conservées. GoPlus GET fixe désactivé par défaut, DNS épinglé et limite PostgreSQL partagée indépendante. Adaptateurs Solana sans RPC ; ingestion réservée à un hôte de confiance, aucune donnée privée/sociale. Texte fournisseur échappé, URL affichées sans navigation automatique. Aucun wallet, signature ou transaction. Voir [phase 9](V2_PHASE9.md).
+
+
+## Phase 10 — alertes privées
+
+État, historique et livraisons privés par règle/propriétaire/origine, RLS forcée et verrou transactionnel. Déduplication et limites réévaluées avant livraison ; personne suivie relue sous verrou partagé, identité stable vérifiée. In-app uniquement, sans nouvel IPC ou appel externe ; provenance sans query string, corps techniques bruts refusés. Stockage local corrompu préservé. Raccordement serveur/collecteurs à venir. Voir [phase 10](V2_PHASE10.md).

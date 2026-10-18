@@ -770,3 +770,160 @@ test("risques : preuves, inconnues, erreurs, contradictions et absence de résea
   expect(errors).toEqual([]);
   expect(external).toEqual([]);
 });
+
+test("alertes V2 : résumé, plafond, preuve, faux positif et reprise sans réseau", async ({
+  page,
+}) => {
+  const external: string[] = [],
+    errors: string[] = [];
+  page.on("request", (r) => {
+    if (
+      !r.url().startsWith("http://127.0.0.1:5173") &&
+      !r.url().startsWith("data:")
+    )
+      external.push(r.url());
+  });
+  page.on("pageerror", (e) => errors.push(e.message));
+  await page.goto("/#page=alerts");
+  const center = page.getByRole("region", {
+      name: "Centre d’alertes V2",
+      exact: true,
+    }),
+    form = center.getByRole("form", { name: "Configurer une alerte V2" });
+  await form.getByLabel("Nom de l’alerte V2").fill("Résumé navigateur");
+  await form
+    .getByLabel("Termes (séparés par des virgules)")
+    .fill("Nébula Mobile, #nebula");
+  await form.getByLabel("Mode de livraison V2").selectOption("interval");
+  await form.getByLabel("Maximum d’alertes par heure").fill("2");
+  await form.getByLabel("Délai de récupération (secondes)").fill("0");
+  await form
+    .getByRole("button", { name: "Enregistrer l’alerte V2", exact: true })
+    .click();
+  await expect(center.getByRole("status")).toContainText("enregistrée");
+  await center
+    .getByRole("button", {
+      name: "Avancer les alertes de 5 minutes",
+      exact: true,
+    })
+    .click();
+  const history = center.getByRole("region", {
+      name: "Historique des alertes V2",
+      exact: true,
+    }),
+    notifications = center.getByRole("region", {
+      name: "Notifications V2 dans l’application",
+      exact: true,
+    });
+  await expect(
+    history
+      .getByRole("article")
+      .filter({ hasText: "Résumé navigateur" })
+      .first(),
+  ).toContainText("En attente du résumé");
+  await history.getByLabel("Afficher les décisions supprimées V2").check();
+  await expect(history).toContainText("Plafond horaire atteint");
+  await center
+    .getByRole("button", {
+      name: "Avancer les alertes d’une heure",
+      exact: true,
+    })
+    .click();
+  const digest = notifications
+    .getByRole("article")
+    .filter({ hasText: "Résumé navigateur" });
+  await expect(digest).toHaveCount(1);
+  await expect(digest).toContainText("2 observation(s)");
+  await digest.getByText("Voir les observations du résumé").click();
+  await expect(digest).toContainText("Nébula Mobile");
+  await expect(
+    digest.getByRole("link", { name: "Voir la publication" }).first(),
+  ).toBeVisible();
+  await digest
+    .getByRole("button", { name: "Marquer comme lue", exact: true })
+    .click();
+  const entry = history
+    .getByRole("article")
+    .filter({ hasText: "Résumé navigateur" })
+    .first();
+  await entry
+    .getByRole("button", { name: "Signaler un faux positif", exact: true })
+    .click();
+  await expect(entry).toContainText("Faux positif signalé");
+  await expect(history).toContainText("ne constitue pas un conseil financier");
+  await page.reload();
+  await expect(digest).toHaveCount(1);
+  await expect(digest).toContainText("Lue");
+  await expect(entry).toContainText("Faux positif signalé");
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect
+    .poll(() =>
+      page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
+    )
+    .toBe(true);
+  expect(external).toEqual([]);
+  expect(errors).toEqual([]);
+});
+
+test("alertes V2 : pause d’une personne et stockage corrompu préservé", async ({
+  page,
+}) => {
+  await page.goto("/#page=people");
+  await page
+    .getByLabel("Identifiant X ou URL de profil")
+    .fill("@demo_analyste_julie");
+  await page
+    .getByRole("button", { name: "Vérifier le compte", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Confirmer l’ajout", exact: true })
+    .click();
+  await page.goto("/#page=alerts");
+  const center = page.getByRole("region", {
+      name: "Centre d’alertes V2",
+      exact: true,
+    }),
+    form = center.getByRole("form", { name: "Configurer une alerte V2" });
+  await form.getByLabel("Nom de l’alerte V2").fill("Julie en pause");
+  await form.getByLabel("Type d’alerte V2").selectOption("person_post");
+  await form
+    .getByLabel("Personne suivie pour l’alerte")
+    .selectOption({ index: 1 });
+  await form.getByLabel("Termes (séparés par des virgules)").fill("");
+  await form
+    .getByRole("button", { name: "Enregistrer l’alerte V2", exact: true })
+    .click();
+  await center
+    .getByRole("button", {
+      name: "Avancer les alertes de 5 minutes",
+      exact: true,
+    })
+    .click();
+  const history = center.getByRole("region", {
+    name: "Historique des alertes V2",
+    exact: true,
+  });
+  await history.getByLabel("Afficher les décisions supprimées V2").check();
+  await expect(
+    history.getByRole("article").filter({ hasText: "Julie en pause" }),
+  ).toContainText("Personne en pause");
+  await page.evaluate(() =>
+    localStorage.setItem(
+      "memeradar-demo-alerts-phase10-v1",
+      "{invalid-preserved",
+    ),
+  );
+  await page.reload();
+  await expect(center).toContainText("Stockage des alertes illisible");
+  await expect(
+    center.getByRole("button", {
+      name: "Avancer les alertes de 5 minutes",
+      exact: true,
+    }),
+  ).toBeDisabled();
+  expect(
+    await page.evaluate(() =>
+      localStorage.getItem("memeradar-demo-alerts-phase10-v1"),
+    ),
+  ).toBe("{invalid-preserved");
+});

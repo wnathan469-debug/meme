@@ -1738,3 +1738,21 @@ footer p {
   white-space: normal;
   overflow-wrap: anywhere;
 }
+
+.alerts-v2 {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.alerts-v2 form {
+  margin: 1rem 0;
+  padding: 1rem 0;
+  border-block: 1px solid var(--border);
+}
+.alerts-v2 article {
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border);
+  min-width: 0;
+}
+.alerts-v2 .form-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+}

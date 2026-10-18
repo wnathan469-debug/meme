@@ -48,5 +48,10 @@
     "version": "0010_token_charts",
     "upSha256": "abac1b809b04bfa426a440a4182fd75cb6949e439f7d78db5f7ae04cae8a88b8",
     "downSha256": "1b68693a0d1fabbe79a35cf3d4989cbee3ada34bae9212824ad65763422436b1"
+  },
+  {
+    "version": "0011_alert_runtime",
+    "upSha256": "a74ca0e76a698889b928d0be205e17b63806a263d5cc1619e45170e0cc2a135d",
+    "downSha256": "8e1465a6f28c3973b0ae6169584e8731dc2fd72150b0b097fc3005723c3d7ec8"
   }
 ]

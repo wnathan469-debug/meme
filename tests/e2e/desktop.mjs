@@ -249,6 +249,31 @@ try {
       .textContent(),
     /Événement Electron/,
   );
+  const center = page.getByRole("region", {
+    name: "Centre d’alertes V2",
+    exact: true,
+  });
+  await center.waitFor();
+  await center
+    .getByRole("button", {
+      name: "Avancer les alertes d’une heure",
+      exact: true,
+    })
+    .click();
+  const notifications = center.getByRole("region", {
+    name: "Notifications V2 dans l’application",
+    exact: true,
+  });
+  assert.ok((await notifications.getByRole("article").count()) > 0);
+  await notifications
+    .getByRole("button", { name: "Marquer comme lue", exact: true })
+    .first()
+    .click();
+  const before = await notifications.getByRole("article").count();
+  await page.reload();
+  await center.waitFor();
+  assert.equal(await notifications.getByRole("article").count(), before);
+  assert.match(await notifications.textContent(), /Lue/);
   console.log(
     "PASS: Electron sandbox, IPC validation, persistent preferences across restart, clipboard, deep link and blocked main/renderer network.",
   );

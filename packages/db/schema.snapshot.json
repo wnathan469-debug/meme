@@ -188,6 +188,75 @@
       ]
     },
     {
+      "name": "alert_runtime_states",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "default": "gen_random_uuid()",
+          "generated": false,
+          "primary": true
+        },
+        {
+          "name": "data_origin",
+          "type": "data_origin",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "knowledge_kind",
+          "type": "knowledge_kind",
+          "nullable": false,
+          "default": "'CALCULATED'::memeradar.knowledge_kind",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "default": "now()",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "default": "now()",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "rule_id",
+          "type": "uuid",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "user_id",
+          "type": "uuid",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "state",
+          "type": "jsonb",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        }
+      ]
+    },
+    {
       "name": "alert_subject_states",
       "columns": [
         {

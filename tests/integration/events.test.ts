@@ -452,7 +452,7 @@ it("keeps interruption evidence separate from publication-time coverage and chec
   expect(
     (await pool.query("SELECT count(*) FROM memeradar.schema_migrations"))
       .rows[0].count,
-  ).toBe("10");
+  ).toBe("11");
 });
 
 it("reuses only same-conversation display identities without creating a global commenter profile", async () => {

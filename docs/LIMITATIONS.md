@@ -71,3 +71,8 @@ Interface de marché en DEMO, jeu dédié distinct des valeurs V1 ; pas de prix 
 ## Phase 9 — risques
 
 Interface entièrement fictive, sans analyse live annoncée. GoPlus testé sur fixtures et SDK officiel consulté ; couverture/droits/quota et fraîcheur réels à diagnostiquer avant activation. Décodeurs Solana/métadonnées et relevés de détenteurs/mouvements/LP exigent des lectures déjà acquises et liées au token par un hôte de confiance. Aucun scanner historique ni simulation de vente locale. Proxy présent ≠ modifiabilité prouvée, métadonnées Metaplex ≠ tous les programmes, rôle de portefeuille non vérifié ≠ exclusion légitime. Pas de certification, pas de note globale ; données absentes, anciennes ou contradictoires explicites. Raccordement authentifié et nouvel installateur public restent à venir. Voir [phase 9](V2_PHASE9.md).
+
+
+## Phase 10 — alertes
+
+Centre utilisateur en DEMO locale : évaluation manuelle, horloge propre, trois jours et stockage borné. Pas de surveillance en arrière-plan, courriel, webhook, bot ou notification système. Service privé durable disponible pour un hôte authentifié, pas encore raccordé automatiquement aux collecteurs ; il exige comparabilité, qualité, couverture et provenance des observations. Heures silencieuses/plafond suppriment avec raison ; un résumé en attente conserve son échéance après modification. Rétention/archivage à organiser avant saturation. Voir [phase 10](V2_PHASE10.md).

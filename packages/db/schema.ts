@@ -79,6 +79,22 @@ export const alertRules = memeradar.table("alert_rules", {
   digestIntervalSeconds: integer("digest_interval_seconds"),
   maxPerHour: integer("max_per_hour"),
 });
+export const alertRuntimeStates = memeradar.table("alert_runtime_states", {
+  id: uuid("id").default(sql.raw("gen_random_uuid()")).primaryKey(),
+  dataOrigin: dataOrigin("data_origin").notNull(),
+  knowledgeKind: knowledgeKind("knowledge_kind")
+    .default(sql.raw("'CALCULATED'::memeradar.knowledge_kind"))
+    .notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true, mode: "date" })
+    .default(sql.raw("now()"))
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" })
+    .default(sql.raw("now()"))
+    .notNull(),
+  ruleId: uuid("rule_id").notNull(),
+  userId: uuid("user_id").notNull(),
+  state: jsonb("state").notNull(),
+});
 export const alertSubjectStates = memeradar.table("alert_subject_states", {
   id: uuid("id").default(sql.raw("gen_random_uuid()")).primaryKey(),
   dataOrigin: dataOrigin("data_origin").notNull(),
@@ -1747,6 +1763,7 @@ export const xUsers = memeradar.table("x_users", {
 });
 export const schemaTables = {
   alertRules,
+  alertRuntimeStates,
   alertSubjectStates,
   alerts,
   analysisEvidence,
