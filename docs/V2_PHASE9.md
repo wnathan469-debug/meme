@@ -65,4 +65,11 @@ Validation locale réussie :
 - `npm run test:desktop` sous Xvfb : parcours Electron réussi, avec risque contradictoire/échec, avertissements et protections réseau/IPC existantes.
 - `npm audit --omit=dev` : zéro vulnérabilité signalée.
 
-Les validations GitHub Linux et Windows seront ajoutées après leur exécution. Prochaine phase : **10 — alertes et fréquence**, après validation utilisateur.
+Validations GitHub réussies sur le commit **c8d9e10aa8c9d5fb1395395a193d56ab1266b082** :
+
+- [Linux — contrats, migrations, PostgreSQL, Redis, diagnostics sans appel X et audit](https://github.com/wnathan469-debug/meme/actions/runs/39159935389).
+- [Windows — compilation native, tests, installateur NSIS et ZIP vérifié après extraction](https://github.com/wnathan469-debug/meme/actions/runs/39159935477).
+
+Soit **321 tests TypeScript distincts** avec les sept tests Redis, plus les neuf parcours navigateur, le parcours Electron et les contrôles SQL V1. Le ZIP Windows est conservé dans l’artefact CI pendant 14 jours ; cette validation de fabrication ne remplace pas un essai d’installation sur le PC de l’utilisateur. Le travail de publication préserve les fichiers immuables de la release publique 0.1.0 : aucun lien de cette ancienne version ne représente la phase 9.
+
+Prochaine phase : **10 — alertes et fréquence**, après validation utilisateur.
