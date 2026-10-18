@@ -20,6 +20,7 @@ const normalizeText = (value: string) =>
   value.normalize("NFKC").toLocaleLowerCase("en").replace(/\s+/g, " ").trim();
 const uuid = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
 export class PgXCollectionRepository implements CollectionRepository {
+  private static readonly advisorySessions = new WeakMap<Pool, number>();
   constructor(
     private readonly pool: Pool,
     readonly ownerId: string,
@@ -32,6 +33,21 @@ export class PgXCollectionRepository implements CollectionRepository {
     return withUserContext(this.pool, this.ownerId, this.origin, work);
   }
   async withStreamLock(
+    key: string,
+    work: () => Promise<void>,
+  ): Promise<boolean> {
+    const sessions = PgXCollectionRepository.advisorySessions;
+    const used = sessions.get(this.pool) ?? 0;
+    // Session locks must leave a connection available for the callback's SQL transactions.
+    if (used >= Math.max(0, (this.pool.options.max ?? 10) - 1)) return false;
+    sessions.set(this.pool, used + 1);
+    try {
+      return await this.sessionLock(key, work);
+    } finally {
+      sessions.set(this.pool, (sessions.get(this.pool) ?? 1) - 1);
+    }
+  }
+  private async sessionLock(
     key: string,
     work: () => Promise<void>,
   ): Promise<boolean> {

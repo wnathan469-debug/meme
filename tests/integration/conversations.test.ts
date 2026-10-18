@@ -385,3 +385,37 @@ it("estimates REAL requests, expansions and retries without probes and invalidat
   });
   expect(transport.calls).toHaveLength(0);
 });
+
+it("leaves a pool connection available while a conversation lock runs its SQL work", async () => {
+  const small = new pg.Pool({
+    connectionString: url.toString(),
+    max: 2,
+    connectionTimeoutMillis: 1000,
+  });
+  const a = new PgXCollectionRepository(small, owners[0], "DEMO"),
+    b = new PgXCollectionRepository(small, owners[0], "DEMO");
+  let release!: () => void, ready!: () => void;
+  const gate = new Promise<void>((r) => {
+      release = r;
+    }),
+    started = new Promise<void>((r) => {
+      ready = r;
+    });
+  try {
+    const first = a.withStreamLock("capacity-one", async () => {
+      expect((await small.query("SELECT 1 AS n")).rows[0].n).toBe(1);
+      ready();
+      await gate;
+    });
+    await started;
+    const work = vi.fn(async () => {});
+    expect(await b.withStreamLock("capacity-two", work)).toBe(false);
+    expect(work).not.toHaveBeenCalled();
+    release();
+    expect(await first).toBe(true);
+    expect(await b.withStreamLock("capacity-two", work)).toBe(true);
+  } finally {
+    release();
+    await small.end();
+  }
+});
