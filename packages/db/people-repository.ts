@@ -161,7 +161,7 @@ export class PgPeopleRepository implements PeopleRepository {
           this.origin + ":user:" + user.id,
         ]);
         await c.query(
-          "INSERT INTO memeradar.x_username_history(data_origin,x_user_id,username,observed_at) SELECT data_origin,x_user_id,username,$3 FROM memeradar.x_users WHERE data_origin=$1 AND x_user_id=$2 AND username<>$4 AND last_refreshed_at<=$3 ON CONFLICT DO NOTHING",
+          "INSERT INTO memeradar.x_username_history(data_origin,x_user_id,username,observed_at) SELECT data_origin,x_user_id,username,$3 FROM memeradar.x_users WHERE data_origin=$1 AND x_user_id=$2 AND username<>$4 AND (last_refreshed_at IS NULL OR last_refreshed_at<=$3) ON CONFLICT DO NOTHING",
           [this.origin, user.id, user.observedAt, user.username],
         );
         await c.query(

@@ -101,6 +101,9 @@ it("deduplicates concurrent confirmations and recognizes renamed accounts with h
   expect(results.every((r) => r.duplicate)).toBe(true);
   expect(await repo.list()).toHaveLength(1);
   const original = (await provider.getUsersByIds(["DEMO_USER_A"]))[0];
+  await pool.query(
+    "UPDATE memeradar.x_users SET last_refreshed_at=NULL WHERE x_user_id='DEMO_USER_A'",
+  );
   const renamed = {
     ...original,
     username: "demo_julie_new",

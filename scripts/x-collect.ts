@@ -44,7 +44,16 @@ try {
       if (args.includes("--once")) {
         const result = await collector.tick();
         process.stdout.write(
-          JSON.stringify({ result, status: worker.collector.status }) + "\n",
+          JSON.stringify({
+            result,
+            status: args.includes("--people")
+              ? {
+                  mode: config.mode === "demo" ? "demo" : "polling",
+                  feature: "people",
+                  ...result,
+                }
+              : worker.collector.status,
+          }) + "\n",
         );
       } else await collector.run(controller.signal);
     } finally {
