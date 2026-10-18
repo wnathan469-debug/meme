@@ -87,7 +87,7 @@ Statut des ADR 001 à 004 : retenu comme base de la phase 2 après validation du
 
 ## ADR-009 — Évolution V2 progressive et accès X séparé
 
-**Statut.** Proposition soumise à validation de la phase 0 V2 ; aucun code V2 implémenté.
+**Statut.** Audit validé par l’utilisateur ; phase 1 V2 implémentée, intégration UI et déploiement live à venir.
 
 **Contexte.** Le document V2 demande veille X, personnes, conversations et graphiques, tandis que l'édition 0.1.0 est une démonstration Electron autonome sans backend, client HTTP ou connexion à PostgreSQL. L'utilisateur souhaite conserver une installation Windows sans outils de développement.
 
@@ -96,3 +96,12 @@ Statut des ADR 001 à 004 : retenu comme base de la phase 2 après validation du
 **Alternatives.** Réécriture complète ; collecte depuis le renderer avec jeton ; installation manuelle de Postgres/Redis imposée à l'utilisateur ; annoncer du live sur les fixtures. Ces alternatives ne répondent pas au besoin de compatibilité, sécurité ou simplicité d'installation.
 
 **Conséquences.** L'hébergement et le financement du backend live restent à décider avant activation ; la démo ne dépend pas de ce service. Migrations additives, sauvegardes et nouvelle version de préférences ; tests V1 conservés. Les contradictions sur le scénario Tesla et les identifiants fictifs sont explicites dans AUDIT_V2.md et ne justifient aucune suppression silencieuse.
+
+
+## ADR-010 — Réservations exactes partagées et activation live explicite
+
+**Décision.** Client REST privé derrière XProvider, transport Undici 7.30.1 épinglé, validation Zod existante, ipaddr.js 2.2.0 pour le classement IP, ioredis 5.11.1 pour les contrôles atomiques Lua. Pas de SDK X ajouté : chemins vérifiés dans le SDK officiel, logique de contrôle sous notre responsabilité. tsx 4.23.15 exécute le diagnostic TypeScript hors renderer.
+
+**Motifs.** Aucun transport partagé n'existait dans V1. Le refus DEMO précède DNS ; un tarif inconnu ou registre indisponible bloque les appels. Les montants sont exacts en micro-USD, les réservations pessimistes couvrent chaque tentative, les plafonds globaux et par fonctionnalité sont atomiques. L'adaptateur mémoire reste local aux tests, la composition live exige Redis. Les budgets ne sont jamais désactivables.
+
+**Écarts explicités.** `getPostsByIds` retourne une page normalisée plutôt qu'un tableau nu, pour conserver provenance, erreurs partielles et quotas. Les variables de plafond portent l'unité MICRO_USD. Le flux optionnel, les probes périodiques, les priorités et alertes visibles sont reportés aux collecteurs/UI correspondants ; aucune méthode vide ne prétend les implémenter. Le journal Redis est provisoire avant la migration additive phase 2 et ne remplace pas un audit durable. Détails et garanties opérationnelles : PROVIDERS.md.

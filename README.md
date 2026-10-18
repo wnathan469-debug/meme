@@ -63,7 +63,9 @@ release/            Paquets générés, non versionnés
 
 ## Évolution V2
 
-[Audit V2 et plan de modification](docs/AUDIT_V2.md) : phase 0 réalisée, en attente de validation avant le code. La version Windows 0.1.0 publiée reste inchangée.
+[Audit V2 et plan de modification](docs/AUDIT_V2.md) : phase 0 validée. [Phase 1 V2](docs/V2_PHASE1.md) : client X privé, fournisseur démo, contrôles de sécurité, quotas et budgets implémentés et testés. [Configuration et limites fournisseur](docs/PROVIDERS.md). La version Windows 0.1.0 publiée reste inchangée ; la nouvelle interface et la collecte live ne sont pas encore livrées.
+
+`npm run x:diagnose` fonctionne hors ligne sans clé. `npm run test:redis` lance un Redis Docker éphémère pour les tests partagés ; ces outils concernent le développement du serveur, pas l’installation Windows.
 
 ## Documentation et avancement
 

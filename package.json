@@ -2,7 +2,7 @@
   "name": "memeradar",
   "version": "0.1.0",
   "private": true,
-  "description": "MemeRadar — veille explicable, démonstration hors ligne",
+  "description": "MemeRadar \u2014 veille explicable, d\u00e9monstration hors ligne",
   "author": "MemeRadar",
   "license": "UNLICENSED",
   "main": "apps/desktop/main.cjs",
@@ -21,11 +21,16 @@
     "dist:win": "npm run build && node scripts/build-windows.cjs",
     "dist:zip": "npm run build && electron-builder --win zip --x64",
     "test:desktop": "node tests/e2e/desktop.mjs",
-    "format:check": "prettier --check scripts apps packages/core tests/unit tests/e2e/*.ts tests/e2e/*.mjs *.ts *.json"
+    "format:check": "prettier --check scripts apps packages/core packages/shared packages/connectors tests/unit tests/contract tests/e2e/*.ts tests/e2e/*.mjs tests/integration/*.ts tests/fixtures *.ts *.json",
+    "x:diagnose": "tsx scripts/x-diagnose.ts",
+    "test:redis": "node scripts/test-x-redis.mjs"
   },
   "dependencies": {
+    "ioredis": "5.11.1",
+    "ipaddr.js": "2.2.0",
     "react": "19.3.1",
     "react-dom": "19.3.1",
+    "undici": "7.30.1",
     "zod": "4.3.6"
   },
   "devDependencies": {
@@ -38,6 +43,7 @@
     "electron": "44.9.0",
     "electron-builder": "26.15.3",
     "prettier": "3.9.10",
+    "tsx": "4.23.15",
     "typescript": "5.9.3",
     "vite": "8.3.4",
     "vitest": "4.1.12"

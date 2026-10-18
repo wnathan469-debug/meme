@@ -18,6 +18,12 @@
     "packages/core",
     "tests/unit",
     "vite.config.ts",
-    "playwright.config.ts"
+    "playwright.config.ts",
+    "packages/shared",
+    "packages/connectors",
+    "apps/api",
+    "scripts/*.ts",
+    "tests/contract",
+    "tests/integration/*.ts"
   ]
 }

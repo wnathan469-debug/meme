@@ -1,0 +1,22 @@
+{
+  "_fixture": {
+    "data_origin": "DEMO",
+    "description": "Partial synthetic response with unavailable resource; never a real deletion claim."
+  },
+  "data": [
+    {
+      "id": "900000000000000000003",
+      "text": "[DÉMO] Réponse fictive",
+      "referenced_tweets": [
+        { "id": "900000000000000000001", "type": "replied_to" }
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "resource_id": "900000000000000000004",
+      "detail": "Untrusted provider text is not logged or forwarded"
+    }
+  ],
+  "meta": { "result_count": 1, "next_token": "fixture-next-page" }
+}

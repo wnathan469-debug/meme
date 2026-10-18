@@ -1,0 +1,42 @@
+{
+  "_fixture": {
+    "data_origin": "DEMO",
+    "description": "Synthetic contract response. Numeric IDs are invented, never sent to X."
+  },
+  "data": [
+    {
+      "id": "900000000000000000001",
+      "text": "[DÉMO] Annonce fictive de Nébula Mobile",
+      "author_id": "900000000000000000002",
+      "created_at": "2026-01-15T14:00:00.000Z",
+      "conversation_id": "900000000000000000001",
+      "referenced_tweets": [],
+      "lang": "fr",
+      "public_metrics": {
+        "like_count": 8,
+        "reply_count": 120,
+        "retweet_count": 2,
+        "quote_count": 1
+      },
+      "entities": {
+        "hashtags": [{ "tag": "DEMO" }],
+        "cashtags": [{ "tag": "DEMOCOIN" }],
+        "mentions": [{ "username": "demo_julie" }],
+        "urls": [{ "url": "https://demo.memeradar.invalid/post/1" }]
+      }
+    }
+  ],
+  "includes": {
+    "users": [
+      {
+        "id": "900000000000000000002",
+        "username": "demo_julie",
+        "name": "[DÉMO] Julie Cosmique",
+        "protected": false,
+        "verified_type": "none",
+        "public_metrics": { "followers_count": 24 }
+      }
+    ]
+  },
+  "meta": { "result_count": 1 }
+}

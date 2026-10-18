@@ -1,0 +1,15 @@
+{
+  "_fixture": {
+    "data_origin": "DEMO",
+    "description": "Invented users for contract tests only."
+  },
+  "data": [
+    {
+      "id": "900000000000000000002",
+      "username": "demo_julie",
+      "name": "[DÉMO] Julie Cosmique",
+      "protected": false,
+      "public_metrics": { "followers_count": 24 }
+    }
+  ]
+}

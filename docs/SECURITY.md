@@ -9,3 +9,8 @@ Le modèle de menace couvre des données locales invalides et une tentative de n
 Le futur mode live exigera l'ensemble des protections de l'architecture serveur (authentification, CSRF, SSRF avec DNS/redirects contrôlés, secrets, quotas et audit). Elles ne sont pas déclarées implémentées par cette édition hors ligne.
 
 Les dépendances sont verrouillées par package-lock.json. Voir VALIDATION.md pour le résultat de l'audit. Le paquet n'est pas signé : signature et essais Windows natifs nécessaires avant diffusion publique.
+
+
+## Socle X V2
+
+Le nouveau transport privé refuse tout réseau DEMO avant DNS, contrôle les IP publiques et épingle la résolution, vérifie TLS et refuse les redirections interorigines. Les jetons et chaînes Redis restent côté serveur, masqués en JSON et inspection. Aucun texte de publication, en-tête ou URL complète dans le journal technique. Budgets exacts et quotas partagés bloquent les appels si les contrôles sont indisponibles. Aucun accès réseau supplémentaire n'est accordé au renderer Electron. Voir PROVIDERS.md pour les limites opérationnelles Redis et les conditions d'activation live.
