@@ -18,7 +18,7 @@ Les services et l'état de collecte sont prêts pour le futur branchement de l'i
 
 Migration additive `0006_x_collection_state`, sans modification de 0001–0005. Le nombre de tables applicatives reste **55**. Ajouts : jeton de bail, curseur provisoire, empreinte de requête et prochaine échéance sur les checkpoints ; état partiel et dates d'interruption sur les collectes ; empreinte de texte et référence d'auteur non récupéré sur les publications. Schéma ORM/snapshot régénérés et comparés au PostgreSQL migré. Retour conservateur bloqué si les nouvelles données sont utilisées.
 
-L'enregistrement d'une page, des auteurs effectivement observés, métriques, références, associations règles/collectes et du curseur forme une transaction. Une page invalide ou un résultat provenant d'un bail remplacé ne peut avancer le curseur ni émettre une notification. Les baux sont renouvelés à l'enregistrement ; la reprise d'un bail expiré marque l'ancienne exécution interrompue. Un verrou de session partagé limite le flux à un worker par origine/espace de facturation ; il est relâché même si la session échoue.
+Le premier checkpoint est explicitement dû à l'instant du worker : la précision de l'horloge SQL ne retarde pas le premier passage. L'enregistrement d'une page, des auteurs effectivement observés, métriques, références, associations règles/collectes et du curseur forme une transaction. Une page invalide ou un résultat provenant d'un bail remplacé ne peut avancer le curseur ni émettre une notification. Les baux sont renouvelés à l'enregistrement ; la reprise d'un bail expiré marque l'ancienne exécution interrompue. Un verrou de session partagé limite le flux à un worker par origine/espace de facturation ; il est relâché même si la session échoue.
 
 Le plus grand ID REAL est comparé en BigInt, sans Number. Tant qu'une pagination reste ouverte, le `since_id` initial est conservé et le plus grand ID observé reste provisoire. Il n'est promu qu'à la dernière page enregistrée. En DEMO, les IDs restent opaques et suivent l'ordre du simulateur. Une modification de requête invalide ses anciens curseurs ; un jeton de pagination rejeté est réinitialisé sans sauter les anciennes pages. Une requête rejetée sans jeton est mise en pause, au lieu de répéter indéfiniment un appel invalide.
 
@@ -83,6 +83,15 @@ Le rattrapage est borné en pages et à la fenêtre réellement disponible. Un e
 **179 tests TypeScript distincts** : 138 + 7 + 34. Les tests unitaires exécutés de nouveau avec Redis ne sont pas comptés deux fois. Tous les tests X utilisent fixtures ou sockets simulées ; seuls PostgreSQL et Redis locaux sont réellement contactés. Les conteneurs sont jetables et nettoyés ; l'application n'a effectué aucune collecte fournisseur.
 
 Cas nouveaux vérifiés : fusion multi-mode/règles, reprise de pagination, bail périmé, transaction rejetée sans notification, isolation propriétaire, filtres et SQL paramétré, égalité de textes sans fusion, devis expiré/consommé/modifié, tarification REAL simulée et journal durable, indisponibilité et anti-résurrection par page périmée, pause, verrous de flux, worker DEMO intégré, auteur non récupéré, 401/403/429/503, silence, UTF-8/NDJSON fragmenté, borne de taille, refus SSRF/redirections, budget inconnu/épuisé, POST ambigu non répété, rattrapage/reconnexion et état connecté après handshake seulement. Les seuils de couverture globaux restent à 80 %.
+
+## Vérifications GitHub du code publié
+
+Commit source final : `4f79918c42fce2fb6c2b6a2425ebeb1e72bbb583`.
+
+- [Linux : compilation, migrations, collecte/recherche, Redis et audit production](https://github.com/wnathan469-debug/meme/actions/runs/39133936060) : réussi.
+- [Windows natif : compilation, tests, installateur et ZIP vérifié](https://github.com/wnathan469-debug/meme/actions/runs/39133936097) : réussi. La publication conserve les fichiers publics 0.1.0 existants.
+
+Ces contrôles ne valident pas un accès réseau X réel ni une installation V2 sur le PC de l'utilisateur. Le test d'intégration du premier passage couvre aussi la synchronisation déterministe de son échéance.
 
 ## Livraison et suite
 
