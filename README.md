@@ -69,7 +69,7 @@ release/            Paquets générés, non versionnés
 
 ## Documentation et avancement
 
-Phases 1 et 2 validées, phase 3 réalisée et testée. La demande d'une application Windows a ensuite conduit à une édition de bureau démo ; les autres phases serveur/live restent ouvertes.
+Pour le cahier des charges V1 : phases 1 et 2 validées, phase 3 réalisée et testée. La demande d'une application Windows a ensuite conduit à une édition de bureau démo ; les autres phases serveur/live restent ouvertes.
 
 - [Cadrage](docs/CADRAGE.md) · [Architecture serveur](docs/ARCHITECTURE.md) · [Décisions](docs/DECISIONS.md)
 - [Guide de bureau](docs/DESKTOP.md) · [Indicateurs](docs/INDICATORS.md) · [Validation](docs/VALIDATION.md)

@@ -104,6 +104,15 @@ Les tests distincts TypeScript sont **139** : 112 unitaires/contrats + 7 Redis +
 
 Cas vérifiés : V1 peuplée → V2 sans perte de token/quantité/règle/alerte ; base vide ; répétition/concurrence ; rollback compatible et refus atomique sur données V2/nouvelles alertes ; checksums modifiés, version inconnue et échec injecté sans tables résiduelles ; séparation des origines, IDs immuables, pseudonymes, réponses orphelines ; RLS et nettoyage du contexte ; contraintes OHLC ; 40 réservations simultanées limitées à 20 ; montants au-delà de 2^53 ; atomicité des limites par fonctionnalité ; journal idempotent ; refus avant X si base indisponible ; composition privée sans probe ; sauvegarde/restauration ; migration des préférences concurrente et conservation V1.
 
+## Vérifications GitHub du code publié
+
+Commit source : `f3339513218777805cb3a5354f2e200334b6d628`.
+
+- [Linux : V1, V2 PostgreSQL/Redis, contrats et audit production](https://github.com/wnathan469-debug/meme/actions/runs/39092075728) : réussi.
+- [Windows natif : compilation, tests, installateur et ZIP vérifié](https://github.com/wnathan469-debug/meme/actions/runs/39092075677) : réussi ; la publication conserve les fichiers publics 0.1.0 existants.
+
+Ces constructions ne constituent ni un installateur V2 publié, ni une installation/mise à niveau déjà vérifiée sur le PC de l'utilisateur.
+
 ## Fichiers complets et suite
 
 Les fichiers complets sont dans le dépôt. Les ajouts principaux se trouvent dans [packages/db](../packages/db), [migrations 0002–0005](../packages/db/migrations), [préférences V2](../apps/desktop/preferences-v2.cjs), [tests PostgreSQL](../tests/integration/v2-database.test.ts) et [tests préférences](../tests/unit/preferences-v2.test.ts). Le manifeste détaillé figure ci-dessous. Aucun fichier supprimé ; 0001 et l'interface V1 sont inchangés.
@@ -165,4 +174,3 @@ La phase 3 implémentera les collecteurs X, la déduplication applicative, la re
 | [tests/integration/x-redis.test.ts](../tests/integration/x-redis.test.ts) | Composition sans base durable désormais refusée. |
 | [tsconfig.json](../tsconfig.json) | Modules et tests DB vérifiés strictement. |
 | [vitest.config.ts](../vitest.config.ts) | Couverture des préférences V2 ajoutée. |
-
