@@ -66,6 +66,11 @@ Validation locale :
 
 Les passages intermédiaires ont permis de corriger le sélecteur de navigation après renommage « Sources et API », de contrôler le format des réponses avant le succès d’une sonde et de refuser une réservation sans fonctionnalité quand un plafond ciblé existe. Une collision entre répertoires temporaires de couverture PostgreSQL/Redis a été résolue en exécutant ces cibles successivement. Aucun test supprimé, seuil réduit, timeout augmenté ou retry ajouté.
 
-Validation Linux/Windows du commit : en cours de construction sur GitHub, liens consignés après vérification. Aucun test fournisseur réel, tarif contractuel, compte protégé réel ou installation sur le PC utilisateur n’est annoncé comme validé. La génération d’un artefact Windows CI ne remplace pas un essai d’installation native sur ce PC.
+Validations GitHub réussies sur le commit **b7812998cc6ae7ce79db682197e8a85410bd13a4** :
+
+- [Linux — contrats, migrations, PostgreSQL, Redis, diagnostics et audit](https://github.com/wnathan469-debug/meme/actions/runs/39178039400).
+- [Windows — tests, compilation native, installateur NSIS et ZIP vérifié après extraction](https://github.com/wnathan469-debug/meme/actions/runs/39178039371).
+
+Les deux workflows sont terminés avec succès. L’artefact Windows est conservé par GitHub Actions pendant 14 jours. Le processus de publication a vérifié les empreintes puis conservé les fichiers immuables de la release publique 0.1.0, déjà existante : ces anciens téléchargements ne contiennent pas la phase 11. Aucun test fournisseur réel, tarif contractuel, compte protégé réel ou installation sur le PC utilisateur n’est annoncé comme validé. La génération d’un artefact Windows CI ne remplace pas un essai d’installation native sur ce PC.
 
 Il reste **trois phases : 12 (interface/navigation), 13 (démo unifiée), 14 (validation et livraison finales)**.
