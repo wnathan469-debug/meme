@@ -79,6 +79,15 @@ export class PgXCollectionRepository implements CollectionRepository {
       client.release(discard);
     }
   }
+  async cacheSeconds(kind: "posts" | "profiles", fallback: number) {
+    return this.tx(async (c) => {
+      const r = await c.query(
+        "SELECT settings->'cache'->>$3 AS seconds FROM memeradar.provider_controls WHERE data_origin=$1 AND owner_user_id=$2 AND provider='x'",
+        [this.origin, this.ownerId, kind],
+      );
+      return r.rowCount ? Number(r.rows[0].seconds) : fallback;
+    });
+  }
   async createRule(input: {
     query: string;
     priority?: CollectionRule["priority"];
@@ -105,7 +114,14 @@ export class PgXCollectionRepository implements CollectionRepository {
             JSON.stringify({ query: input.query }),
             input.query,
             input.priority ?? "normal",
-            input.intervalSeconds ?? 300,
+            input.intervalSeconds ??
+              (
+                await client.query(
+                  "SELECT settings->'priorities'->>$3 AS seconds FROM memeradar.provider_controls WHERE data_origin=$1 AND owner_user_id=$2 AND provider='x'",
+                  [this.origin, this.ownerId, input.priority ?? "normal"],
+                )
+              ).rows[0]?.seconds ??
+              300,
             input.status ?? "paused",
           ],
         )

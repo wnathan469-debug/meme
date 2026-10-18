@@ -1,3 +1,5 @@
+import { recordDiagnostic } from "../../packages/db/source-repository";
+import { ObservedPublicTransport } from "../../packages/sources/transport";
 import type { Pool } from "pg";
 import type { Origin } from "../../packages/connectors/x/contracts";
 import {
@@ -21,13 +23,16 @@ export function createChartRuntime(
       ? new DemoMarketProvider()
       : enabled
         ? new GeckoTerminalProvider(
-            new SafeHttpTransport({
-              mode: "live",
-              allowedHosts: ["api.geckoterminal.com"],
-              maxRedirects: 0,
-              timeoutMs: 10000,
-              maxBytes: 2000000,
-            }),
+            new ObservedPublicTransport(
+              new SafeHttpTransport({
+                mode: "live",
+                allowedHosts: ["api.geckoterminal.com"],
+                maxRedirects: 0,
+                timeoutMs: 10000,
+                maxBytes: 2000000,
+              }),
+              (d) => recordDiagnostic(pool, origin, "gecko", "default", d),
+            ),
             new PgMarketGate(pool, origin),
             true,
           )

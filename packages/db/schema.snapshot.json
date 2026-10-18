@@ -4096,6 +4096,232 @@
       ]
     },
     {
+      "name": "provider_controls",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "default": "gen_random_uuid()",
+          "generated": false,
+          "primary": true
+        },
+        {
+          "name": "data_origin",
+          "type": "data_origin",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "knowledge_kind",
+          "type": "knowledge_kind",
+          "nullable": false,
+          "default": "'OBSERVED'::memeradar.knowledge_kind",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "default": "now()",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "default": "now()",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "provider",
+          "type": "text",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "namespace",
+          "type": "text",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "owner_user_id",
+          "type": "uuid",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "enabled",
+          "type": "bool",
+          "nullable": false,
+          "default": "false",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "settings",
+          "type": "jsonb",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "revision",
+          "type": "int4",
+          "nullable": false,
+          "default": "1",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "failures",
+          "type": "int4",
+          "nullable": false,
+          "default": "0",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "blocked_until",
+          "type": "timestamptz",
+          "nullable": true,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "circuit_lease_until",
+          "type": "timestamptz",
+          "nullable": true,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "probe_id",
+          "type": "uuid",
+          "nullable": true,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "probe_ceiling",
+          "type": "raw_quantity",
+          "nullable": true,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "probe_expires_at",
+          "type": "timestamptz",
+          "nullable": true,
+          "default": null,
+          "generated": false,
+          "primary": false
+        }
+      ]
+    },
+    {
+      "name": "provider_diagnostics",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "default": "gen_random_uuid()",
+          "generated": false,
+          "primary": true
+        },
+        {
+          "name": "data_origin",
+          "type": "data_origin",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "knowledge_kind",
+          "type": "knowledge_kind",
+          "nullable": false,
+          "default": "'OBSERVED'::memeradar.knowledge_kind",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "default": "now()",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "default": "now()",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "provider",
+          "type": "text",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "namespace",
+          "type": "text",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "event_key",
+          "type": "uuid",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "observed_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "diagnostic",
+          "type": "jsonb",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        }
+      ]
+    },
+    {
       "name": "provider_status",
       "columns": [
         {

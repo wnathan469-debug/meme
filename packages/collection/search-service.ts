@@ -51,7 +51,9 @@ export class XSearchService {
     if (this.quotes.size >= 1000)
       this.quotes.delete(this.quotes.keys().next().value!);
     const id = randomUUID(),
-      expiresAt = this.clock.now() + 300000,
+      expiresAt =
+        this.clock.now() +
+        (await this.repository.cacheSeconds("posts", 300)) * 1000,
       pricingHash = createHash("sha256")
         .update(JSON.stringify(price))
         .digest("hex");

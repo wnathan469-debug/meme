@@ -1,3 +1,4 @@
+import { createSourcesRuntime } from "../api/sources-runtime";
 import { PgAlertRepository } from "../../packages/db/alert-repository";
 import { createRiskRuntime } from "../api/risk-runtime";
 import { createChartRuntime } from "../api/chart-runtime";
@@ -77,6 +78,14 @@ export async function createXWorker(
     { ...config.collection, maxResults: config.maxResults },
   );
   return {
+    sources: createSourcesRuntime(
+      pool,
+      ownerId,
+      config,
+      runtime.provider,
+      runtime.control,
+      { marketAllowed: marketEnabled, risksAllowed: risksEnabled },
+    ),
     alerts: new PgAlertRepository(pool, ownerId, runtime.provider.dataOrigin),
     risks: createRiskRuntime(
       pool,

@@ -993,6 +993,61 @@ export const providerCalls = memeradar.table("provider_calls", {
     mode: "date",
   }).notNull(),
 });
+export const providerControls = memeradar.table("provider_controls", {
+  id: uuid("id").default(sql.raw("gen_random_uuid()")).primaryKey(),
+  dataOrigin: dataOrigin("data_origin").notNull(),
+  knowledgeKind: knowledgeKind("knowledge_kind")
+    .default(sql.raw("'OBSERVED'::memeradar.knowledge_kind"))
+    .notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true, mode: "date" })
+    .default(sql.raw("now()"))
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" })
+    .default(sql.raw("now()"))
+    .notNull(),
+  provider: text("provider").notNull(),
+  namespace: text("namespace").notNull(),
+  ownerUserId: uuid("owner_user_id").notNull(),
+  enabled: boolean("enabled").default(sql.raw("false")).notNull(),
+  settings: jsonb("settings").notNull(),
+  revision: integer("revision").default(sql.raw("1")).notNull(),
+  failures: integer("failures").default(sql.raw("0")).notNull(),
+  blockedUntil: timestamp("blocked_until", {
+    withTimezone: true,
+    mode: "date",
+  }),
+  circuitLeaseUntil: timestamp("circuit_lease_until", {
+    withTimezone: true,
+    mode: "date",
+  }),
+  probeId: uuid("probe_id"),
+  probeCeiling: rawQuantity("probe_ceiling"),
+  probeExpiresAt: timestamp("probe_expires_at", {
+    withTimezone: true,
+    mode: "date",
+  }),
+});
+export const providerDiagnostics = memeradar.table("provider_diagnostics", {
+  id: uuid("id").default(sql.raw("gen_random_uuid()")).primaryKey(),
+  dataOrigin: dataOrigin("data_origin").notNull(),
+  knowledgeKind: knowledgeKind("knowledge_kind")
+    .default(sql.raw("'OBSERVED'::memeradar.knowledge_kind"))
+    .notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true, mode: "date" })
+    .default(sql.raw("now()"))
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" })
+    .default(sql.raw("now()"))
+    .notNull(),
+  provider: text("provider").notNull(),
+  namespace: text("namespace").notNull(),
+  eventKey: uuid("event_key").notNull(),
+  observedAt: timestamp("observed_at", {
+    withTimezone: true,
+    mode: "date",
+  }).notNull(),
+  diagnostic: jsonb("diagnostic").notNull(),
+});
 export const providerStatus = memeradar.table("provider_status", {
   id: uuid("id").default(sql.raw("gen_random_uuid()")).primaryKey(),
   dataOrigin: dataOrigin("data_origin").notNull(),
@@ -1799,6 +1854,8 @@ export const schemaTables = {
   processedJobs,
   providerBudgets,
   providerCalls,
+  providerControls,
+  providerDiagnostics,
   providerStatus,
   rawItemEntities,
   rawItems,

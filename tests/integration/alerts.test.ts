@@ -267,5 +267,5 @@ it("refuses destructive downgrade with alert rules or history while preserving a
         "SELECT count(*)::int AS n FROM memeradar.schema_migrations",
       )
     ).rows[0].n,
-  ).toBe(11);
+  ).toBe(12);
 });

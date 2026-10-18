@@ -1,3 +1,4 @@
+import { publicAdmission } from "./source-repository";
 import { matchEvent } from "../events/model";
 import type { Pool, PoolClient } from "pg";
 import { randomUUID } from "node:crypto";
@@ -477,9 +478,16 @@ export class PgChartRepository {
     )
       throw new ProviderError("INVALID_INPUT");
     return this.tx(async (c) => {
+      const policy = await c.query(
+        "SELECT settings->'cache'->>'market' AS ttl FROM memeradar.provider_controls WHERE data_origin=$1 AND provider='gecko' AND namespace='default'",
+        [this.origin],
+      );
       const t = await this.token(c, input.chain, input.address),
         lease = randomUUID(),
-        ttl = ttlSeconds[input.interval] * 1000;
+        ttl =
+          (policy.rowCount
+            ? Number(policy.rows[0].ttl)
+            : ttlSeconds[input.interval]) * 1000;
       const row = (
         await c.query(
           "INSERT INTO memeradar.chart_cache_windows(data_origin,token_id,pool_address,interval,starts_at,ends_at,provider,status,lease_id,lease_expires_at) VALUES($1,$2,$3,$4,$5,$6,$7,'pending',$8,$9) ON CONFLICT(data_origin,token_id,pool_address,interval,starts_at,ends_at,provider) DO UPDATE SET lease_id=EXCLUDED.lease_id,lease_expires_at=EXCLUDED.lease_expires_at WHERE (chart_cache_windows.lease_expires_at IS NULL OR chart_cache_windows.lease_expires_at<=$10) AND (chart_cache_windows.fetched_at IS NULL OR chart_cache_windows.fetched_at<=$11 OR chart_cache_windows.status='error') RETURNING id",
@@ -654,8 +662,16 @@ export class PgMarketGate implements MarketGate {
     private now = () => Date.now(),
   ) {}
   async reserve() {
-    const n = this.now(),
-      window = new Date(Math.floor(n / 60000) * 60000);
+    const n = this.now();
+    const provider =
+      this.provider === "geckoterminal-v2"
+        ? "gecko"
+        : this.provider === "goplus-risk-v1"
+          ? "goplus"
+          : null;
+    if (provider)
+      await publicAdmission(this.pool, this.origin, provider, "default", n);
+    const window = new Date(Math.floor(n / 60000) * 60000);
     const r = await this.pool.query(
       "INSERT INTO memeradar.market_request_controls(data_origin,provider,window_start,requests) VALUES($1,$2,$3,1) ON CONFLICT(data_origin,provider) DO UPDATE SET window_start=EXCLUDED.window_start,requests=CASE WHEN market_request_controls.window_start<EXCLUDED.window_start THEN 1 ELSE market_request_controls.requests+1 END WHERE (market_request_controls.blocked_until IS NULL OR market_request_controls.blocked_until<=$4) AND (market_request_controls.window_start<EXCLUDED.window_start OR market_request_controls.requests<20) RETURNING id",
       [this.origin, this.provider, window, new Date(n)],

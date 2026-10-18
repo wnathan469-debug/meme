@@ -274,6 +274,39 @@ try {
   await center.waitFor();
   assert.equal(await notifications.getByRole("article").count(), before);
   assert.match(await notifications.textContent(), /Lue/);
+  await page.goto("memeradar://app/index.html#page=sources");
+  const sources = page.getByRole("region", {
+    name: "Sources et API V2",
+    exact: true,
+  });
+  await sources.waitFor();
+  const sourceX = sources.getByRole("region", {
+    name: "Fournisseur X",
+    exact: true,
+  });
+  assert.match(await sourceX.textContent(), /Capacités X/);
+  await sourceX
+    .getByRole("button", { name: "Préparer le test X", exact: true })
+    .click();
+  await sourceX
+    .getByRole("button", { name: "Confirmer le test démo X", exact: true })
+    .click();
+  assert.equal(
+    await sourceX
+      .getByRole("button", { name: "Confirmer le test démo X", exact: true })
+      .count(),
+    0,
+  );
+  await sourceX.getByLabel("Activer X", { exact: true }).uncheck();
+  await sourceX
+    .getByRole("button", { name: "Enregistrer les réglages X", exact: true })
+    .click();
+  await page.reload();
+  await sources.waitFor();
+  assert.equal(
+    await sourceX.getByLabel("Activer X", { exact: true }).isChecked(),
+    false,
+  );
   console.log(
     "PASS: Electron sandbox, IPC validation, persistent preferences across restart, clipboard, deep link and blocked main/renderer network.",
   );

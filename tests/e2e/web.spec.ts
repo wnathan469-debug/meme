@@ -124,7 +124,7 @@ test("petit écran, données manquantes et sources exclues", async ({ page }) =>
     dialog.getByText(/Donnée manquante : métadonnées/),
   ).toBeVisible();
   await page.keyboard.press("Escape");
-  await page.getByRole("link", { name: "Sources", exact: true }).click();
+  await page.getByRole("link", { name: "Sources et API", exact: true }).click();
   await page.getByLabel("Inclure dans les vues de sources").nth(2).uncheck();
   await page.getByRole("link", { name: /Tableau de bord/ }).click();
   await expect(
@@ -924,6 +924,131 @@ test("alertes V2 : pause d’une personne et stockage corrompu préservé", asyn
   expect(
     await page.evaluate(() =>
       localStorage.getItem("memeradar-demo-alerts-phase10-v1"),
+    ),
+  ).toBe("{invalid-preserved");
+});
+
+test("Sources et API : confirmation unique, plafonds, quotas et persistance hors ligne", async ({
+  page,
+}) => {
+  const errors: string[] = [],
+    external: string[] = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  page.on("request", (r) => {
+    if (
+      !r.url().startsWith("http://127.0.0.1:5173") &&
+      !r.url().startsWith("data:")
+    )
+      external.push(r.url());
+  });
+  await page.goto("/#page=sources");
+  const center = page.getByRole("region", {
+    name: "Sources et API V2",
+    exact: true,
+  });
+  const x = center.getByRole("region", { name: "Fournisseur X", exact: true });
+  await expect(center).toContainText("Aucun secret à saisir");
+  await expect(x.getByRole("table")).toContainText("Non testée");
+  const state = () =>
+    page.evaluate(() =>
+      JSON.parse(
+        localStorage.getItem("memeradar-demo-sources-phase11-v1") || "null",
+      ),
+    );
+  await x
+    .getByRole("button", { name: "Préparer le test X", exact: true })
+    .click();
+  await expect(
+    x.getByRole("region", { name: "Devis du test X", exact: true }),
+  ).toContainText("une requête");
+  expect(await state()).toBeNull();
+  await x
+    .getByRole("button", { name: "Confirmer le test démo X", exact: true })
+    .click();
+  expect((await state()).entries.x.tests).toBe(1);
+  expect((await state()).entries.x.cost).toBe("150");
+  await expect(
+    x.getByRole("button", { name: "Confirmer le test démo X", exact: true }),
+  ).toHaveCount(0);
+  const daily = x.getByLabel("Plafond quotidien X (USD)");
+  await daily.fill("0.01");
+  await x
+    .getByRole("button", { name: "Enregistrer les réglages X", exact: true })
+    .click();
+  expect((await state()).entries.x.settings.budget.daily).toBe("1000000");
+  await daily.fill("2.000001");
+  await x
+    .getByRole("button", { name: "Enregistrer les réglages X", exact: true })
+    .click();
+  expect((await state()).entries.x.settings.budget.daily).toBe("2000001");
+  await page.reload();
+  await expect(daily).toHaveValue("2.000001");
+  await center.getByLabel("État des API démo").selectOption("quota");
+  await expect(x).toContainText("RATE_LIMITED");
+  await expect(x).toContainText("Quota : 0 / 300");
+  await x
+    .getByRole("button", { name: "Préparer le test X", exact: true })
+    .click();
+  await expect(
+    x.getByRole("region", { name: "Devis du test X", exact: true }),
+  ).toHaveCount(0);
+  await center
+    .getByRole("button", {
+      name: "Avancer les diagnostics de deux minutes",
+      exact: true,
+    })
+    .click();
+  await x
+    .getByRole("button", { name: "Préparer le test X", exact: true })
+    .click();
+  await expect(
+    x.getByRole("region", { name: "Devis du test X", exact: true }),
+  ).toHaveCount(0);
+  await center.getByLabel("État des API démo").selectOption("normal");
+  await x.getByLabel("Activer X", { exact: true }).uncheck();
+  await x
+    .getByRole("button", { name: "Enregistrer les réglages X", exact: true })
+    .click();
+  await page.reload();
+  await expect(x.getByLabel("Activer X", { exact: true })).not.toBeChecked();
+  await x
+    .getByRole("button", { name: "Préparer le test X", exact: true })
+    .click();
+  await expect(
+    x.getByRole("region", { name: "Devis du test X", exact: true }),
+  ).toHaveCount(0);
+  await page.setViewportSize({ width: 390, height: 844 });
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= window.innerWidth,
+    ),
+  ).toBe(true);
+  expect(external).toEqual([]);
+  expect(errors).toEqual([]);
+});
+
+test("Sources et API : stockage illisible conservé sans écrasement", async ({
+  page,
+}) => {
+  await page.goto("/#page=sources");
+  await page.evaluate(() =>
+    localStorage.setItem(
+      "memeradar-demo-sources-phase11-v1",
+      "{invalid-preserved",
+    ),
+  );
+  await page.reload();
+  const center = page.getByRole("region", {
+    name: "Sources et API V2",
+    exact: true,
+  });
+  await expect(center).toContainText("Stockage Sources et API illisible");
+  await expect(
+    center.getByRole("button", { name: "Préparer le test X", exact: true }),
+  ).toBeDisabled();
+  expect(
+    await page.evaluate(() =>
+      localStorage.getItem("memeradar-demo-sources-phase11-v1"),
     ),
   ).toBe("{invalid-preserved");
 });

@@ -1,3 +1,4 @@
+import { SourcesV2 } from "./SourcesV2";
 import { AlertsV2 } from "./AlertsV2";
 import { OpenChart } from "./TokenLink";
 import { SocialProofs } from "./SocialProofs";
@@ -61,7 +62,7 @@ const navigation: { id: Page; icon: string; label: string }[] = [
   { id: "alerts", icon: "♧", label: "Alertes" },
   { id: "conversations", icon: "◌", label: "Conversations" },
   { id: "people", icon: "♙", label: "Personnes suivies" },
-  { id: "sources", icon: "◫", label: "Sources" },
+  { id: "sources", icon: "◫", label: "Sources et API" },
   { id: "settings", icon: "⚙", label: "Paramètres" },
 ];
 function readRoute() {
@@ -1018,6 +1019,7 @@ function App() {
           )}
           {route.page === "sources" && (
             <>
+              <SourcesV2 zone={saved.timezone} />
               <div className="info-box">
                 Les connecteurs ci-dessous lisent uniquement les fixtures
                 locales. Les interrupteurs filtrent les publications affichées ;

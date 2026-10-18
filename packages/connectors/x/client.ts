@@ -368,6 +368,10 @@ export class XApiClient implements XProvider {
           posts,
           users,
           costMicros: amount,
+          ...(error ? { errorCode: error.code } : {}),
+          ...(reply
+            ? { quota: quotaFromHeaders(reply.headers, this.clock.now()) }
+            : {}),
           estimated: true,
           at: new Date(this.clock.now()).toISOString(),
         });
@@ -627,7 +631,12 @@ export class XApiClient implements XProvider {
     this.pageParameters(options);
     await this.allowed("timeline");
     let user = this.userCache.get(userId);
-    if (!user || user.until <= this.clock.now()) {
+    const ttl = (await this.store.cacheSeconds?.("profiles", 300)) ?? 300;
+    if (
+      !user ||
+      user.until <= this.clock.now() ||
+      this.clock.now() - Date.parse(user.user.observedAt) >= ttl * 1000
+    ) {
       await this.getUsersByIds([userId]);
       user = this.userCache.get(userId);
     }

@@ -53,5 +53,10 @@
     "version": "0011_alert_runtime",
     "upSha256": "a74ca0e76a698889b928d0be205e17b63806a263d5cc1619e45170e0cc2a135d",
     "downSha256": "8e1465a6f28c3973b0ae6169584e8731dc2fd72150b0b097fc3005723c3d7ec8"
+  },
+  {
+    "version": "0012_provider_management",
+    "upSha256": "e34404dbe594c00646a8dcc17cdd4a3368daeb466f4fbbd3693c129cc66fdc41",
+    "downSha256": "f0011e03b8d730d9af884a11d84685b314531ccf0df53aca176fb73ec85aae2b"
   }
 ]

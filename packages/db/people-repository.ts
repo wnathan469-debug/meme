@@ -89,6 +89,13 @@ export class PgPeopleRepository implements PeopleRepository {
     );
   }
   private async rule(c: PoolClient, p: Person) {
+    const configured = await c.query(
+      "SELECT settings->'priorities'->>$3 AS seconds FROM memeradar.provider_controls WHERE data_origin=$1 AND owner_user_id=$2 AND provider='x'",
+      [this.origin, this.ownerId, p.priority],
+    );
+    const interval = configured.rowCount
+      ? Number(configured.rows[0].seconds)
+      : intervals[p.priority];
     const existing = (
       await c.query(
         "SELECT id FROM memeradar.x_rules WHERE owner_user_id=$1 AND data_origin=$2 AND expression->>'personId'=$3",
@@ -102,14 +109,7 @@ export class PgPeopleRepository implements PeopleRepository {
     if (existing)
       await c.query(
         "UPDATE memeradar.x_rules SET status=$1,priority=$2,poll_interval_seconds=$3 WHERE id=$4 AND data_origin=$5 AND owner_user_id=$6",
-        [
-          status,
-          p.priority,
-          intervals[p.priority],
-          existing.id,
-          this.origin,
-          this.ownerId,
-        ],
+        [status, p.priority, interval, existing.id, this.origin, this.ownerId],
       );
     else if (p.xUserId)
       await c.query(
@@ -120,7 +120,7 @@ export class PgPeopleRepository implements PeopleRepository {
           JSON.stringify({ kind: "people", personId: p.id }),
           `user:${p.xUserId}`,
           p.priority,
-          intervals[p.priority],
+          interval,
           status,
         ],
       );

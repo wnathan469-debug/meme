@@ -157,3 +157,7 @@ Lightweight Charts 5.2.1 (Apache-2.0), Fancy Canvas 2.1.0 (MIT), versions verrou
 ## Phase 10 — fréquence et reprise
 
 Moteur déterministe séparé de V1, 12 types, états privés durables. Comparaisons exactes, hystérésis, cooldown, borne horaire glissante par observation, contrôle à l’admission et à la livraison ; suppression tracée sans report silencieux. Résumés périodiques UTC et quotidiens en heure civile IANA, DST couvert ; faux positifs sans suppression de preuve. Migration 0011 additive, une table, aucune dépendance ou canal externe. Voir [phase 10](V2_PHASE10.md).
+
+## Phase 11 — administration des fournisseurs et budget engagé
+
+Séparer les états observés de la présence d’une configuration. Journal technique sans texte fournisseur brut et consommation complète indépendante de la pagination du journal. Plafonds modifiables sous le même verrou que les réservations ; les nouvelles limites par fonctionnalité reprennent l’historique, avec remboursements attachés aux réservations d’origine. Test réseau explicite par nonce durable à usage unique, deux minutes, au plus une tentative sans retry automatique. Les secrets restent hors du renderer et des tables de gestion. Interface hors ligne dédiée jusqu’à la phase 12 ; voir [phase 11](V2_PHASE11.md).

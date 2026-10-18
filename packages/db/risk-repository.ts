@@ -33,6 +33,13 @@ export class PgRiskRepository {
     if (!r.rowCount) throw new ProviderError("NOT_FOUND");
     return r.rows[0].id;
   }
+  async cacheSeconds() {
+    const r = await this.pool.query(
+      "SELECT settings->'cache'->>'risks' AS seconds FROM memeradar.provider_controls WHERE data_origin=$1 AND provider='goplus' AND namespace='default'",
+      [this.origin],
+    );
+    return r.rowCount ? Number(r.rows[0].seconds) : 0;
+  }
   async store(raw: RiskBatch) {
     const b = batchSchema.parse(raw);
     // Validation includes identity and origin-specific provenance, before opening a transaction.

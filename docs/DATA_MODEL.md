@@ -124,3 +124,7 @@ Schéma inchangé : 66 tables applicatives, migrations 0001–0010 inchangées. 
 ## Évolution V2 — phase 10
 
 Migration 0011 : 67 tables applicatives et onze versions ; alert_runtime_states lie règle, propriétaire et origine avec JSON borné et RLS forcée. alert_rules reçoit un type SQL additionnel transaction_activity et une clé propriétaire composite ; historique/livraisons/anciens états de sujet reçoivent des politiques de propriétaire, la politique existante des règles est conservée. alerts et notification_deliveries conservent les décisions et livraisons in-app idempotentes. Rollback refuse les données phase 10 ; anciens SQL immuables, ORM/snapshot régénérés. Voir [phase 10](V2_PHASE10.md).
+
+## Évolution V2 — phase 11
+
+Migration 0012 : **69 tables applicatives**, douze versions. `provider_controls` conserve réglages non secrets par origine/fournisseur/espace de compte, révision, circuit et nonce de test ; `provider_diagnostics` stocke un journal technique nettoyé, sans URL/query/secret/corps fournisseur. RLS des écritures de réglages et de lecture des journaux ; lecture technique de la politique pour les coordinateurs de confiance, sans exposition publique. Les plafonds X s’appuient sur les réservations/budgets existants, sous verrou commun ; ajout de limites par fonctionnalité avec reprise des engagements et remboursements ultérieurs. Rollback refuse les tables peuplées ; ORM/snapshot régénérés. Voir [phase 11](V2_PHASE11.md).

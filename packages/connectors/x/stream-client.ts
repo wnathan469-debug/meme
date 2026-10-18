@@ -154,6 +154,7 @@ export class XFilteredStream implements XStreamProvider {
       posts,
       users,
       costMicros: cost,
+      ...(error ? { errorCode: error.code } : {}),
       estimated: true,
       at: new Date(this.clock.now()).toISOString(),
     });

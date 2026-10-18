@@ -1,3 +1,6 @@
+import { ensureBudgetLimit } from "./provider-budget-policy";
+import { settingsSchema, diagnosticSchema } from "../sources/model";
+import { recordDiagnostic } from "./source-repository";
 /** PostgreSQL owns money and audit durability; Redis owns transient coordination. */
 import type { Pool, PoolClient } from "pg";
 import type { ControlStore, Reservation, Usage } from "../connectors/x/control";
@@ -60,27 +63,54 @@ export class DurableXControlStore implements ControlStore {
     )
       throw new ProviderError("INVALID_INPUT");
     return this.transaction(async (client) => {
+      const policy = await client.query(
+        "SELECT enabled,settings FROM memeradar.provider_controls WHERE data_origin=$1 AND provider='x' AND namespace=$2",
+        [this.origin, this.namespace],
+      );
+      if (policy.rowCount) {
+        if (!policy.rows[0].enabled)
+          throw new ProviderError("NETWORK_DISABLED");
+        const s = settingsSchema.parse(policy.rows[0].settings);
+        if (!value.feature && Object.keys(s.budget.features).length)
+          throw new ProviderError("INVALID_INPUT");
+        value = {
+          ...value,
+          warningPercent: s.budget.warningPercent,
+          limits: value.limits.map((l) => ({
+            ...l,
+            amount: l.key.startsWith("day:")
+              ? s.budget.daily
+              : l.key.startsWith("month:")
+                ? s.budget.monthly
+                : l.amount,
+          })),
+        };
+        if (value.feature && s.budget.features[value.feature]) {
+          const caps = s.budget.features[value.feature]!;
+          for (const l of value.limits.filter(
+            (l) => l.key.startsWith("day:") || l.key.startsWith("month:"),
+          )) {
+            const key = `feature:${value.feature}:${l.key}`,
+              amount = l.key.startsWith("day:") ? caps.daily : caps.monthly,
+              old = value.limits.find((l) => l.key === key);
+            if (old) old.amount = amount;
+            else value.limits.push({ key, amount });
+          }
+        }
+      }
       const ids: string[] = [];
       let warning = false;
       for (const limit of [...value.limits].sort((a, b) =>
         a.key.localeCompare(b.key),
       )) {
-        await client.query(
-          "INSERT INTO memeradar.provider_budgets(data_origin,provider,namespace,budget_key,limit_micros,expires_at) VALUES($1,'x',$2,$3,$4,$5) ON CONFLICT(data_origin,provider,namespace,budget_key) DO NOTHING",
-          [
-            this.origin,
-            this.namespace,
-            limit.key,
-            limit.amount,
-            new Date(value.expiresAt),
-          ],
+        const row = await ensureBudgetLimit(
+          client,
+          this.origin,
+          this.namespace,
+          limit.key,
+          limit.amount,
+          new Date(value.expiresAt),
         );
-        const row = (
-          await client.query(
-            "SELECT id,limit_micros::text,spent_micros::text FROM memeradar.provider_budgets WHERE data_origin=$1 AND provider='x' AND namespace=$2 AND budget_key=$3 FOR UPDATE",
-            [this.origin, this.namespace, limit.key],
-          )
-        ).rows[0];
         if (row.limit_micros !== limit.amount)
           throw new ProviderError("STORE_UNAVAILABLE");
         const next = BigInt(row.spent_micros) + BigInt(value.amount);
@@ -161,6 +191,49 @@ export class DurableXControlStore implements ControlStore {
           value.at,
         ],
       );
+      const q = value.quota ?? (await this.coordination.quota(value.endpoint));
+      await recordDiagnostic(
+        this.pool,
+        this.origin,
+        "x",
+        this.namespace,
+        diagnosticSchema.parse({
+          id: value.requestId,
+          endpoint: value.endpoint,
+          at: value.at,
+          code:
+            value.errorCode ??
+            (value.status === 429
+              ? "RATE_LIMITED"
+              : value.status !== null && value.status >= 400
+                ? "PROVIDER_UNAVAILABLE"
+                : null),
+          status: value.status,
+          quota: q
+            ? {
+                limit: q.limit,
+                remaining: q.remaining,
+                resetAt:
+                  q.resetAt !== null ? new Date(q.resetAt).toISOString() : null,
+              }
+            : null,
+          retryAt:
+            q?.remaining === 0 && q.resetAt
+              ? new Date(q.resetAt).toISOString()
+              : null,
+        }),
+      );
+    });
+  }
+  async cacheSeconds(kind: "profiles" | "posts", fallback: number) {
+    return this.safe(async () => {
+      const r = await this.pool.query(
+        "SELECT settings FROM memeradar.provider_controls WHERE data_origin=$1 AND provider='x' AND namespace=$2",
+        [this.origin, this.namespace],
+      );
+      return r.rowCount
+        ? settingsSchema.parse(r.rows[0].settings).cache[kind]
+        : fallback;
     });
   }
   async usage(): Promise<Usage[]> {

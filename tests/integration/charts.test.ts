@@ -426,5 +426,5 @@ it("works with a non-bypass application role and refuses destructive downgrade w
   expect(
     (await pool.query("SELECT count(*) FROM memeradar.schema_migrations"))
       .rows[0].count,
-  ).toBe("11");
+  ).toBe("12");
 });

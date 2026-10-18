@@ -62,3 +62,7 @@ Graphique chargé localement sans iframe/CDN. Source REAL exacte HTTPS api.gecko
 ## Phase 10 — alertes privées
 
 État, historique et livraisons privés par règle/propriétaire/origine, RLS forcée et verrou transactionnel. Déduplication et limites réévaluées avant livraison ; personne suivie relue sous verrou partagé, identité stable vérifiée. In-app uniquement, sans nouvel IPC ou appel externe ; provenance sans query string, corps techniques bruts refusés. Stockage local corrompu préservé. Raccordement serveur/collecteurs à venir. Voir [phase 10](V2_PHASE10.md).
+
+## Administration Sources et API — phase 11
+
+Les DTO et journaux de diagnostic n’acceptent ni corps d’erreur brut, jeton, query string, URL complète ou en-tête. Les producteurs transmettent seulement nom logique d’endpoint, dates, code local, statut et quota numérique. La politique budgétaire non secrète est lisible par les coordinateurs de confiance ; les routes futures doivent passer par le contrôle propriétaire/origine du service, jamais exposer directement les tables. Réglages et journaux ont leurs politiques RLS ; rôle serveur non-superuser/NOBYPASSRLS exigé. Le nonce de test de deux minutes est consommé avant réseau, invalidé par modification des réglages et ne permet qu’une tentative. Revalidation budgétaire à l’appel, interdiction réseau de l’hôte prioritaire et plafond ajouté conservant les engagements historiques. Aucun nouveau secret, IPC ou droit réseau Electron. Voir [phase 11](V2_PHASE11.md).

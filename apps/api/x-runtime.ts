@@ -17,6 +17,7 @@ import { ProviderError } from "../../packages/shared/errors";
 import type { XProvider } from "../../packages/connectors/x/contracts";
 export interface XRuntime {
   provider: XProvider | null;
+  control?: import("../../packages/connectors/x/control").ControlStore;
   status: "demo" | "not_configured" | "ready";
   close(): Promise<void>;
 }
@@ -61,7 +62,7 @@ export async function createXRuntime(config: XConfig): Promise<XRuntime> {
     });
     pool.on("error", () => {});
     const schema = await pool.query(
-      "SELECT 1 FROM memeradar.schema_migrations WHERE version='0011_alert_runtime'",
+      "SELECT 1 FROM memeradar.schema_migrations WHERE version='0012_provider_management'",
     );
     if (schema.rowCount !== 1) throw new Error();
   } catch {
@@ -98,6 +99,7 @@ export async function createXRuntime(config: XConfig): Promise<XRuntime> {
     );
   return {
     provider,
+    control: store,
     status: "ready",
     close: async () => {
       redis.disconnect();

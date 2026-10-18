@@ -29,6 +29,8 @@ export interface Reservation {
   warningPercent: number;
 }
 export interface Usage {
+  errorCode?: import("../../shared/errors").ErrorCode;
+  quota?: Quota;
   requestId: string;
   endpoint: string;
   feature: Feature;
@@ -45,6 +47,7 @@ export interface CircuitPolicy {
 }
 export interface ControlStore {
   readonly scope: "local" | "shared";
+  cacheSeconds?(kind: "profiles" | "posts", fallback: number): Promise<number>;
   reserve(reservation: Reservation): Promise<{ warning: boolean }>;
   settle(id: string, actual: string): Promise<void>;
   takeRate(endpoint: string, now: number, intervalMs: number): Promise<void>;
