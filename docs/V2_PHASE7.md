@@ -136,7 +136,12 @@ Le rollback refuse toute utilisation des nouvelles données, sans suppression ut
 - Référence SQL V1 : 51 contrôles avant/après rollback, échec atomique et concurrence réussis.
 - Audit de production : zéro vulnérabilité ; diagnostics sans appel fournisseur.
 
-Les quatre seuils de couverture globaux restent à 80 %, dépassés par les suites unitaires et PostgreSQL. Résultats CI Linux et Windows à consigner après exécution. Une compilation native et un ZIP vérifié ne remplacent pas un essai d’installation sur le PC de l’utilisateur.
+Les quatre seuils de couverture globaux restent à 80 %, dépassés par les suites unitaires et PostgreSQL. CI sur le commit `6fd7347e85dec53fc9e0bbbfc41c6b3511ad6c38` :
+
+- [Linux — contrôles complets réussis](https://github.com/wnathan469-debug/meme/actions/runs/39155355030).
+- [Windows — tests, compilation NSIS et vérification du ZIP réussis](https://github.com/wnathan469-debug/meme/actions/runs/39155355001). L’archive est conservée comme artefact de ce workflow pendant 14 jours. La publication préserve les fichiers immuables de la version publique 0.1.0.
+
+ Une compilation native et un ZIP vérifié ne remplacent pas un essai d’installation sur le PC de l’utilisateur.
 
 ## Sources livrées et suite
 
