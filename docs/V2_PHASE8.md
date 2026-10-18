@@ -118,7 +118,12 @@ Les nouvelles tables utilisent le même cloisonnement d’origine/FK et les trig
 - Référence SQL V1 : 51 contrôles avant/après rollback, réapplication, échec atomique et concurrence réussis.
 - Audit des dépendances de production : zéro vulnérabilité. Diagnostics sans appel fournisseur.
 
-Seuils globaux de couverture maintenus à 80 % sur les quatre mesures et dépassés. Résultats CI Linux/Windows à consigner après exécution. Un build et un ZIP vérifié ne prouvent pas une installation sur le PC de l’utilisateur.
+Seuils globaux de couverture maintenus à 80 % sur les quatre mesures et dépassés. CI sur le commit `6dcd8e4c56a31735cacb8beaaf0f1fd7903ba19e` :
+
+- [Linux — contrôles complets réussis](https://github.com/wnathan469-debug/meme/actions/runs/39158169876).
+- [Windows — tests, compilation NSIS et vérification du ZIP réussis](https://github.com/wnathan469-debug/meme/actions/runs/39158169961). L’archive de cette construction est conservée comme artefact pendant 14 jours. La publication préserve les fichiers immuables de la version publique 0.1.0.
+
+ Un build et un ZIP vérifié ne prouvent pas une installation sur le PC de l’utilisateur.
 
 ## Sources et suite
 
