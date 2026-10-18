@@ -37,9 +37,9 @@ npm run dist:win    # Installateur Windows dans release/
 
 Le banc cloud utilise `CHROMIUM_PATH=/usr/bin/chromium npm run test:e2e`. Le test du shell se lance avec `npm run test:desktop` sur une machine disposant d'un affichage et du runtime Electron local. Sur Linux cloud, un affichage virtuel est requis. La construction NSIS depuis Linux utilise un adaptateur limité au lecteur de désinstalleur natif inclus dans electron-builder ; voir DESKTOP.md. Sur Windows, la construction suit le chemin natif du builder.
 
-## Base serveur — phase 3
+## Base serveur — référence V1 et migrations V2
 
-Le schéma PostgreSQL et les migrations du futur backend sont livrés séparément dans `packages/db/`. L'application de bureau démo n'a pas besoin de cette base.
+Le schéma PostgreSQL et les migrations du futur backend sont livrés séparément dans `packages/db/`. [La procédure V2](docs/V2_PHASE2.md) utilise le nouveau lanceur `npm run db:migrate` et conserve la référence V1. L'application de bureau démo n'a pas besoin de cette base.
 
 Avec Docker :
 
@@ -63,9 +63,9 @@ release/            Paquets générés, non versionnés
 
 ## Évolution V2
 
-[Audit V2 et plan de modification](docs/AUDIT_V2.md) : phase 0 validée. [Phase 1 V2](docs/V2_PHASE1.md) : client X privé, fournisseur démo, contrôles de sécurité, quotas et budgets implémentés et testés. [Configuration et limites fournisseur](docs/PROVIDERS.md). La version Windows 0.1.0 publiée reste inchangée ; la nouvelle interface et la collecte live ne sont pas encore livrées.
+[Audit V2 et plan de modification](docs/AUDIT_V2.md) : phase 0 validée. [Phase 1 V2](docs/V2_PHASE1.md) : client X privé, fournisseur démo, contrôles de sécurité, quotas et budgets implémentés et testés. [Phase 2 V2](docs/V2_PHASE2.md) : migrations additives, 55 tables applicatives, ORM de requêtes, budgets et journal durables, conversion des préférences préparée. [Configuration et limites fournisseur](docs/PROVIDERS.md). La version Windows 0.1.0 publiée reste inchangée ; la nouvelle interface et la collecte live ne sont pas encore livrées.
 
-`npm run x:diagnose` fonctionne hors ligne sans clé. `npm run test:redis` lance un Redis Docker éphémère pour les tests partagés ; ces outils concernent le développement du serveur, pas l’installation Windows.
+`npm run x:diagnose` fonctionne hors ligne sans clé. `npm run test:redis` lance un Redis Docker éphémère pour les tests partagés ; `npm run test:db:v2` vérifie migrations, PostgreSQL et restauration en conteneurs jetables ; ces outils concernent le développement du serveur, pas l’installation Windows.
 
 ## Documentation et avancement
 

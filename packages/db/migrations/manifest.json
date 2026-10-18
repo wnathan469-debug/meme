@@ -1,0 +1,27 @@
+[
+  {
+    "version": "0001_initial",
+    "upSha256": "4992a27ba64bed6a4d45b4f3d6fe4ead8c8c34b44a9bcfe1c94408f3595d4545",
+    "downSha256": "a43c8e02c35aad07e07f12a485b50db62f20bc3eace8f0778508cb55e9ce0811"
+  },
+  {
+    "version": "0002_x_identity_collection",
+    "upSha256": "e83491d9652ddd9200194a7c73486d5d525e11034d981b90e85a54c727ebdd9a",
+    "downSha256": "981500e69049a876c710fe6b316f834d6973a769ef2cbe10f4d7b173dc3aba6e"
+  },
+  {
+    "version": "0003_people_conversations",
+    "upSha256": "9a34aded4ee203043173558c7ee8c13f64137351bfb4f03135b994c2f5883307",
+    "downSha256": "0fa79f88bd2363d5e76e442ec7add76eaa326f70ed7b4f9a5720cc1ca5f30879"
+  },
+  {
+    "version": "0004_social_chart_evidence",
+    "upSha256": "2d25fff2b9018329254080a61468b3602d842458935c706ab6e37f60295ef9fa",
+    "downSha256": "3be481b6a2b906298cafbf869bc9680143b642ff0be73608f9df1987ee4f0700"
+  },
+  {
+    "version": "0005_provider_controls_alerts",
+    "upSha256": "35add69b9544882012479f5dc776917969a85faeb42911750618e8fddef92a2b",
+    "downSha256": "410f2cbeff93157939ca5f98043c11079b8699a2c002dadc05a2664ed16f4c79"
+  }
+]

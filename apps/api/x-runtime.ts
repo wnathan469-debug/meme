@@ -1,5 +1,7 @@
 /** Composition only: no HTTP listener, no background collection, no paid startup probe. */
 import Redis from "ioredis";
+import pg from "pg";
+import { DurableXControlStore } from "../../packages/db/x-control-store";
 import { loadXConfig, type XConfig } from "../../packages/connectors/x/config";
 import {
   XApiClient,
@@ -30,8 +32,10 @@ export async function createXRuntime(config: XConfig): Promise<XRuntime> {
     };
   if (!config.pricing || !config.budget)
     throw new ProviderError("PRICING_UNKNOWN");
-  if (!config.redisUrl) throw new ProviderError("STORE_UNAVAILABLE");
+  if (!config.redisUrl || !config.databaseUrl)
+    throw new ProviderError("STORE_UNAVAILABLE");
   let redis: Redis | undefined;
+  let pool: pg.Pool | undefined;
   try {
     const url = new URL(config.redisUrl.reveal());
     if (!["redis:", "rediss:"].includes(url.protocol)) throw new Error();
@@ -46,11 +50,27 @@ export async function createXRuntime(config: XConfig): Promise<XRuntime> {
       /* Request methods return sanitised STORE_UNAVAILABLE; never log connection strings. */
     });
     await redis.connect();
+    pool = new pg.Pool({
+      connectionString: config.databaseUrl.reveal(),
+      max: 8,
+      connectionTimeoutMillis: 5000,
+      statement_timeout: 10000,
+    });
+    pool.on("error", () => {});
+    const schema = await pool.query(
+      "SELECT 1 FROM memeradar.schema_migrations WHERE version='0005_provider_controls_alerts'",
+    );
+    if (schema.rowCount !== 1) throw new Error();
   } catch {
     redis?.disconnect();
+    await pool?.end();
     throw new ProviderError("STORE_UNAVAILABLE");
   }
-  const store = new RedisControlStore(redis, config.namespace);
+  const store = new DurableXControlStore(
+    pool!,
+    new RedisControlStore(redis, config.namespace),
+    config.namespace,
+  );
   const transport = new SafeHttpTransport({
     mode: "live",
     allowedHosts: [new URL(config.baseUrl).hostname],
@@ -61,6 +81,7 @@ export async function createXRuntime(config: XConfig): Promise<XRuntime> {
     status: "ready",
     close: async () => {
       redis.disconnect();
+      await pool!.end();
     },
   };
 }
@@ -79,6 +100,7 @@ export async function diagnoseX(
       pricingConfigured: !!config.pricing,
       budgetConfigured: !!config.budget,
       sharedStoreConfigured: !!config.redisUrl,
+      durableStoreConfigured: !!config.databaseUrl,
       networkCalls: 0,
     };
   const provider = new DemoXProvider();

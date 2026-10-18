@@ -19,6 +19,8 @@ jobs:
       - run: npm run build
       - run: npm run format:check
       - run: npm test -- --coverage
+      - run: npm run test:db
+      - run: npm run test:db:v2
       - run: npm run test:redis
       - run: npm run x:diagnose
       - run: npm audit --omit=dev --audit-level=moderate

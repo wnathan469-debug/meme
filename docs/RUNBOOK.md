@@ -21,3 +21,8 @@ Fermer l'application avant intervention sur `%APPDATA%\MemeRadar`. Sauvegarder `
 Construire avec les dépendances verrouillées, lancer build, tests métier, tests navigateur et shell, puis générer le paquet Windows. Vérifier l'intégrité SHA-256, tester installation et désinstallation sur une machine Windows et signer avant diffusion publique. Les mises à jour sont manuelles ; il n'existe pas de téléchargement automatique au runtime.
 
 Le schéma PostgreSQL serveur est séparé : sa procédure de migration/rollback et ses limites sont dans DATA_MODEL.md. Aucun service serveur n'est lancé par cette édition.
+
+
+## Serveur V2 — migrations et reprise
+
+La procédure [V2_PHASE2.md](V2_PHASE2.md) remplace les anciennes commandes de mise à niveau serveur. Utiliser db:migrate après sauvegarde restaurée sur une autre base, collecteurs arrêtés et version de workers cohérente. Un rollback V2 refuse toute perte ; ne pas supprimer les données pour contourner ce refus. PostgreSQL conserve désormais les budgets et le journal, Redis les coordinations temporaires. Sauvegarder les deux selon leurs garanties, ne pas rembourser automatiquement une réservation ambiguë. La base/les services ne sont toujours pas nécessaires à l'installation de la démo Windows.

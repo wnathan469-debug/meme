@@ -20,6 +20,8 @@ export interface BudgetLimit {
   amount: string;
 }
 export interface Reservation {
+  endpoint?: string;
+  feature?: Feature;
   id: string;
   amount: string;
   limits: BudgetLimit[];
@@ -298,6 +300,7 @@ export class BudgetGuard {
     feature: Feature,
     maxPosts: number,
     maxUsers: number,
+    endpoint?: string,
   ): Promise<{ amount: string; warning: boolean }> {
     const amount = this.cost(maxPosts, maxUsers),
       date = new Date(this.clock.now());
@@ -324,6 +327,8 @@ export class BudgetGuard {
     );
     const result = await this.store.reserve({
       id,
+      endpoint,
+      feature,
       amount,
       limits,
       expiresAt,

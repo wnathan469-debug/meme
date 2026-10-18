@@ -32,3 +32,8 @@ Aucune affirmation de gain, d'exhaustivité ou de sécurité d'un token n'est fo
 ## Socle V2 — phase 1
 
 Client REST X et adaptateur DEMO implémentés séparément, sans branchement à Electron, serveur hébergé ou tâche de collecte. Aucun droit X, tarif, appel réel ou fonctionnement de bout en bout live validé. Les modifications n'ajoutent aucune donnée réelle à l'installateur 0.1.0. Stream/rejeu étendu, migrations V2, personnes, conversations, graphiques et nouvelles vues restent dans les phases suivantes. Le journal de coûts Redis est provisoire ; les garanties de persistance et la conformité doivent être complétées avant activation. Voir [PROVIDERS.md](PROVIDERS.md) et [V2_PHASE1.md](V2_PHASE1.md).
+
+
+## Persistance V2 — phase 2
+
+Migrations 0002–0005, schéma ORM de requêtes, budgets/journal PostgreSQL et conversion de préférences sont implémentés et testés. Ils ne constituent pas un backend hébergé, des collecteurs, une nouvelle interface ou un paquet V2 publié. Le runtime privé exige maintenant PostgreSQL et Redis. Les checkpoints/status ont leur schéma mais attendent les collecteurs ; rétention, rapprochement des appels interrompus, rôles/identités déployés et administration des plafonds restent à finaliser avant activation réelle. Les FK/check/index/RLS sont maintenus en SQL, sans duplication DDL dans Drizzle. La conversion des préférences est prête et sera activée avec l'interface V2. Voir [V2_PHASE2.md](V2_PHASE2.md).

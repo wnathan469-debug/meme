@@ -24,6 +24,7 @@
     "apps/api",
     "scripts/*.ts",
     "tests/contract",
-    "tests/integration/*.ts"
+    "tests/integration/*.ts",
+    "packages/db/*.ts"
   ]
 }

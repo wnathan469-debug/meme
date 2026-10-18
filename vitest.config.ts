@@ -6,6 +6,7 @@ export default defineConfig({
       provider: "v8",
       include: [
         "packages/core/domain.ts",
+        "apps/desktop/preferences-v2.cjs",
         "packages/connectors/x/{client,contracts,control}.ts",
         "packages/shared/*.ts",
       ],

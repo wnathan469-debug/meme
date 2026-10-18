@@ -248,6 +248,7 @@ export class XApiClient implements XProvider {
             feature,
             maxPosts,
             maxUsers,
+            endpoint,
           );
         } catch (error) {
           await this.store.finishCircuit(
@@ -354,7 +355,7 @@ export class XApiClient implements XProvider {
           sent ||= error.sent;
           if (!sent) amount = "0";
         }
-        // Reservations stay pessimistically charged if either settlement or logging fails.
+        // Durable reservations preserve accounting even if settlement or usage logging fails.
         await this.budget.settle(requestId, amount);
         await this.store.appendUsage({
           requestId,

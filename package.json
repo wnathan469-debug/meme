@@ -21,13 +21,18 @@
     "dist:win": "npm run build && node scripts/build-windows.cjs",
     "dist:zip": "npm run build && electron-builder --win zip --x64",
     "test:desktop": "node tests/e2e/desktop.mjs",
-    "format:check": "prettier --check scripts apps packages/core packages/shared packages/connectors tests/unit tests/contract tests/e2e/*.ts tests/e2e/*.mjs tests/integration/*.ts tests/fixtures *.ts *.json",
+    "format:check": "prettier --check scripts apps packages/db/*.ts packages/db/migrations/manifest.json packages/core packages/shared packages/connectors tests/unit tests/contract tests/e2e/*.ts tests/e2e/*.mjs tests/integration/*.ts tests/fixtures *.ts *.json",
     "x:diagnose": "tsx scripts/x-diagnose.ts",
-    "test:redis": "node scripts/test-x-redis.mjs"
+    "test:redis": "node scripts/test-x-redis.mjs",
+    "db:migrate": "tsx scripts/db-migrate.ts",
+    "test:db:v2": "node scripts/test-v2-database.mjs",
+    "db:schema": "tsx scripts/db-schema.ts"
   },
   "dependencies": {
+    "drizzle-orm": "0.45.4",
     "ioredis": "5.11.1",
     "ipaddr.js": "2.2.0",
+    "pg": "8.23.1",
     "react": "19.3.1",
     "react-dom": "19.3.1",
     "undici": "7.30.1",
@@ -36,6 +41,7 @@
   "devDependencies": {
     "@playwright/test": "1.61.1",
     "@types/node": "24.10.1",
+    "@types/pg": "8.23.1",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
     "@vitejs/plugin-react": "6.0.1",

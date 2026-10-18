@@ -151,27 +151,11 @@ describe("actual Redis Lua shared controls, no X calls", () => {
   });
 });
 
-it("composes the private runtime against actual Redis without probing X", async () => {
-  const runtime = await createXRuntime(
-    await config({ redisUrl: new Secret(url!) }),
-  );
-  try {
-    expect(runtime.status).toBe("ready");
-    expect((await runtime.provider!.capabilities()).recent.state).toBe(
-      "untested",
-    );
-  } finally {
-    await runtime.close();
-  }
+it("refuses live composition without a durable database, before connecting", async () => {
+  await expect(
+    createXRuntime(await config({ redisUrl: new Secret(url!) })),
+  ).rejects.toMatchObject({ code: "STORE_UNAVAILABLE" });
   await expect(
     createXRuntime(await config({ pricing: null })),
   ).rejects.toMatchObject({ code: "PRICING_UNKNOWN" });
-  await expect(
-    createXRuntime(await config({ redisUrl: null })),
-  ).rejects.toMatchObject({ code: "STORE_UNAVAILABLE" });
-  await expect(
-    createXRuntime(
-      await config({ redisUrl: new Secret("https://invalid.invalid") }),
-    ),
-  ).rejects.toMatchObject({ code: "STORE_UNAVAILABLE" });
 });

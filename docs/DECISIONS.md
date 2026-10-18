@@ -105,3 +105,14 @@ Statut des ADR 001 à 004 : retenu comme base de la phase 2 après validation du
 **Motifs.** Aucun transport partagé n'existait dans V1. Le refus DEMO précède DNS ; un tarif inconnu ou registre indisponible bloque les appels. Les montants sont exacts en micro-USD, les réservations pessimistes couvrent chaque tentative, les plafonds globaux et par fonctionnalité sont atomiques. L'adaptateur mémoire reste local aux tests, la composition live exige Redis. Les budgets ne sont jamais désactivables.
 
 **Écarts explicités.** `getPostsByIds` retourne une page normalisée plutôt qu'un tableau nu, pour conserver provenance, erreurs partielles et quotas. Les variables de plafond portent l'unité MICRO_USD. Le flux optionnel, les probes périodiques, les priorités et alertes visibles sont reportés aux collecteurs/UI correspondants ; aucune méthode vide ne prétend les implémenter. Le journal Redis est provisoire avant la migration additive phase 2 et ne remplace pas un audit durable. Détails et garanties opérationnelles : PROVIDERS.md.
+
+
+## ADR-011 — SQL versionné, ORM de requêtes et comptabilité durable
+
+**Décision.** Conserver 0001 intact, ajouter 0002–0005 et un manifeste SHA-256. Lanceur pg/TypeScript avec verrou de session et transactions, refus des versions/empreintes inconnues, retour V2 global atomique sans perte de ligne. Le bootstrap V1 historique reste disponible pour ses tests ; la commande opérateur devient db:migrate. Le registre V1 sans checksum est adopté explicitement comme référence de confiance, sans prétendre certifier son passé.
+
+**ORM.** Drizzle 0.45.4 et pg 8.23.1 pour les requêtes ; schéma complet des colonnes généré par introspection de SQL testé. Les contraintes/index/triggers/RLS restent dans le SQL, sans deuxième générateur DDL. Pas de drizzle push, pas de remplacement destructeur des tables. NUMERIC/domaines monétaires en chaînes exactes et bigint en bigint.
+
+**Persistance.** PostgreSQL prend la responsabilité des budgets/réservations et du journal. Redis conserve les quotas et coordinations temporaires. Un runtime réel exige les deux ; pas de repli moins durable. Intention avant appel, coût connu après règlement, rapprochement des interruptions à ajouter avant déploiement. Aucun import automatique de compteurs externes ni mélange de versions de workers. RLS forcée sur personnes/catégories/règles privées ; rôle applicatif non privilégié et contexte utilisateur transactionnel, authentification serveur encore à livrer.
+
+**Préférences.** Module V1→V2 testé, backup exact et publication exclusive sans écrasement ; activation différée jusqu'à l'interface V2 pour éviter une copie périmée pendant l'usage V1. Aucun secret/REAL introduit par conversion. L'application et l'installateur actuels restent sur leurs préférences V1.

@@ -14,3 +14,8 @@ Les dépendances sont verrouillées par package-lock.json. Voir VALIDATION.md po
 ## Socle X V2
 
 Le nouveau transport privé refuse tout réseau DEMO avant DNS, contrôle les IP publiques et épingle la résolution, vérifie TLS et refuse les redirections interorigines. Les jetons et chaînes Redis restent côté serveur, masqués en JSON et inspection. Aucun texte de publication, en-tête ou URL complète dans le journal technique. Budgets exacts et quotas partagés bloquent les appels si les contrôles sont indisponibles. Aucun accès réseau supplémentaire n'est accordé au renderer Electron. Voir PROVIDERS.md pour les limites opérationnelles Redis et les conditions d'activation live.
+
+
+## Persistance V2 — phase 2
+
+Budgets et journal résident désormais dans PostgreSQL, avec réservations transactionnelles et défaut fermé si le stockage est indisponible. L'intention avant appel et le règlement restent inspectables après arrêt ; aucun remboursement automatique d'appel ambigu. RLS forcée sur données privées, catégories de même propriétaire et FK d'origine sur toutes les nouvelles liaisons. Le contexte SQL doit provenir du futur serveur authentifié, avec rôle sans superuser/BYPASSRLS ; il ne constitue pas lui-même une authentification. Le lanceur de migrations vérifie les empreintes, verrouille les tables au retour arrière et refuse la perte de données. Les sauvegardes contiennent potentiellement des notes privées et nécessitent contrôle d'accès/chiffrement selon l'hébergement. Voir V2_PHASE2.md. Aucun secret n'est ajouté aux préférences V2 ni au renderer.

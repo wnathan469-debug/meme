@@ -1,6 +1,8 @@
-# Phase 3 — Modèle physique PostgreSQL
+# Modèle physique PostgreSQL — référence V1 et évolution V2
 
-Statut : migration et tests exécutés sur PostgreSQL 16. L'application et ses dépôts ne sont pas encore implémentés. Cette base vise le serveur décrit en phase 2 ; une distribution de bureau autonome nécessite une décision supplémentaire sur son stockage embarqué.
+**État actuel :** V2 ajoute les migrations 0002–0005, un lanceur à checksums, 22 tables et un ORM de requêtes. Voir [V2_PHASE2.md](V2_PHASE2.md) pour les commandes actuelles (`npm run db:migrate`), les sauvegardes et retours conservateurs. `migrate.sql` ci-dessous est le bootstrap V1 historique, pas la mise à niveau V2.
+
+Le détail qui suit décrit la **référence V1** conservée. Statut V1 : migration et tests exécutés sur PostgreSQL 16. L'application et ses dépôts ne sont pas encore implémentés. Cette base vise le serveur décrit en phase 2 ; une distribution de bureau autonome nécessite une décision supplémentaire sur son stockage embarqué.
 
 ## Fichiers et exécution
 

@@ -52,6 +52,7 @@ export interface XConfig {
   baseUrl: string;
   namespace: string;
   redisUrl: Secret | null;
+  databaseUrl: Secret | null;
   endpoints: typeof defaultEndpoints;
   postFieldsParameter: "tweet.fields" | "post.fields";
   pricing: Pricing | null;
@@ -183,6 +184,7 @@ export async function loadXConfig(
     enabled: bool("X_API_ENABLED"),
     token,
     redisUrl,
+    databaseUrl: env.DATABASE_URL ? new Secret(env.DATABASE_URL) : null,
     baseUrl,
     namespace,
     endpoints,
