@@ -28,6 +28,7 @@
     "packages/db/*.ts",
     "packages/collection",
     "packages/conversations",
+    "packages/events",
     "packages/people",
     "apps/worker"
   ]

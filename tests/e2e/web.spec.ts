@@ -366,3 +366,150 @@ test("conversation démo : confirmation, 35/120, parents manquants, citations et
   ).toBe(true);
   expect(external).toEqual([]);
 });
+
+test("événement V2 : ligne de base, trou visible, liens interprétés et règle persistante sans réseau", async ({
+  page,
+}) => {
+  const id = "00000000-0000-4000-8000-000000000060",
+    title =
+      "[DÉMO] Annonce virale d’un nouveau produit par l’entreprise fictive Nébula Mobile",
+    external: string[] = [];
+  page.on("request", (r) => {
+    if (
+      !r.url().startsWith("http://127.0.0.1:5173") &&
+      !r.url().startsWith("data:")
+    )
+      external.push(r.url());
+  });
+  await page.goto("/#page=events");
+  await expect(
+    page.getByRole("button", {
+      name: /Annonce virale d’un nouveau véhicule par Tesla/,
+    }),
+  ).toBeVisible();
+  await page
+    .getByRole("button", {
+      name: new RegExp("Annonce virale d’un nouveau produit"),
+    })
+    .click();
+  const detail = page.getByRole("region", {
+    name: "Fiche événement enrichie",
+    exact: true,
+  });
+  await expect(
+    detail.getByRole("heading", { name: title, exact: true }),
+  ).toBeVisible();
+  const attention = detail.getByRole("region", {
+    name: "Attention avant et après",
+    exact: true,
+  });
+  await expect(attention).toContainText(
+    "Ligne de base : 1 mentions par tranche",
+  );
+  const gap = attention.getByRole("row").filter({ hasText: "T+15 à T+20 min" });
+  await expect(gap).toContainText("Inconnu (au moins");
+  await expect(gap).toContainText("Indisponible");
+  const provenance = detail.getByRole("region", {
+    name: "Fiabilité et popularité distinctes",
+    exact: true,
+  });
+  await expect(provenance).toContainText("Niveau A");
+  await expect(provenance).toContainText("ne modifie pas la fiabilité");
+  await expect(
+    detail.getByRole("region", { name: "Chronologie enrichie", exact: true }),
+  ).toContainText("Première mention exacte connue du token");
+  const posts = detail.getByRole("region", {
+    name: "Publications liées à l’événement",
+    exact: true,
+  });
+  await posts
+    .getByLabel("Catégorie du compte", { exact: true })
+    .selectOption("official_attested");
+  await expect(posts).toContainText("@demo_nebula_officiel");
+  await expect(posts).not.toContainText("@demo_analyste_julie");
+  await posts
+    .getByLabel("Catégorie du compte", { exact: true })
+    .selectOption("followed");
+  await expect(posts).toContainText("@demo_trader_k");
+  await expect(posts).not.toContainText("@demo_nebula_officiel");
+  await detail
+    .getByRole("button", {
+      name: "Configurer l’alerte d’événement",
+      exact: true,
+    })
+    .click();
+  await detail
+    .getByLabel("Type de sujet", { exact: true })
+    .selectOption("hashtag");
+  await detail
+    .getByLabel("Sujet de l’alerte", { exact: true })
+    .fill("#ProduitCosmique");
+  await detail
+    .getByRole("button", {
+      name: "Enregistrer la règle d’événement",
+      exact: true,
+    })
+    .click();
+  await expect(detail.getByRole("status")).toContainText(
+    "Règle d’événement enregistrée",
+  );
+  await detail
+    .getByRole("link", { name: "Voir mes règles d’événement", exact: true })
+    .click();
+  await page.reload();
+  const drafts = page.getByRole("region", {
+    name: "Règles d’événement enregistrées",
+    exact: true,
+  });
+  await expect(drafts).toContainText("#ProduitCosmique");
+  await expect(drafts).toContainText("En pause");
+  await drafts
+    .getByRole("link", { name: "Voir l’événement associé", exact: true })
+    .click();
+  await expect(page).toHaveURL(new RegExp(id));
+  await page.getByRole("slider").fill("10");
+  await expect(
+    page.getByRole("region", { name: "Attention avant et après", exact: true }),
+  ).toContainText("Ligne de base : inconnue");
+  await page.getByRole("slider").fill("60");
+  await page.goto("/#page=conversations&conversation=DEMO_POST_ROOT");
+  await page
+    .getByRole("button", { name: "Préparer le chargement", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Confirmer le chargement démo", exact: true })
+    .click();
+  await page.getByLabel("Événement lié", { exact: true }).selectOption(id);
+  await page
+    .getByRole("region", { name: "Citations récupérées", exact: true })
+    .getByRole("link", { name: "Voir l’événement lié", exact: true })
+    .count()
+    .then((n) => expect(n).toBe(0));
+  const firstEventLink = page
+    .getByRole("link", { name: "Voir l’événement lié", exact: true })
+    .first();
+  await expect(firstEventLink).toBeVisible();
+  await firstEventLink.click();
+  await expect(
+    page.getByRole("region", { name: "Fiche événement enrichie", exact: true }),
+  ).toBeVisible();
+  await page.setViewportSize({ width: 390, height: 844 });
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+  await page.goto("/#page=sources");
+  await page.getByLabel("Inclure dans les vues de sources").nth(2).uncheck();
+  await page.goto(`/#page=events&event=${id}`);
+  await expect(
+    page.getByRole("region", { name: "Attention avant et après", exact: true }),
+  ).toContainText("Ligne de base : inconnue");
+  await expect(
+    page.getByRole("region", {
+      name: "Fiabilité et popularité distinctes",
+      exact: true,
+    }),
+  ).toContainText("Indisponible : source X exclue");
+  expect(external).toEqual([]);
+});

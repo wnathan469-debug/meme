@@ -6,6 +6,7 @@ export default defineConfig({
       "tests/integration/x-collection.test.ts",
       "tests/integration/people.test.ts",
       "tests/integration/conversations.test.ts",
+      "tests/integration/events.test.ts",
     ],
     testTimeout: 20000,
     hookTimeout: 30000,
@@ -18,6 +19,7 @@ export default defineConfig({
         "packages/db/client.ts",
         "packages/db/people-repository.ts",
         "packages/db/conversation-repository.ts",
+        "packages/db/event-repository.ts",
         // Pure graph/filter/coverage functions have their own unit coverage target.
         "packages/conversations/service.ts",
         "packages/people/{model,service,collector}.ts",

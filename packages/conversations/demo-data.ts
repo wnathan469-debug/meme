@@ -1,3 +1,4 @@
+import { DEMO_EVENT_ID, matchEvent } from "../events/model";
 /** Deterministic public fiction, shared by the browser and private DEMO provider. */
 import { demoPosts, demoUsers } from "../connectors/x/demo-data";
 import { normalizePost, type RawPost } from "../connectors/x/contracts";
@@ -65,7 +66,12 @@ export function demoConversationSnapshot(): ConversationPost[] {
         ? { id: user.id, username: user.username, name: user.name }
         : null,
       tokenIds: [],
-      eventIds: [],
+      eventIds: matchEvent(
+        normalizePost(post, "DEMO", "2026-01-15T14:40:00.000Z"),
+        [{ kind: "phrase", text: "Nébula Mobile" }],
+      )
+        ? [DEMO_EVENT_ID]
+        : [],
       followed: post.author_id === "DEMO_USER_A",
     };
   });

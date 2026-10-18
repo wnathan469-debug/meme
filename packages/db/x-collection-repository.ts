@@ -593,7 +593,7 @@ export class PgXCollectionRepository implements CollectionRepository {
     }
     if (f.eventId)
       where.push(
-        `EXISTS(SELECT 1 FROM memeradar.post_event_links e WHERE e.post_id=p.id AND e.data_origin=p.data_origin AND e.event_id=${bind(f.eventId)})`,
+        `EXISTS(SELECT 1 FROM memeradar.post_event_links e WHERE e.post_id=p.id AND e.data_origin=p.data_origin AND e.event_id=${bind(f.eventId)} AND (e.owner_user_id IS NULL OR e.owner_user_id=$2) AND (e.watch_id IS NULL OR EXISTS(SELECT 1 FROM memeradar.event_watches ew WHERE ew.id=e.watch_id AND ew.data_origin=e.data_origin AND ew.owner_user_id=e.owner_user_id AND ew.revision=e.watch_revision)))`,
       );
     if (f.tokenId)
       where.push(

@@ -288,8 +288,8 @@ export class PgPeopleRepository implements PeopleRepository {
       ).rows;
       const events = (
         await c.query(
-          `SELECT event_id,method,count(DISTINCT post_id)::text AS publications FROM memeradar.post_event_links WHERE data_origin=$1 AND post_id=ANY($2::uuid[]) GROUP BY event_id,method ORDER BY publications DESC,event_id,method LIMIT 100`,
-          [this.origin, ids],
+          `SELECT e.event_id,e.method,count(DISTINCT e.post_id)::text AS publications FROM memeradar.post_event_links e WHERE e.data_origin=$1 AND e.post_id=ANY($2::uuid[]) AND (e.owner_user_id IS NULL OR e.owner_user_id=$3) AND (e.watch_id IS NULL OR EXISTS(SELECT 1 FROM memeradar.event_watches ew WHERE ew.id=e.watch_id AND ew.data_origin=e.data_origin AND ew.owner_user_id=e.owner_user_id AND ew.revision=e.watch_revision)) GROUP BY e.event_id,e.method ORDER BY publications DESC,event_id,method LIMIT 100`,
+          [this.origin, ids, this.ownerId],
         )
       ).rows;
       const runs = (

@@ -1,3 +1,4 @@
+import { DEMO_EVENT_ID } from "../../../packages/events/model";
 import React, { useState } from "react";
 import {
   demoConversationSnapshot,
@@ -221,13 +222,26 @@ export function Conversations({ id }: { id: string }) {
             </label>
             <label>
               Événement lié
-              <select aria-label="Événement lié" disabled>
-                <option>Aucun lien d’événement enregistré</option>
+              <select
+                aria-label="Événement lié"
+                value={filters.eventId ?? ""}
+                onChange={(e) =>
+                  setFilters({
+                    ...filters,
+                    eventId: e.target.value || undefined,
+                  })
+                }
+              >
+                <option value="">Tous les événements</option>
+                <option value={DEMO_EVENT_ID}>
+                  Nébula Mobile — lien interprété
+                </option>
               </select>
             </label>
             <p>
-              Les liens automatiques seront ajoutés aux phases 6–7 ; une adresse
-              candidate ne prouve pas un contrat légitime.
+              Les liens d’événement sont interprétés ; les liens de tokens
+              seront ajoutés en phase 7. Une adresse candidate ne prouve pas un
+              contrat légitime.
             </p>
             <div role="group" aria-label="Mode de lecture">
               <button

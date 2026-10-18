@@ -351,6 +351,31 @@ export const entities = memeradar.table("entities", {
     .default(sql.raw("'{}'::text[]"))
     .notNull(),
 });
+export const eventCoverageWindows = memeradar.table("event_coverage_windows", {
+  id: uuid("id").default(sql.raw("gen_random_uuid()")).primaryKey(),
+  dataOrigin: dataOrigin("data_origin").notNull(),
+  knowledgeKind: knowledgeKind("knowledge_kind")
+    .default(sql.raw("'OBSERVED'::memeradar.knowledge_kind"))
+    .notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true, mode: "date" })
+    .default(sql.raw("now()"))
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" })
+    .default(sql.raw("now()"))
+    .notNull(),
+  ownerUserId: uuid("owner_user_id").notNull(),
+  watchId: uuid("watch_id").notNull(),
+  ruleId: uuid("rule_id").notNull(),
+  revision: integer("revision").notNull(),
+  startsAt: timestamp("starts_at", {
+    withTimezone: true,
+    mode: "date",
+  }).notNull(),
+  endsAt: timestamp("ends_at", { withTimezone: true, mode: "date" }).notNull(),
+  status: text("status").notNull(),
+  reason: text("reason").notNull(),
+  method: text("method").notNull(),
+});
 export const eventItems = memeradar.table("event_items", {
   id: uuid("id").default(sql.raw("gen_random_uuid()")).primaryKey(),
   dataOrigin: dataOrigin("data_origin").notNull(),
@@ -369,6 +394,46 @@ export const eventItems = memeradar.table("event_items", {
   isOriginCandidate: boolean("is_origin_candidate")
     .default(sql.raw("false"))
     .notNull(),
+});
+export const eventWatchRules = memeradar.table("event_watch_rules", {
+  id: uuid("id").default(sql.raw("gen_random_uuid()")).primaryKey(),
+  dataOrigin: dataOrigin("data_origin").notNull(),
+  knowledgeKind: knowledgeKind("knowledge_kind")
+    .default(sql.raw("'OBSERVED'::memeradar.knowledge_kind"))
+    .notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true, mode: "date" })
+    .default(sql.raw("now()"))
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" })
+    .default(sql.raw("now()"))
+    .notNull(),
+  ownerUserId: uuid("owner_user_id").notNull(),
+  watchId: uuid("watch_id").notNull(),
+  ruleId: uuid("rule_id").notNull(),
+  ruleQuery: text("rule_query").notNull(),
+  revision: integer("revision").default(sql.raw("1")).notNull(),
+});
+export const eventWatches = memeradar.table("event_watches", {
+  id: uuid("id").default(sql.raw("gen_random_uuid()")).primaryKey(),
+  dataOrigin: dataOrigin("data_origin").notNull(),
+  knowledgeKind: knowledgeKind("knowledge_kind")
+    .default(sql.raw("'OBSERVED'::memeradar.knowledge_kind"))
+    .notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true, mode: "date" })
+    .default(sql.raw("now()"))
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" })
+    .default(sql.raw("now()"))
+    .notNull(),
+  ownerUserId: uuid("owner_user_id").notNull(),
+  eventId: uuid("event_id").notNull(),
+  revision: integer("revision").default(sql.raw("1")).notNull(),
+  terms: jsonb("terms").notNull(),
+  officialAccounts: jsonb("official_accounts")
+    .default(sql.raw("'[]'::jsonb"))
+    .notNull(),
+  baselineBuckets: integer("baseline_buckets").default(sql.raw("6")).notNull(),
+  afterBuckets: integer("after_buckets").default(sql.raw("12")).notNull(),
 });
 export const events = memeradar.table("events", {
   id: uuid("id").default(sql.raw("gen_random_uuid()")).primaryKey(),
@@ -662,6 +727,10 @@ export const postEventLinks = memeradar.table("post_event_links", {
   eventId: uuid("event_id").notNull(),
   score: fraction("score").notNull(),
   method: text("method").notNull(),
+  ownerUserId: uuid("owner_user_id"),
+  watchId: uuid("watch_id"),
+  watchRevision: integer("watch_revision"),
+  evidence: jsonb("evidence").default(sql.raw("'[]'::jsonb")).notNull(),
 });
 export const postTokenMentions = memeradar.table("post_token_mentions", {
   id: uuid("id").default(sql.raw("gen_random_uuid()")).primaryKey(),
@@ -1507,7 +1576,10 @@ export const schemaTables = {
   conversationViews,
   conversations,
   entities,
+  eventCoverageWindows,
   eventItems,
+  eventWatchRules,
+  eventWatches,
   events,
   evidenceRecords,
   holderSnapshots,

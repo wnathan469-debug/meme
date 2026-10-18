@@ -141,6 +141,49 @@ try {
   await page.screenshot({
     path: path.join(root, "tests/e2e/desktop-conversation.png"),
   });
+  await page.goto(
+    "memeradar://app/index.html#page=events&event=00000000-0000-4000-8000-000000000060",
+  );
+  const eventDetail = page.getByRole("region", {
+    name: "Fiche événement enrichie",
+    exact: true,
+  });
+  await eventDetail.waitFor();
+  assert.match(
+    await eventDetail
+      .getByRole("region", { name: "Attention avant et après", exact: true })
+      .textContent(),
+    /Ligne de base : 1 mentions par tranche/,
+  );
+  await eventDetail
+    .getByRole("button", {
+      name: "Configurer l’alerte d’événement",
+      exact: true,
+    })
+    .click();
+  await eventDetail
+    .getByLabel("Sujet de l’alerte", { exact: true })
+    .fill("Événement Electron");
+  await eventDetail
+    .getByRole("button", {
+      name: "Enregistrer la règle d’événement",
+      exact: true,
+    })
+    .click();
+  await eventDetail.getByRole("status").waitFor();
+  await page.screenshot({
+    path: path.join(root, "tests/e2e/desktop-event.png"),
+  });
+  await page.goto("memeradar://app/index.html#page=alerts");
+  assert.match(
+    await page
+      .getByRole("region", {
+        name: "Règles d’événement enregistrées",
+        exact: true,
+      })
+      .textContent(),
+    /Événement Electron/,
+  );
   console.log(
     "PASS: Electron sandbox, IPC validation, persistent preferences across restart, clipboard, deep link and blocked main/renderer network.",
   );

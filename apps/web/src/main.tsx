@@ -1,3 +1,10 @@
+import { EVENT_TITLE as V2_EVENT_TITLE } from "../../../packages/events/model";
+import {
+  EventInsights,
+  EventFeatureCard,
+  EventAlertDrafts,
+  EventAlertForm,
+} from "./EventInsights";
 import { Conversations } from "./Conversations";
 import { demoConversationId } from "../../../packages/conversations/demo-data";
 import { People } from "./People";
@@ -624,7 +631,14 @@ function App() {
                     Tous les événements ↗
                   </button>
                 </div>
-                <div className="event-grid">{events.map(eventCard)}</div>
+                <div className="event-grid">
+                  {events.map(eventCard)}
+                  <EventFeatureCard query="" />
+                </div>
+                <p className="small muted">
+                  Les indicateurs agrégés couvrent les trois scénarios d’origine
+                  ; Nébula Mobile présente ses mesures distinctes dans sa fiche.
+                </p>
               </section>
               <section className="panel">
                 <div className="section-heading">
@@ -652,13 +666,27 @@ function App() {
           {route.page === "events" && (
             <>
               <Filters query={route.query} onQuery={(v) => filter("q", v)} />
-              <div className="event-grid">{filteredEvents.map(eventCard)}</div>
-              {!filteredEvents.length && (
-                <Empty
-                  title="Aucun événement correspondant"
-                  text="Essayez un autre mot-clé."
-                />
-              )}
+              <div className="event-grid">
+                {filteredEvents.map(eventCard)}
+                <EventFeatureCard query={route.query} />
+              </div>
+              <EventInsights
+                id={route.event}
+                minute={minute}
+                zone={saved.timezone}
+                socialDisabled={socialDisabled}
+                indexerDisabled={saved.disabledSources.includes("indexer")}
+                pressDisabled={saved.disabledSources.includes("press")}
+              />
+              {!filteredEvents.length &&
+                !V2_EVENT_TITLE.toLowerCase().includes(
+                  route.query.toLowerCase(),
+                ) && (
+                  <Empty
+                    title="Aucun événement correspondant"
+                    text="Essayez un autre mot-clé."
+                  />
+                )}
             </>
           )}
           {route.page === "tokens" && (
@@ -775,6 +803,7 @@ function App() {
           )}
           {route.page === "alerts" && (
             <>
+              <EventAlertDrafts />
               <div className="tabs">
                 <button
                   className={tab === "history" ? "selected" : ""}
@@ -1226,6 +1255,11 @@ function App() {
                       </button>
                     ))}
                 </div>
+                <EventAlertForm
+                  key={event.id}
+                  eventId={event.id}
+                  defaultSubject={event.entity}
+                />
                 <h3>Chronologie et sources</h3>
                 <p className="small muted">
                   Observations fictives disponibles jusqu’à T+{minute} min. Les

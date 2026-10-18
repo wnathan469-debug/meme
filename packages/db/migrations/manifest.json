@@ -33,5 +33,10 @@
     "version": "0007_conversation_views",
     "upSha256": "edcdd5ad475ec139b5623de88581201c6160bf9383b94de8c5bcef3b24e094d0",
     "downSha256": "ecd7a945545eb5d61eae3266777f36e55fb34ca518a22b19a565c34a5c89d376"
+  },
+  {
+    "version": "0008_event_attention",
+    "upSha256": "3a59c93329757c0d0c16914378b84df798197501c3ac430d1389a491e8de0d40",
+    "downSha256": "5104e729c08c3ea7717291a16f352ec8d59986201b91dfe933080231396efcee"
   }
 ]

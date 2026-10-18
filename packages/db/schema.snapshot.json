@@ -1347,6 +1347,123 @@
       ]
     },
     {
+      "name": "event_coverage_windows",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "default": "gen_random_uuid()",
+          "generated": false,
+          "primary": true
+        },
+        {
+          "name": "data_origin",
+          "type": "data_origin",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "knowledge_kind",
+          "type": "knowledge_kind",
+          "nullable": false,
+          "default": "'OBSERVED'::memeradar.knowledge_kind",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "default": "now()",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "default": "now()",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "owner_user_id",
+          "type": "uuid",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "watch_id",
+          "type": "uuid",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "rule_id",
+          "type": "uuid",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "revision",
+          "type": "int4",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "starts_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "ends_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "status",
+          "type": "text",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "reason",
+          "type": "text",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "method",
+          "type": "text",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        }
+      ]
+    },
+    {
       "name": "event_items",
       "columns": [
         {
@@ -1418,6 +1535,192 @@
           "type": "bool",
           "nullable": false,
           "default": "false",
+          "generated": false,
+          "primary": false
+        }
+      ]
+    },
+    {
+      "name": "event_watch_rules",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "default": "gen_random_uuid()",
+          "generated": false,
+          "primary": true
+        },
+        {
+          "name": "data_origin",
+          "type": "data_origin",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "knowledge_kind",
+          "type": "knowledge_kind",
+          "nullable": false,
+          "default": "'OBSERVED'::memeradar.knowledge_kind",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "default": "now()",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "default": "now()",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "owner_user_id",
+          "type": "uuid",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "watch_id",
+          "type": "uuid",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "rule_id",
+          "type": "uuid",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "rule_query",
+          "type": "text",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "revision",
+          "type": "int4",
+          "nullable": false,
+          "default": "1",
+          "generated": false,
+          "primary": false
+        }
+      ]
+    },
+    {
+      "name": "event_watches",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "default": "gen_random_uuid()",
+          "generated": false,
+          "primary": true
+        },
+        {
+          "name": "data_origin",
+          "type": "data_origin",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "knowledge_kind",
+          "type": "knowledge_kind",
+          "nullable": false,
+          "default": "'OBSERVED'::memeradar.knowledge_kind",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "default": "now()",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "default": "now()",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "owner_user_id",
+          "type": "uuid",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "event_id",
+          "type": "uuid",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "revision",
+          "type": "int4",
+          "nullable": false,
+          "default": "1",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "terms",
+          "type": "jsonb",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "official_accounts",
+          "type": "jsonb",
+          "nullable": false,
+          "default": "'[]'::jsonb",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "baseline_buckets",
+          "type": "int4",
+          "nullable": false,
+          "default": "6",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "after_buckets",
+          "type": "int4",
+          "nullable": false,
+          "default": "12",
           "generated": false,
           "primary": false
         }
@@ -2657,6 +2960,38 @@
           "type": "text",
           "nullable": false,
           "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "owner_user_id",
+          "type": "uuid",
+          "nullable": true,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "watch_id",
+          "type": "uuid",
+          "nullable": true,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "watch_revision",
+          "type": "int4",
+          "nullable": true,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "evidence",
+          "type": "jsonb",
+          "nullable": false,
+          "default": "'[]'::jsonb",
           "generated": false,
           "primary": false
         }
