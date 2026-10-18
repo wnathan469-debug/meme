@@ -13,6 +13,7 @@ export default defineConfig({
         "packages/conversations/model.ts",
         "packages/events/model.ts",
         "packages/social/*.ts",
+        "packages/risks/{model,adapters,goplus}.ts",
         "packages/charts/{decimal,model,service}.ts",
         "packages/connectors/market/*.ts",
         "packages/shared/*.ts",

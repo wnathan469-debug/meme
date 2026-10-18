@@ -31,6 +31,7 @@
     "packages/events",
     "packages/social",
     "packages/charts",
+    "packages/risks",
     "packages/people",
     "apps/worker"
   ]

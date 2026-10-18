@@ -705,3 +705,68 @@ test("graphique token : identité, pools, périodes manquantes, sources et marqu
   expect(errors).toEqual([]);
   expect(external).toEqual([]);
 });
+
+test("risques : preuves, inconnues, erreurs, contradictions et absence de réseau", async ({
+  page,
+}) => {
+  const external: string[] = [],
+    errors: string[] = [];
+  page.on("request", (r) => {
+    if (
+      !r.url().startsWith("http://127.0.0.1:5173") &&
+      !r.url().startsWith("data:")
+    )
+      external.push(r.url());
+  });
+  page.on("pageerror", (e) => errors.push(e.message));
+  await page.goto("/#/tokens/base/0xDEMO" + "0".repeat(34) + "42");
+  const risk = page.getByRole("region", {
+    name: "Analyse des risques du token",
+    exact: true,
+  });
+  await expect(risk).toBeVisible();
+  await expect(risk).toContainText(
+    "L'absence de signal ne signifie pas l'absence de risque.",
+  );
+  await expect(
+    risk.getByRole("complementary", { name: "Activité sociale et légitimité" }),
+  ).toContainText("promotion payée");
+  const holder = risk.getByRole("article", { name: /Concentration/ });
+  await expect(holder).toContainText("Signal détecté");
+  await holder.getByText(/Preuve et limites/).click();
+  await expect(holder).toContainText("Top 1 : 16 %");
+  await expect(holder).toContainText("UTC");
+  await expect(holder).toContainText("demo.memeradar.invalid/risks");
+  await expect(
+    risk.getByRole("article", { name: "Autorité de gel Solana", exact: true }),
+  ).toContainText("Non applicable");
+  const state = risk.getByLabel("État des contrôles de risque démo");
+  await state.selectOption("conflict");
+  await expect(holder).toContainText("Sources contradictoires");
+  await state.selectOption("missing");
+  await expect(holder).toContainText("Données insuffisantes");
+  await state.selectOption("failed");
+  await expect(
+    risk.getByRole("article", {
+      name: "Signal de honeypot ou de vente bloquée",
+      exact: true,
+    }),
+  ).toContainText("Vérification échouée");
+  await state.selectOption("stale");
+  await expect(holder).toContainText("Observations anciennes");
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect
+    .poll(() =>
+      page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
+    )
+    .toBe(true);
+  await page.goto("/#page=sources");
+  await page.getByLabel("Inclure dans les vues de sources").nth(3).uncheck();
+  await page.goto("/#/tokens/base/0xDEMO" + "0".repeat(34) + "42");
+  await expect(risk.getByRole("status")).toContainText(
+    "Source d’analyse exclue",
+  );
+  await expect(holder).toContainText("Données insuffisantes");
+  expect(errors).toEqual([]);
+  expect(external).toEqual([]);
+});

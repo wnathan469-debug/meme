@@ -220,6 +220,21 @@ try {
   await page.screenshot({
     path: path.join(root, "tests/e2e/desktop-chart.png"),
   });
+  const risks = analysis.getByRole("region", {
+    name: "Analyse des risques du token",
+    exact: true,
+  });
+  await risks.waitFor();
+  assert.match(await risks.textContent(), /non une certification de sécurité/);
+  assert.match(await risks.textContent(), /Activité sociale et légitimité/);
+  await risks
+    .getByLabel("État des contrôles de risque démo")
+    .selectOption("conflict");
+  assert.match(await risks.textContent(), /Sources contradictoires/);
+  await risks
+    .getByLabel("État des contrôles de risque démo")
+    .selectOption("failed");
+  assert.match(await risks.textContent(), /Vérification échouée/);
   await page.goto("memeradar://app/index.html#/tokens/base/INVALID");
   await page
     .getByRole("region", { name: "Erreur de route token", exact: true })

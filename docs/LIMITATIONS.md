@@ -66,3 +66,8 @@ Extraction hors ligne sur tokens déjà connus : aucune découverte/validation r
 ## Phase 8 — analyse et graphique
 
 Interface de marché en DEMO, jeu dédié distinct des valeurs V1 ; pas de prix réel annoncé. Contrats GeckoTerminal validés sur fixtures : documentation publique/API bloquée par le réseau de cet environnement, aucun essai live ni activation implicite. Diagnostic opérateur requis avant REAL. Une page de pools, 300 bougies/requête et transactions récentes restent partiels ; rendu local progressif plafonné à 1 500 tranches. Capitalisation inconnue en REAL sans offre circulante vérifiée. Causes des variations de liquidité non déduites ; aucune interpolation. Raccordement serveur et livraison publique V2 à venir. Voir [phase 8](V2_PHASE8.md).
+
+
+## Phase 9 — risques
+
+Interface entièrement fictive, sans analyse live annoncée. GoPlus testé sur fixtures et SDK officiel consulté ; couverture/droits/quota et fraîcheur réels à diagnostiquer avant activation. Décodeurs Solana/métadonnées et relevés de détenteurs/mouvements/LP exigent des lectures déjà acquises et liées au token par un hôte de confiance. Aucun scanner historique ni simulation de vente locale. Proxy présent ≠ modifiabilité prouvée, métadonnées Metaplex ≠ tous les programmes, rôle de portefeuille non vérifié ≠ exclusion légitime. Pas de certification, pas de note globale ; données absentes, anciennes ou contradictoires explicites. Raccordement authentifié et nouvel installateur public restent à venir. Voir [phase 9](V2_PHASE9.md).

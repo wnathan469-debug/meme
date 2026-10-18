@@ -147,3 +147,8 @@ L’extraction ne choisit jamais une chaîne EVM d’après le symbole ou l’un
 ## Phase 8 — analyse et graphique
 
 Lightweight Charts 5.2.1 (Apache-2.0), Fancy Canvas 2.1.0 (MIT), versions verrouillées et attribution/licences embarquées. Graphique chargé à la demande. Calculs financiers en décimales BigInt ; Number réservé au dessin borné, chaînes exactes conservées. Le seuil est comparé avant arrondi. Cache public par pool et période, marqueurs privés par propriétaire ; pool vérifié et côté de prix explicite. Pas de FDV déguisée en capitalisation, pas de retrait de liquidité déduit d’une seule variation. Voir [phase 8](V2_PHASE8.md).
+
+
+## Phase 9 — analyse des risques
+
+17 contrôles indépendants, sans score ni certification. Seuils locaux : concentration top 1 ≥ 10 % / top 10 ≥ 50 %, transfert ≥ 1 % ou sortie créateur identifié, baisse de liquidité ≥ 20 %. BigInt, rôles vérifiés pour exclusions, données partielles jamais transformées en absence de risque. TTL maximal cinq minutes et échéance LP, provenance et contradictions visibles. Table risk_findings réutilisée, acquisitions immuables/idempotentes. Aucun ajout de dépendance ni migration. Voir [phase 9](V2_PHASE9.md).

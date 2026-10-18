@@ -52,3 +52,8 @@ Migration 0009 : RLS forcée sur mentions, candidats et attestations ; lectures 
 ## Phase 8 — analyse et graphique
 
 Graphique chargé localement sans iframe/CDN. Source REAL exacte HTTPS api.geckoterminal.com, DNS épinglé, redirections refusées, délai/corps bornés, aucune activation implicite. Requêtes réservées dans le contrôle partagé ; 429 sans boucle de retry. Cache public séparé des marqueurs privés, filtrés par propriétaire même en connexion administrateur. Adresses validées par chaîne, URL explorateur centralisées, HTML échappé et contrôles/bidi neutralisés. Aucune clé ou transaction crypto ajoutée. Voir [phase 8](V2_PHASE8.md).
+
+
+## Phase 9 — contrôles de risque
+
+Évaluations séparées par chaîne/adresse/origine, preuves bornées, TTL/échéance, contradictions et inconnues conservées. GoPlus GET fixe désactivé par défaut, DNS épinglé et limite PostgreSQL partagée indépendante. Adaptateurs Solana sans RPC ; ingestion réservée à un hôte de confiance, aucune donnée privée/sociale. Texte fournisseur échappé, URL affichées sans navigation automatique. Aucun wallet, signature ou transaction. Voir [phase 9](V2_PHASE9.md).

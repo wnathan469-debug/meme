@@ -1717,3 +1717,24 @@ footer p {
   font-size: 10px;
   padding: 3px;
 }
+
+.risk-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+}
+.risk-check {
+  min-width: 0;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow-wrap: anywhere;
+}
+.risk-check h4 {
+  margin: 0 0 0.5rem;
+}
+.risk-analysis code {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}

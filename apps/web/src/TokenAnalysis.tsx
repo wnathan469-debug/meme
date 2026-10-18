@@ -1,3 +1,5 @@
+import { RiskPanel } from "./RiskPanel";
+import { eventAt } from "../../../packages/events/demo-data";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   createChart,
@@ -834,25 +836,48 @@ export function TokenAnalysis({
           </p>
         )}
       </section>
-      <section className="panel">
-        <h3>Contrôles de risque existants</h3>
+      <RiskPanel
+        key={identity.chain + identity.address}
+        identity={{ ...identity, origin: "DEMO" }}
+        minute={minute}
+        zone={zone}
+        disabled={indexerDisabled}
+      />
+      <section
+        className="panel"
+        aria-label="Contrôles de risque historiques V1"
+      >
+        <h3>Contrôles de risque historiques V1</h3>
+        <p>
+          Instantanés historiques conservés ; ils ne remplacent pas les
+          contrôles datés ci-dessus.
+        </p>
         <p>{RISK_WARNING}</p>
-        {legacy?.risks.map((r) => (
-          <p key={r.title}>
-            <strong>{r.title}</strong> ·{" "}
-            {r.status === "signal_detected"
-              ? "Signal détecté"
-              : r.status === "check_failed"
-                ? "Vérification échouée"
-                : "Données insuffisantes"}{" "}
-            : {r.evidence} Source : {r.source} · {date(r.observed_at)}. Limites
-            : {r.limitations}
-          </p>
-        ))}
-        {!legacy && (
+        {!indexerDisabled &&
+          legacy?.risks
+            .filter(
+              (r) => Date.parse(r.observed_at) <= Date.parse(eventAt(minute)),
+            )
+            .map((r) => (
+              <p key={r.title}>
+                <strong>{r.title}</strong> ·{" "}
+                {r.status === "signal_detected"
+                  ? "Signal détecté"
+                  : r.status === "check_failed"
+                    ? "Vérification échouée"
+                    : "Données insuffisantes"}{" "}
+                : {r.evidence} Source : {r.source} · {date(r.observed_at)}.
+                Limites : {r.limitations}
+              </p>
+            ))}
+        {(indexerDisabled ||
+          !legacy ||
+          !legacy.risks.some(
+            (r) => Date.parse(r.observed_at) <= Date.parse(eventAt(minute)),
+          )) && (
           <p>
-            Données de contrôle du contrat non disponibles. L’analyse détaillée
-            sera étendue en phase 9.
+            Aucun instantané de contrôle V1 disponible pour ce token et les
+            sources incluses à cet instant.
           </p>
         )}
         <p>

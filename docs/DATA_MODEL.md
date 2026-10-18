@@ -114,3 +114,8 @@ Migration additive 0008 : 60 tables applicatives. `event_watches`, `event_watch_
 ## Phase 8 — analyse et graphique
 
 Migration 0010 : 66 tables applicatives plus le registre ; côté de prix/fournisseur sur pools, URL de bougie, fenêtres de cache/baux, observations de marché par pool, transactions et contrôle partagé des tentatives. FK token/pool/origine, exactitude décimale et rollback conservateur ; SQL 0001–0009 immuable, ORM/snapshot alignés. Voir [phase 8](V2_PHASE8.md).
+
+
+## Évolution V2 — phase 9
+
+Schéma inchangé : 66 tables applicatives, migrations 0001–0010 inchangées. risk_findings conserve les observations publiques normalisées sous evidence.phase9, avec source, URL, observation/récupération, couverture, échéance et limites ; checker_version sépare les sources par SHA-256. Acquisitions identiques idempotentes, conflit de contenu à même clé refusé. Lecture par token/chaîne/origine et instant, maximum 100 groupes de source/contrôle, dépassement explicite. Retour V1 conserve ces preuves. Voir [phase 9](V2_PHASE9.md).

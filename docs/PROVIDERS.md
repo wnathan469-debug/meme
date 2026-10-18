@@ -58,3 +58,8 @@ La conformité de stockage, la suppression/indisponibilité périodique et l'att
 ## Collecte et recherche — phase 3
 
 Worker privé, polling/flux bornés, recherche gratuite locale et devis préalable aux recherches API, pagination/fencing/idempotence et vérification d'indisponibilité sont détaillés dans [V2_PHASE3.md](V2_PHASE3.md). Les quotas d'offre et tarifs restent à vérifier dans le compte X. La limite logicielle de flux ne suffit pas à garantir la facture : sans borne contractuelle vérifiée, le flux REAL n'est pas proposé par le runtime. La démo demeure isolée et n'affiche pas « en direct ». Les nouvelles vues et l'exposition authentifiée ne sont pas livrées dans l'installateur actuel.
+
+
+## Phase 9 — GoPlus et lectures de risque
+
+GoPlus Token Security v1 : adaptateur EVM GET, activation explicite et diagnostic requis, aucun essai live. Documentation web bloquée HTTP CONNECT 403 ; endpoint et champs confrontés au SDK officiel au commit ea1a80e33f1804c59632d18cee12102ffa367671. Champs manquants inconnus, code fermé/proxy ou absence en DEX empêchent les conclusions négatives hors portée. Lectures Solana/métadonnées et relevés détenteurs/LP fournis par un hôte de confiance ; aucun RPC envoyé par ces décodeurs. Dates, quotas et limites détaillés dans [phase 9](V2_PHASE9.md).

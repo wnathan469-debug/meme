@@ -1,3 +1,4 @@
+import { createRiskRuntime } from "../api/risk-runtime";
 import { createChartRuntime } from "../api/chart-runtime";
 import { PgSocialRepository } from "../../packages/db/social-repository";
 import { PgEventRepository } from "../../packages/db/event-repository";
@@ -19,6 +20,7 @@ export async function createXWorker(
   config: XConfig,
   ownerId: string,
   marketEnabled = false,
+  risksEnabled = false,
 ) {
   if (
     !/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(
@@ -74,6 +76,12 @@ export async function createXWorker(
     { ...config.collection, maxResults: config.maxResults },
   );
   return {
+    risks: createRiskRuntime(
+      pool,
+      ownerId,
+      runtime.provider.dataOrigin,
+      risksEnabled,
+    ),
     charts: createChartRuntime(
       pool,
       ownerId,
