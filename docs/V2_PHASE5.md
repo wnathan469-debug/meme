@@ -73,7 +73,9 @@ Le rôle de production doit être non superuser, sans BYPASSRLS, et le propriét
 - Référence SQL V1 : 51 contrôles avant/après rollback et vérifications de concurrence réussis. Migration V1 → 0007 et comparaison ORM réussies.
 - Audit des dépendances de production : **zéro vulnérabilité**. Diagnostics hors ligne sans appel fournisseur.
 
-Les résultats de CI distante Linux/Windows seront consignés après exécution. Aucune fixture n’est présentée comme une vérification d’accès réel à X.
+Au total : **215 tests TypeScript distincts** (154 unitaires/contrats, 54 PostgreSQL et sept Redis), en complément des cinq parcours navigateur, du shell Electron et des contrôles SQL.
+
+CI distante du code final `84f98aa` vérifiée le 18 octobre 2026 : [Linux — socle X et données](https://github.com/wnathan469-debug/meme/actions/runs/39138164996) **réussi** ; [Windows — construction native, installateur et ZIP vérifié](https://github.com/wnathan469-debug/meme/actions/runs/39138165097) **réussi**, avec conservation de la publication 0.1.0 existante. Aucun essai d’installation sur le PC de l’utilisateur ni publication d’une V2 n’est prétendu. Aucune fixture n’est présentée comme une vérification d’accès réel à X.
 
 ## Fichiers livrés
 
