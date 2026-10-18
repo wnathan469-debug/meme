@@ -98,7 +98,14 @@ Le retour arrière refuse la présence de configurations, fenêtres, liens priv�
 - Référence SQL V1 : 51 contrôles avant/après rollback, échec atomique et concurrence réussis.
 - Audit des dépendances de production : zéro vulnérabilité. Diagnostics sans appel fournisseur.
 
-Seuils globaux de couverture inchangés à 80 % sur les quatre mesures, dépassés pour les cibles unitaires et PostgreSQL. Le modèle pur est mesuré dans la cible unitaire ; les dépôts sont mesurés sur PostgreSQL réel jetable. Résultats de CI Linux/Windows à consigner après exécution.
+Seuils globaux de couverture inchangés à 80 % sur les quatre mesures, dépassés pour les cibles unitaires et PostgreSQL. Le modèle pur est mesuré dans la cible unitaire ; les dépôts sont mesurés sur PostgreSQL réel jetable. **231 tests TypeScript distincts** (161 unitaires/contrats, 63 PostgreSQL et sept Redis), auxquels s’ajoutent les parcours navigateur/Electron et les contrôles SQL.
+
+CI sur le commit `c7eb8e59c7db710b8630e2f8d410e6be69f0e1f5` :
+
+- [Linux — contrôles complets réussis](https://github.com/wnathan469-debug/meme/actions/runs/39141061052).
+- [Windows — tests, compilation NSIS et vérification du ZIP réussis](https://github.com/wnathan469-debug/meme/actions/runs/39141061045). L’archive construite est conservée comme artefact de ce workflow pendant 14 jours ; la publication préserve les fichiers immuables de la version publique 0.1.0.
+
+Ces validations ne constituent pas un essai d’installation sur le PC de l’utilisateur et ne publient pas une nouvelle version V2.
 
 ## Sources livrées et suite
 
