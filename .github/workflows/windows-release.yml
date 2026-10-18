@@ -80,6 +80,10 @@ jobs:
           sha256sum -c SHA256SUMS.txt
           cd ..
           version=$(node -p "require('./package.json').version")
+          if gh release view "v$version" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "Release v$version already exists; preserving its immutable assets."
+            exit 0
+          fi
           gh release create "v$version" \
             --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
             --title "MemeRadar $version — démonstration Windows" \
