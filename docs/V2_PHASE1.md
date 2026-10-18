@@ -26,6 +26,13 @@ L'audit phase 0 a été approuvé par l'utilisateur. Phase 1 implémentée le 18
 
 Le test du transport TLS utilise une socket simulée ; les tests SSRF injectent DNS et réponses. Les tests Redis vérifient réellement les scripts Lua, les accès concurrents de deux clients, les nombres au-delà de 2^53, les remboursements idempotents, les quotas, le coupe-circuit et la composition serveur sans probe X. Ils ne prouvent ni l'accès fournisseur ni la durabilité d'une future infrastructure Redis. Les dépendances de développement conservent les avis modérés de la chaîne de construction déjà documentés dans l'audit ; le bilan « 0 » concerne les dépendances de production.
 
+## Vérification GitHub du code enregistré
+
+Commit source : `3907bf1221d229d11bf579679b470795d46fcd63`.
+
+- [Socle Linux, tests Redis et audit production](https://github.com/wnathan469-debug/meme/actions/runs/39090808705) : réussi.
+- [Windows natif, compilation, tests, installateur et ZIP vérifié](https://github.com/wnathan469-debug/meme/actions/runs/39090808619) : réussi. La publication conserve la version publique 0.1.0 existante ; cette construction de contrôle ne constitue pas une nouvelle version V2 publiée ni une installation testée sur le PC de l'utilisateur.
+
 ## Fichiers livrés en entier dans le dépôt
 
 Chaque chemin ci-dessous ouvre sa version complète. Aucun fichier supprimé. Aucun changement aux migrations existantes, aux préférences V1, aux fichiers de l'interface ou à l'installateur public 0.1.0.
