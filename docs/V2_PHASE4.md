@@ -53,7 +53,9 @@ La composition privée expose `people`, `peopleCollector` et `peopleDetails(id)`
 - Navigateur Chromium : quatre parcours réussis, dont confirmation, notes échappées, filtres des publications, pause, catégories, persistance et suppression sans requête externe.
 - Shell Electron Linux : sandbox, IPC, préférences V1, note de personne après redémarrage, deep links, presse-papiers et refus réseau réussis. Cela ne remplace pas un essai d’installation sur un PC Windows.
 
-Redis : les sept contrôles d’intégration passent dans la suite de 153 tests exécutée avant l’ajout du dernier test de capacité concurrente, lui-même validé dans les 147 tests unitaires finaux. Audit de production : zéro vulnérabilité. Diagnostics et commande `--people` seule : zéro appel fournisseur. Les résultats de CI distante sont consignés après leur exécution. Aucun résultat de fixture n’est présenté comme une vérification d’accès réel à X.
+Redis : sept contrôles d’intégration réussis. Au total, 196 tests TypeScript distincts (147 unitaires/contrats, 42 PostgreSQL et sept Redis), en complément des parcours navigateur/Electron et contrôles SQL. Audit de production : zéro vulnérabilité. Diagnostics et commande `--people` seule : zéro appel fournisseur.
+
+CI distante du commit final `a9a80c3` vérifiée le 18 octobre 2026 : [Linux, socle X et données](https://github.com/wnathan469-debug/meme/actions/runs/39135960933) **réussi** ; [construction native Windows, installateur et ZIP vérifiés](https://github.com/wnathan469-debug/meme/actions/runs/39135960892) **réussie**, avec conservation de la publication 0.1.0 existante. Cela ne constitue ni une publication V2 ni un essai d’installation sur le PC de l’utilisateur. Aucun résultat de fixture n’est présenté comme une vérification d’accès réel à X.
 
 ## Fichiers livrés
 
