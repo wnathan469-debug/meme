@@ -144,8 +144,8 @@ export class PgXCollectionRepository implements CollectionRepository {
       const actual = this.rule(live),
         queryHash = hash(actual.query.trim());
       await client.query(
-        "INSERT INTO memeradar.x_collection_checkpoints(data_origin,rule_id,mode) VALUES($1,$2,$3) ON CONFLICT(data_origin,rule_id,mode) DO NOTHING",
-        [this.origin, rule.id, mode],
+        "INSERT INTO memeradar.x_collection_checkpoints(data_origin,rule_id,mode,next_due_at) VALUES($1,$2,$3,$4) ON CONFLICT(data_origin,rule_id,mode) DO NOTHING",
+        [this.origin, rule.id, mode, new Date(now)],
       );
       const checkpoint = (
         await client.query(

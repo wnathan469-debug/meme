@@ -143,6 +143,14 @@ it("checkpoints only committed pages, resumes pagination and rejects expired wor
   const rule = await repo.createRule({ query: "pages", status: "active" }),
     lease = (await repo.claim(rule, "search", clock.now(), 1000, true))!;
   expect(await repo.claim(rule, "search", clock.now(), 1000, true)).toBeNull();
+  expect(
+    (
+      await pool.query(
+        "SELECT next_due_at FROM memeradar.x_collection_checkpoints WHERE rule_id=$1",
+        [rule.id],
+      )
+    ).rows[0].next_due_at.getTime(),
+  ).toBe(clock.now());
   await repo.ingest(
     lease,
     page([post("DEMO_PAGE_01")], "page-two"),
