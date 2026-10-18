@@ -121,7 +121,7 @@ Migration additive `0009_social_tokens` : **62 tables applicatives**, plus le re
 
 RLS forcée sur les trois tables ; contexte utilisateur et origine obligatoires. Les anciennes mentions globales restent lisibles dans leur origine. Les nouveaux éléments privés exigent leur propriétaire, et les dépôts de recherche, personnes, conversations et événements filtrent explicitement ces accès même lors des tests en connexion administrateur. Les changements d’origine sont refusés par les triggers communs.
 
-L’empreinte de texte, les entités, le type et l’auteur sont comparés à la publication actuelle avant d’utiliser une nouvelle mention. Une publication supprimée/indisponible ou modifiée cesse immédiatement de contribuer à la lecture ; la reconstruction nettoie ensuite ses mentions et candidats privés concernés. Les attestations peuvent être conservées comme métadonnées de revue mais ne valent plus comme preuve active. Cela ne constitue pas encore une politique automatique de rétention complète : l’hôte doit programmer les reconstructions/purges conformément à ses paramètres.
+L’empreinte de texte, les entités, le type et l’auteur sont comparés à la publication actuelle avant d’utiliser une nouvelle mention. Une publication supprimée/indisponible ou modifiée cesse immédiatement de contribuer à la lecture ; le texte courant est également rapproché des termes actuels de l’événement, sans attendre la reconstruction de ses anciennes liaisons. La reconstruction nettoie ensuite ses mentions et candidats privés concernés. Les attestations peuvent être conservées comme métadonnées de revue mais ne valent plus comme preuve active. Cela ne constitue pas encore une politique automatique de rétention complète : l’hôte doit programmer les reconstructions/purges conformément à ses paramètres.
 
 Le rollback refuse toute utilisation des nouvelles données, sans suppression utilisateur. Les migrations avant/arrière, l’intégrité V1 et la correspondance ORM/snapshot avec le SQL migré sont testées.
 
@@ -129,8 +129,8 @@ Le rollback refuse toute utilisation des nouvelles données, sans suppression ut
 
 - Construction TypeScript/Vite et formatage réussis ; aucune dépendance ajoutée.
 - **176 tests unitaires/contrats** réussis, dont 15 nouveaux : huit vecteurs ERC-55, checksum invalide, base58/longueur, séparation DEMO/REAL, domaines trompeurs, URL de pool, chaîne ambiguë, cashtags, noms, niveaux, dates/offsets et rejeu fictif.
-- **70 tests PostgreSQL V2** réussis, dont sept nouveaux : extraction idempotente, candidats ambigus, association par événement, isolation entre propriétaires dans les lecteurs, preuve officielle explicite/révocation, contenu modifié/indisponible, RLS sans bypass et rollback conservateur.
-- **Sept contrôles Redis** réussis ; les tests unitaires partagés ne sont pas comptés deux fois. Total TypeScript distinct : **253**.
+- **71 tests PostgreSQL V2** réussis, dont huit nouveaux : extraction idempotente, candidats ambigus, association par événement, isolation entre propriétaires dans les lecteurs, preuve officielle explicite/révocation, contenu modifié/indisponible, revalidation du texte d’événement avant reconstruction de ses anciens liens, RLS sans bypass et rollback conservateur.
+- **Sept contrôles Redis** réussis ; les tests unitaires partagés ne sont pas comptés deux fois. Total TypeScript distinct : **254**.
 - **Sept parcours Chromium** réussis, dont un nouveau parcours des preuves : adresse, méthodes, première observation, faibles indices, liens événement/conversation/token, sources exclues et largeur 390 px sans requête externe.
 - Shell Electron Linux : sandbox/IPC, persistance V1/notes/règles, nouvelles preuves et navigation, blocage réseau réussis.
 - Référence SQL V1 : 51 contrôles avant/après rollback, échec atomique et concurrence réussis.

@@ -1,3 +1,4 @@
+import { matchEvent } from "../events/model";
 import type { Pool, PoolClient } from "pg";
 import { z } from "zod";
 import { withUserContext } from "./client";
@@ -214,7 +215,17 @@ export class PgSocialRepository {
       return rows.map((r) => r.token_id as string);
     });
     const result = [];
-    for (const id of ids) result.push(await this.read(id, eventId, asOf));
+    for (const id of ids) {
+      const detail = await this.read(id, eventId, asOf);
+      if (
+        detail.mentions.some(
+          (m) =>
+            m.eventLinked &&
+            (m.method === "exact_address" || m.method === "token_page_url"),
+        )
+      )
+        result.push(detail);
+    }
     return result;
   }
   async read(
@@ -266,7 +277,7 @@ export class PgSocialRepository {
         publishedAt: r.published_at?.toISOString() ?? null,
         collectedAt: r.collected_at.toISOString(),
         authorId: r.author_x_user_id ?? r.unresolved_author_x_user_id,
-        eventLinked: r.event_linked,
+        eventLinked: r.event_linked && !!matchEvent(postDTO(r), watch.terms),
       }));
       const attestations = (
         await c.query(
@@ -363,6 +374,7 @@ export class PgSocialRepository {
       if (
         !p ||
         !p.published_at ||
+        !matchEvent(postDTO(p), w.terms) ||
         p.collected_at > new Date(v.reviewedAt) ||
         p.published_at > new Date(v.reviewedAt) ||
         !w.official_accounts.some(

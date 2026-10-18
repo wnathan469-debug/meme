@@ -416,3 +416,32 @@ it("enforces RLS without context and across owners with a non-bypass application
     await scoped.end();
   }
 });
+
+it("revalidates event text on current content even before old event links are rebuilt", async () => {
+  await events.configure(event, {
+    terms: [{ kind: "phrase", text: "Nébula Mobile" }],
+    ruleIds: [rule.id],
+    officialAccounts: [
+      {
+        userId: users[0].id,
+        evidenceUrl: "https://demo.memeradar.invalid/official",
+        reviewedAt: at(0),
+      },
+    ],
+  });
+  await events.rebuild(event);
+  posts = posts
+    .filter((p) => p.id === "DEMO_SOCIAL_UNKNOWN")
+    .map((p) => ({
+      ...p,
+      text: `Autre sujet sans rapport : ${address}`,
+      collectedAt: new Date(Date.now() - 1).toISOString(),
+    }));
+  await ingest(collection, rule, posts);
+  await repo.rebuild({ ruleId: rule.id, contextChain: "base" });
+  expect((await repo.read(token, event)).level).toBe("WEAK");
+  expect(await repo.forEvent(event)).toEqual([]);
+  await expect(
+    repo.attestOfficialPublication(attest("DEMO_SOCIAL_UNKNOWN")),
+  ).rejects.toMatchObject({ code: "INVALID_INPUT" });
+});
