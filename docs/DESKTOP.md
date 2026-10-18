@@ -4,9 +4,12 @@
 
 Cible : Windows 10/11, processeur x64. L'installateur prévu est `MemeRadar-0.1.0-Windows-x64.exe`. Aucune installation de Node.js, Docker, PostgreSQL ou Redis n'est nécessaire pour cette édition.
 
-1. Télécharger l'installateur fourni avec cette livraison.
-2. Ouvrir le fichier et choisir le dossier d'installation dans l'assistant.
-3. Lancer MemeRadar depuis le menu Démarrer ou le raccourci du bureau.
+1. [Télécharger le ZIP de l’installateur depuis GitHub](https://github.com/wnathan469-debug/meme/releases/download/v0.1.0/MemeRadar-0.1.0-Windows-x64-installer.zip).
+2. Dans l’Explorateur Windows : clic droit sur le ZIP → **Extraire tout**.
+3. Ouvrir `MemeRadar-0.1.0-Windows-x64.exe` dans le dossier extrait et suivre l’assistant.
+4. Lancer MemeRadar depuis le menu Démarrer ou le raccourci du bureau.
+
+[Page de publication de secours](https://github.com/wnathan469-debug/meme/releases/tag/v0.1.0) : ouvrir la section **Assets** et sélectionner le fichier se terminant par `-installer.zip`. Les liens `/workspace/...` désignent le disque cloud et ne sont pas des téléchargements publics.
 
 L'application est une première édition de démonstration, sans certificat de signature d'éditeur. Windows peut signaler un éditeur inconnu. Ne désactivez pas vos protections ; faites vérifier le paquet si votre politique d'entreprise exige un logiciel signé. Un certificat et une validation sur une machine Windows restent nécessaires avant une diffusion publique.
 

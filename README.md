@@ -4,7 +4,11 @@ Application de veille et d'analyse explicable, en français. Première édition 
 
 ## Installer sur Windows
 
-Le paquet de cette livraison se trouve dans `release/MemeRadar-0.1.0-Windows-x64.exe` après construction réussie. Ouvrir l'installateur, choisir le dossier, puis lancer MemeRadar depuis le bureau ou le menu Démarrer. Aucun Node.js, Docker, compte ou clé API nécessaire pour l'utiliser.
+[Télécharger MemeRadar 0.1.0 pour Windows (ZIP de l’installateur)](https://github.com/wnathan469-debug/meme/releases/download/v0.1.0/MemeRadar-0.1.0-Windows-x64-installer.zip)
+
+Dans Chrome, télécharger le ZIP, choisir **Extraire tout** dans l’Explorateur Windows, puis ouvrir `MemeRadar-0.1.0-Windows-x64.exe`. Suivre l’assistant et lancer MemeRadar depuis le bureau ou le menu Démarrer. Aucun Node.js, Docker, compte ou clé API nécessaire pour l’utiliser.
+
+[Page de téléchargement et empreintes](https://github.com/wnathan469-debug/meme/releases/tag/v0.1.0) · [Vérifications du téléchargement](docs/DOWNLOAD_VERIFICATION.md)
 
 Consultez [le guide Windows](docs/DESKTOP.md) pour les étapes, le stockage local et les limites de signature/validation. Le mode réel et les connecteurs du cahier des charges ne sont pas encore livrés : voir [LIMITATIONS.md](docs/LIMITATIONS.md).
 

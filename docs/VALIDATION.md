@@ -19,3 +19,10 @@ Le banc shell passe `--no-sandbox` uniquement au processus de test Linux en cont
 Construction NSIS Windows x64 réussie, assistant en français, métadonnées/icône appliquées, paquet non signé. Le contenu ASAR a été comparé aux fichiers actuels du shell, de validation et du renderer ; aucun paquet de test/construction n’est inclus dans les dépendances du paquet. L’archive NSIS passe la vérification 7-Zip ; empreinte SHA-256 fournie dans release/SHA256SUMS.txt. Le désinstalleur intermédiaire a été extrait par le lecteur natif inclus dans electron-builder, sans exécuter de code Windows sur cet hôte. Une validation native de l'assistant, du démarrage et de la désinstallation sur Windows 10/11 reste requise sur la machine de destination. Aucun test sur une machine Windows réelle n'est annoncé.
 
 Les tests n'ont interrogé aucune API d'actualité, réseau social ou blockchain. Les observations restent fictives. Ni la disponibilité des fournisseurs, ni les performances live, ni la conformité juridique ne sont validées.
+
+
+## Distribution HTTPS vérifiée
+
+La version publiée a ensuite été reconstruite sur un runner Windows GitHub Actions : compilation, 30 tests, formatage, création NSIS et vérification du ZIP réussis. Le job de publication a également revérifié les empreintes avant mise en ligne.
+
+Le ZIP a été retéléchargé intégralement depuis l’URL publique GitHub : HTTP 200, type application/octet-stream, 112 725 038 octets ; intégrité ZIP et empreintes ZIP/installateur conformes. Voir DOWNLOAD_VERIFICATION.md. La compilation native Windows ne vaut pas essai de l’assistant ni démarrage de l’application sur le PC de destination.
