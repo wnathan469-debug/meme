@@ -1,0 +1,10 @@
+node_modules/
+dist/
+release/
+playwright-report/
+test-results/
+.env
+.env.local
+*.log
+coverage/
+tests/e2e/*.png

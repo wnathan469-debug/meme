@@ -1,0 +1,69 @@
+# MemeRadar
+
+Application de veille et d'analyse explicable, en français. Première édition de bureau **démo hors ligne** pour Windows 10/11 x64 : trois scénarios fictifs, huit tokens, chronologies, indicateurs et alertes. Aucune donnée réelle ni recommandation financière.
+
+## Installer sur Windows
+
+Le paquet de cette livraison se trouve dans `release/MemeRadar-0.1.0-Windows-x64.exe` après construction réussie. Ouvrir l'installateur, choisir le dossier, puis lancer MemeRadar depuis le bureau ou le menu Démarrer. Aucun Node.js, Docker, compte ou clé API nécessaire pour l'utiliser.
+
+Consultez [le guide Windows](docs/DESKTOP.md) pour les étapes, le stockage local et les limites de signature/validation. Le mode réel et les connecteurs du cahier des charges ne sont pas encore livrés : voir [LIMITATIONS.md](docs/LIMITATIONS.md).
+
+## Fonctionnalités de la démo
+
+- Tableau de bord, événements, tokens, alertes, sources et paramètres.
+- Fiches avec provenance, risque d'usurpation, chronologie et cinq indicateurs expliqués.
+- Rejeu temporel accéléré, règles d'attention modifiables et faux positifs.
+- Recherche, filtres dans l'URL interne, mots-clés suivis, thème clair/sombre et fuseau horaire.
+- Préférences conservées sur le PC ; pas de portefeuille, transaction, télémétrie ou appel fournisseur.
+
+## Développer
+
+Node 24 et npm requis. Depuis la racine :
+
+```bash
+npm ci
+npm run dev          # Interface dans le navigateur local pour le développement
+npm run build       # Types stricts et compilation de production
+npm start           # Application Electron
+npm test -- --coverage
+npm run test:e2e     # Après npx playwright install chromium
+npm run format:check
+npm run dist:win    # Installateur Windows dans release/
+```
+
+Le banc cloud utilise `CHROMIUM_PATH=/usr/bin/chromium npm run test:e2e`. Le test du shell se lance avec `npm run test:desktop` sur une machine disposant d'un affichage et du runtime Electron local. Sur Linux cloud, un affichage virtuel est requis. La construction NSIS depuis Linux utilise un adaptateur limité au lecteur de désinstalleur natif inclus dans electron-builder ; voir DESKTOP.md. Sur Windows, la construction suit le chemin natif du builder.
+
+## Base serveur — phase 3
+
+Le schéma PostgreSQL et les migrations du futur backend sont livrés séparément dans `packages/db/`. L'application de bureau démo n'a pas besoin de cette base.
+
+Avec Docker :
+
+```bash
+npm run test:db
+```
+
+Le banc crée une base jetable sans réseau ni port publié, vérifie l'intégrité et le rollback, puis la supprime. Voir [DATA_MODEL.md](docs/DATA_MODEL.md).
+
+## Structure
+
+```text
+apps/desktop/       Shell Electron, IPC et préférences locales
+apps/web/           Interface React/Vite en français
+packages/core/      Types, fixtures et règles pédagogiques de démo
+packages/db/        Schéma PostgreSQL, migrations et banc de test
+assets/             Icônes locales
+tests/              Tests métier, sécurité et parcours
+release/            Paquets générés, non versionnés
+```
+
+## Documentation et avancement
+
+Phases 1 et 2 validées, phase 3 réalisée et testée. La demande d'une application Windows a ensuite conduit à une édition de bureau démo ; les autres phases serveur/live restent ouvertes.
+
+- [Cadrage](docs/CADRAGE.md) · [Architecture serveur](docs/ARCHITECTURE.md) · [Décisions](docs/DECISIONS.md)
+- [Guide de bureau](docs/DESKTOP.md) · [Indicateurs](docs/INDICATORS.md) · [Validation](docs/VALIDATION.md)
+- [Sécurité](docs/SECURITY.md) · [Limites](docs/LIMITATIONS.md) · [Exploitation](docs/RUNBOOK.md)
+- [Cahier des charges original](docs/SPECIFICATION.md)
+
+Cette analyse est automatisée, peut être incomplète et ne constitue pas un conseil financier. Les memecoins sont des actifs très spéculatifs ; il est possible de perdre la totalité des sommes investies.

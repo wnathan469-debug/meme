@@ -1,0 +1,86 @@
+# Décisions proposées — Phase 1
+
+Statut des ADR 001 à 004 : retenu comme base de la phase 2 après validation du cadrage. Ces choix ne constituent pas encore une implémentation.
+
+## ADR-001 — Monolithe modulaire TypeScript
+
+**Contexte.** Dépôt vide, nombreuses règles métier partagées entre ingestion, API et interface ; besoin de workers sans complexité de microservices.
+
+**Décision.** TypeScript strict, Fastify, React/Vite, PostgreSQL 16, Redis/BullMQ, Drizzle, Zod ; Vitest et Playwright. Retenir une version Node LTS maintenue et compatible au moment du socle, plutôt que figer Node 20 recommandé dans le document sans vérifier son support. Verrouiller les versions lors de l'installation.
+
+**Alternatives.** Python/FastAPI et React (deux chaînes de types) ; NestJS (cadre plus lourd) ; Next.js (rendu serveur sans besoin démontré ici) ; microservices (coût opérationnel prématuré).
+
+**Conséquences.** Contrats de domaine partagés, tests déterministes ; API et worker restent deux processus, avec gestion explicite de leurs cycles de vie. Les diagrammes et frontières sont décrits dans ARCHITECTURE.md (phase 2, à valider).
+
+## ADR-002 — Démonstration isolée et prioritaire
+
+**Contexte.** Aucune clé ni donnée réelle disponible ; risque majeur de présenter une fiction comme une observation réelle.
+
+**Décision.** APP_MODE=demo par défaut ; origine obligatoire sur les données, filtrage dans les dépôts et refus des sorties externes dans le client partagé. Fixtures locales, URLs .invalid, adresses explicitement factices et rejeu déterministe. Prévoir une isolation réseau du déploiement démo ; tester également l'absence de sorties contournant le client partagé.
+
+**Alternatives.** Démo reposant sur des API publiques ou mélangeant données live et seeds, rejetés car incompatibles avec la séparation demandée.
+
+**Conséquences.** Démarrage sans abonnement ; chemin live séparé et configuration validée. Les téléchargements nécessaires à l'installation sont distincts des appels applicatifs pendant la démo. Les communications internes API/Postgres/Redis sont permises, pas les fournisseurs externes.
+
+## ADR-003 — Règles déterministes et couverture explicite
+
+**Contexte.** Association et analyse de risques ne permettent ni certitude financière ni exhaustivité ; les API et quotas évoluent.
+
+**Décision.** Pas de LLM initial ; règles explicables et versionnées, provenance systématique, données manquantes propagées. Vérifier les fournisseurs avant d'annoncer une intégration ; pas de quota, endpoint ou tarif supposé. Aucun niveau CONFIRMED sans publication officielle de l'adresse exacte sur la chaîne concernée.
+
+**Alternatives.** Score global, classification opaque, association sur le seul nom : rejetés conformément au cahier des charges.
+
+**Conséquences.** Résultats reproductibles mais limites de couverture visibles. API sociales et canaux externes optionnels ; toute fonction V1 non livrée devra être signalée, jamais masquée par un résultat inventé.
+
+## ADR-004 — Déploiement privé initial
+
+**Contexte.** Aucun besoin multi-tenant ou hébergeur précisé ; données et canaux externes potentiellement sensibles.
+
+**Décision.** Docker Compose, administrateur local avec mot de passe haché, sessions sécurisées ; fuseau America/Toronto, UTC en stockage. Rétention initiale proposée : extraits 30 jours, logs techniques expurgés 14 jours. Notifications internes par défaut, SMTP/webhook seulement sur activation explicite.
+
+**Alternatives.** SaaS multi-tenant et OIDC dès le départ : coût supérieur sans besoin confirmé.
+
+**Conséquences.** Ne suffit pas pour une ouverture publique ; hébergement, TLS, sauvegardes, autorisations, rétention et conformité devront être revus avant cet usage. Aucun secret ne sera demandé dans le chat.
+
+
+## ADR-005 — Outbox transactionnelle et livraison au moins une fois
+
+**Contexte.** Une écriture PostgreSQL et une publication Redis ne peuvent pas être rendues atomiques par une transaction locale unique.
+
+**Décision proposée en phase 2.** Écrire les événements à publier dans une outbox au sein de la transaction métier ; dispatcher avec identifiant stable et consommateurs idempotents. Conserver alertes et suppressions en base avant tout envoi.
+
+**Alternatives.** Double écriture directe (risque de perte) ; transactions distribuées (complexité excessive pour la V1).
+
+**Conséquences.** Des doublons de tâches sont possibles et doivent être neutralisés. Un envoi externe à issue ambiguë peut être répété ; aucune garantie universelle exactement une fois.
+
+## ADR-006 — Isolation réseau et origine des données
+
+**Contexte.** Le seul blocage du client HTTP partagé ne protège pas contre une sortie via une autre bibliothèque ou le navigateur.
+
+**Décision proposée en phase 2.** Profil Compose démo sans passerelle externe, ressources navigateur locales, liens fictifs non navigables ; bases et namespaces Redis distincts, contraintes d'origine sur les références et filtrage dans les dépôts. Profil live doté d'une sortie contrôlée.
+
+**Alternatives.** Simple badge visuel ou simple filtre de requête, insuffisants pour les garanties demandées.
+
+**Conséquences.** Tester séparément restrictions du transport, du déploiement et du navigateur. Le passage live exige un redémarrage et une configuration validée ; les contraintes SQL détaillées sont prévues en phase 3.
+
+
+## ADR-007 — Schéma SQL explicite et intégrité d'origine
+
+**Contexte.** La phase 3 doit être testable avant l'installation du socle TypeScript/Drizzle et préserver les preuves entre modes.
+
+**Décision.** SQL PostgreSQL 16 comme référence initiale, migrations transactionnelles psql avec verrou et registre. Clés étrangères composites avec origine, NUMERIC exact et preuves officielles relationnelles. Les migrations Drizzle futures devront intégrer cet historique sans recréer les tables.
+
+**Alternatives.** Générer immédiatement tout l'ORM sans socle ; conserver les preuves uniquement en JSON ; identifiants polymorphes sans clés étrangères.
+
+**Conséquences.** Tests directs sur PostgreSQL possibles dès maintenant. Le schéma contrôle intégrité et formes simples ; validation cryptographique, authenticité des publications, JSON métier et filtrage des lectures restent applicatifs. Le registre technique des migrations est la seule table sans origine. Le rollback initial est destructif et exige confirmation explicite.
+
+
+## ADR-008 — Application Windows autonome de démonstration
+
+**Contexte.** Après la phase 3, l'utilisateur demande une application installable sur Windows 10/11. Les fournisseurs, backend et analyses live des phases suivantes n'existent pas encore.
+
+**Décision.** Ajouter une édition de bureau Electron/React autonome, avec fixtures, calculs pédagogiques et préférences locales. Conserver le schéma PostgreSQL comme base du futur serveur ; ne pas imposer Postgres/Redis/Docker à l'utilisateur de la démo. Le mode live reste explicitement indisponible. Session Windows comme contrôle d'accès local, sans introduire un faux compte serveur.
+
+**Alternatives.** Attendre les quinze phases avant tout paquet ; distribuer une interface nécessitant un serveur/Docker installé sur le PC ; prétendre fournir des analyses réelles avec les fixtures.
+
+**Conséquences.** Premier logiciel local installable, sans secret ou abonnement. Les fonctionnalités effectivement livrées et reportées figurent dans DESKTOP.md et LIMITATIONS.md. Electron est configuré sans Node côté renderer, avec preload restreint et refus des sorties réseau. La validation Linux et la génération du paquet ne remplacent pas un essai Windows natif ni une signature d'éditeur.

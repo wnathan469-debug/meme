@@ -1,0 +1,87 @@
+{
+  "name": "memeradar",
+  "version": "0.1.0",
+  "private": true,
+  "description": "MemeRadar — veille explicable, démonstration hors ligne",
+  "author": "MemeRadar",
+  "license": "UNLICENSED",
+  "main": "apps/desktop/main.cjs",
+  "type": "module",
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "tsc --noEmit && vite build",
+    "start": "npm run build && electron .",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "typecheck": "tsc --noEmit",
+    "test:db": "bash packages/db/scripts/test-database.sh",
+    "dist:win": "npm run build && node scripts/build-windows.cjs",
+    "dist:zip": "npm run build && electron-builder --win zip --x64",
+    "test:desktop": "node tests/e2e/desktop.mjs",
+    "format:check": "prettier --check scripts apps packages/core tests/unit tests/e2e/*.ts tests/e2e/*.mjs *.ts *.json"
+  },
+  "dependencies": {
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "zod": "4.3.6"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.61.1",
+    "@types/node": "24.10.1",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "6.0.1",
+    "@vitest/coverage-v8": "4.1.12",
+    "electron": "44.9.0",
+    "electron-builder": "26.15.3",
+    "prettier": "3.9.10",
+    "typescript": "5.9.3",
+    "vite": "8.3.4",
+    "vitest": "4.1.12"
+  },
+  "build": {
+    "appId": "local.memeradar.desktop",
+    "productName": "MemeRadar",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "apps/desktop/*.cjs",
+      "package.json",
+      "docs/DESKTOP.md",
+      "docs/LIMITATIONS.md",
+      "assets/icon.png",
+      "assets/icon.ico",
+      "THIRD_PARTY_NOTICES.md",
+      "docs/INDICATORS.md",
+      "docs/SECURITY.md"
+    ],
+    "asar": true,
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "artifactName": "MemeRadar-${version}-Windows-x64.${ext}",
+      "icon": "assets/icon.ico",
+      "signExecutable": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "deleteAppDataOnUninstall": false,
+      "runAfterFinish": false,
+      "installerIcon": "assets/icon.ico",
+      "installerLanguages": [
+        "fr_FR"
+      ],
+      "language": "1036",
+      "displayLanguageSelector": false
+    }
+  }
+}

@@ -1,0 +1,87 @@
+name: Application Windows téléchargeable
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: memeradar-windows-release
+  cancel-in-progress: false
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci --no-fund
+      - run: npm run build
+      - run: npm test -- --coverage
+      - run: npm run format:check
+      - run: npm run dist:win
+      - name: Créer et vérifier le ZIP de l'installateur
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $version = (Get-Content package.json -Raw | ConvertFrom-Json).version
+          $base = "MemeRadar-$version-Windows-x64"
+          $exe = "release/$base.exe"
+          if ((Get-Item $exe).Length -lt 50000000) { throw 'Installateur incomplet' }
+          $hash = (Get-FileHash $exe -Algorithm SHA256).Hash.ToLowerInvariant()
+          New-Item -ItemType Directory -Path release/staging -Force | Out-Null
+          Copy-Item $exe release/staging/
+          @'
+          MemeRadar — Windows 10/11 x64
+          Extraire le ZIP puis ouvrir le fichier .exe et suivre l'assistant.
+          Aucun outil de développement, Node.js, Docker ou clé API requis.
+          Démonstration hors ligne : données entièrement fictives.
+          Ce paquet n'est pas signé par un certificat d'éditeur.
+          '@ | Set-Content release/staging/LIRE-MOI.txt -Encoding utf8
+          "$hash  $base.exe" | Set-Content release/staging/SHA256SUMS.txt -Encoding ascii
+          Copy-Item docs/DESKTOP.md release/staging/Guide-MemeRadar.md
+          Compress-Archive -Path release/staging/* -DestinationPath "release/$base-installer.zip" -CompressionLevel NoCompression -Force
+          Expand-Archive "release/$base-installer.zip" release/verify -Force
+          $verified = (Get-FileHash "release/verify/$base.exe" -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($verified -ne $hash) { throw 'Le ZIP ne contient pas le bon installateur' }
+          $zipHash = (Get-FileHash "release/$base-installer.zip" -Algorithm SHA256).Hash.ToLowerInvariant()
+          @("$hash  $base.exe", "$zipHash  $base-installer.zip") | Set-Content release/SHA256SUMS.txt -Encoding ascii
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: MemeRadar-Windows
+          retention-days: 14
+          compression-level: 0
+          if-no-files-found: error
+          path: |
+            release/MemeRadar-*-Windows-x64.exe
+            release/MemeRadar-*-Windows-x64-installer.zip
+            release/SHA256SUMS.txt
+  publish:
+    needs: windows
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: MemeRadar-Windows
+          path: downloads
+      - name: Vérifier et publier le téléchargement
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cd downloads
+          sha256sum -c SHA256SUMS.txt
+          cd ..
+          version=$(node -p "require('./package.json').version")
+          gh release create "v$version" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+            --title "MemeRadar $version — démonstration Windows" \
+            --notes-file docs/RELEASE_NOTES.md \
+            downloads/*.exe downloads/*-installer.zip downloads/SHA256SUMS.txt
