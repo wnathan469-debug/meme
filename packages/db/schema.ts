@@ -246,6 +246,41 @@ export const chains = memeradar.table("chains", {
   explorerUrl: httpUrl("explorer_url").notNull(),
   enabled: boolean("enabled").default(sql.raw("false")).notNull(),
 });
+export const chartCacheWindows = memeradar.table("chart_cache_windows", {
+  id: uuid("id").default(sql.raw("gen_random_uuid()")).primaryKey(),
+  dataOrigin: dataOrigin("data_origin").notNull(),
+  knowledgeKind: knowledgeKind("knowledge_kind")
+    .default(sql.raw("'OBSERVED'::memeradar.knowledge_kind"))
+    .notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true, mode: "date" })
+    .default(sql.raw("now()"))
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" })
+    .default(sql.raw("now()"))
+    .notNull(),
+  tokenId: uuid("token_id").notNull(),
+  poolAddress: text("pool_address").notNull(),
+  interval: text("interval").notNull(),
+  startsAt: timestamp("starts_at", {
+    withTimezone: true,
+    mode: "date",
+  }).notNull(),
+  endsAt: timestamp("ends_at", { withTimezone: true, mode: "date" }).notNull(),
+  provider: text("provider").notNull(),
+  tradesStatus: text("trades_status")
+    .default(sql.raw("'not_requested'::text"))
+    .notNull(),
+  tradesErrorCode: text("trades_error_code"),
+  fetchedAt: timestamp("fetched_at", { withTimezone: true, mode: "date" }),
+  status: text("status").notNull(),
+  errorCode: text("error_code"),
+  sourceUrl: httpUrl("source_url"),
+  leaseId: uuid("lease_id"),
+  leaseExpiresAt: timestamp("lease_expires_at", {
+    withTimezone: true,
+    mode: "date",
+  }),
+});
 export const conversationAuthors = memeradar.table("conversation_authors", {
   id: uuid("id").default(sql.raw("gen_random_uuid()")).primaryKey(),
   dataOrigin: dataOrigin("data_origin").notNull(),
@@ -583,6 +618,32 @@ export const marketObservations = memeradar.table("market_observations", {
     .default(sql.raw("'{}'::text[]"))
     .notNull(),
 });
+export const marketRequestControls = memeradar.table(
+  "market_request_controls",
+  {
+    id: uuid("id").default(sql.raw("gen_random_uuid()")).primaryKey(),
+    dataOrigin: dataOrigin("data_origin").notNull(),
+    knowledgeKind: knowledgeKind("knowledge_kind")
+      .default(sql.raw("'CALCULATED'::memeradar.knowledge_kind"))
+      .notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "date" })
+      .default(sql.raw("now()"))
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" })
+      .default(sql.raw("now()"))
+      .notNull(),
+    provider: text("provider").notNull(),
+    windowStart: timestamp("window_start", {
+      withTimezone: true,
+      mode: "date",
+    }).notNull(),
+    requests: integer("requests").notNull(),
+    blockedUntil: timestamp("blocked_until", {
+      withTimezone: true,
+      mode: "date",
+    }),
+  },
+);
 export const notificationDeliveries = memeradar.table(
   "notification_deliveries",
   {
@@ -679,6 +740,64 @@ export const personCategories = memeradar.table("person_categories", {
   ownerUserId: uuid("owner_user_id").notNull(),
   name: text("name").notNull(),
 });
+export const poolMarketSamples = memeradar.table("pool_market_samples", {
+  id: uuid("id").default(sql.raw("gen_random_uuid()")).primaryKey(),
+  dataOrigin: dataOrigin("data_origin").notNull(),
+  knowledgeKind: knowledgeKind("knowledge_kind")
+    .default(sql.raw("'OBSERVED'::memeradar.knowledge_kind"))
+    .notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true, mode: "date" })
+    .default(sql.raw("now()"))
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" })
+    .default(sql.raw("now()"))
+    .notNull(),
+  tokenId: uuid("token_id").notNull(),
+  poolAddress: text("pool_address").notNull(),
+  metric: text("metric").notNull(),
+  observedAt: timestamp("observed_at", {
+    withTimezone: true,
+    mode: "date",
+  }).notNull(),
+  value: exactNonnegative("value"),
+  missingReason: text("missing_reason"),
+  provider: text("provider").notNull(),
+  fetchedAt: timestamp("fetched_at", {
+    withTimezone: true,
+    mode: "date",
+  }).notNull(),
+  sourceUrl: httpUrl("source_url").notNull(),
+});
+export const poolTrades = memeradar.table("pool_trades", {
+  id: uuid("id").default(sql.raw("gen_random_uuid()")).primaryKey(),
+  dataOrigin: dataOrigin("data_origin").notNull(),
+  knowledgeKind: knowledgeKind("knowledge_kind")
+    .default(sql.raw("'OBSERVED'::memeradar.knowledge_kind"))
+    .notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true, mode: "date" })
+    .default(sql.raw("now()"))
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" })
+    .default(sql.raw("now()"))
+    .notNull(),
+  tokenId: uuid("token_id").notNull(),
+  poolAddress: text("pool_address").notNull(),
+  externalId: text("external_id").notNull(),
+  occurredAt: timestamp("occurred_at", {
+    withTimezone: true,
+    mode: "date",
+  }).notNull(),
+  side: text("side").notNull(),
+  usd: exactNonnegative("usd"),
+  tokenAmount: exactNonnegative("token_amount"),
+  walletAddress: text("wallet_address"),
+  provider: text("provider").notNull(),
+  fetchedAt: timestamp("fetched_at", {
+    withTimezone: true,
+    mode: "date",
+  }).notNull(),
+  sourceUrl: httpUrl("source_url").notNull(),
+});
 export const pools = memeradar.table("pools", {
   id: uuid("id").default(sql.raw("gen_random_uuid()")).primaryKey(),
   dataOrigin: dataOrigin("data_origin").notNull(),
@@ -710,6 +829,12 @@ export const pools = memeradar.table("pools", {
     withTimezone: true,
     mode: "date",
   }).notNull(),
+  priceTokenSide: text("price_token_side")
+    .default(sql.raw("'base'::text"))
+    .notNull(),
+  marketProvider: text("market_provider")
+    .default(sql.raw("'legacy'::text"))
+    .notNull(),
 });
 export const postEventLinks = memeradar.table("post_event_links", {
   id: uuid("id").default(sql.raw("gen_random_uuid()")).primaryKey(),
@@ -784,6 +909,7 @@ export const priceCandles = memeradar.table("price_candles", {
     withTimezone: true,
     mode: "date",
   }).notNull(),
+  sourceUrl: httpUrl("source_url"),
 });
 export const processedJobs = memeradar.table("processed_jobs", {
   id: uuid("id").default(sql.raw("gen_random_uuid()")).primaryKey(),
@@ -1628,6 +1754,7 @@ export const schemaTables = {
   attentionSnapshots,
   auditLog,
   chains,
+  chartCacheWindows,
   conversationAuthors,
   conversationViews,
   conversations,
@@ -1641,10 +1768,13 @@ export const schemaTables = {
   holderSnapshots,
   indicatorResults,
   marketObservations,
+  marketRequestControls,
   notificationDeliveries,
   officialContractEvidence,
   outboxMessages,
   personCategories,
+  poolMarketSamples,
+  poolTrades,
   pools,
   postEventLinks,
   postTokenMentions,

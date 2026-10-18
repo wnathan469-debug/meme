@@ -30,6 +30,7 @@
     "packages/conversations",
     "packages/events",
     "packages/social",
+    "packages/charts",
     "packages/people",
     "apps/worker"
   ]

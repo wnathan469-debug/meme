@@ -598,3 +598,110 @@ test("preuves sociales V2 : adresse complète, indices faibles, première observ
   await expect(region).toContainText("Données insuffisantes");
   expect(external).toEqual([]);
 });
+
+test("graphique token : identité, pools, périodes manquantes, sources et marqueurs sans réseau", async ({
+  page,
+}) => {
+  const external: string[] = [],
+    errors: string[] = [];
+  page.on("request", (r) => {
+    if (
+      !r.url().startsWith("http://127.0.0.1:5173") &&
+      !r.url().startsWith("data:")
+    )
+      external.push(r.url());
+  });
+  page.on("pageerror", (e) => errors.push(e.message));
+  await page.goto("/#page=tokens");
+  const row = page.getByRole("row").filter({ hasText: "Orbit Véhicule" });
+  await row
+    .getByRole("link", { name: "Ouvrir le graphique", exact: true })
+    .click();
+  await expect(page).toHaveURL(/#\/tokens\/base\/0xDEMO/);
+  const region = page.getByRole("region", {
+    name: "Analyse et graphique du token",
+    exact: true,
+  });
+  await expect(region).toBeVisible();
+  await expect(region.getByRole("img", { name: /Bougies OHLC/ })).toBeVisible();
+  await expect(region.locator("canvas").first()).toBeVisible();
+  await expect(region).toContainText("ne constitue pas un conseil financier");
+  await page.goto("/#/tokens/base/0xDEMO" + "0".repeat(34) + "42");
+  await expect(region).toContainText("Nébula Étincelle");
+  await expect(region).toContainText("18000 USD");
+  await expect(region).toContainText("tranches sans données");
+  const price = region
+    .getByText("Dernière clôture connue", { exact: true })
+    .locator("..");
+  const firstPrice = await price.textContent();
+  await region
+    .getByLabel("Pool du graphique", { exact: true })
+    .selectOption("0xDEMO" + "0".repeat(32) + "0802");
+  await expect(price).not.toHaveText(firstPrice!);
+  await expect(page).toHaveURL(/pool=/);
+  await region
+    .getByLabel("État du graphique démo", { exact: true })
+    .selectOption("stale");
+  await expect(region).toContainText("Données anciennes");
+  await region
+    .getByLabel("État du graphique démo", { exact: true })
+    .selectOption("conflict");
+  await expect(region).toContainText("Données incohérentes");
+  await expect(region).toContainText("0.009999 USD");
+  await region
+    .getByLabel("État du graphique démo", { exact: true })
+    .selectOption("empty");
+  await expect(region).toContainText("Aucune donnée de prix");
+  await expect(region.locator("canvas")).toHaveCount(0);
+  await region
+    .getByLabel("État du graphique démo", { exact: true })
+    .selectOption("normal");
+  await region
+    .getByLabel("Granularité du graphique", { exact: true })
+    .selectOption("1m");
+  await region
+    .getByLabel("Plage du graphique", { exact: true })
+    .selectOption("7d");
+  await region
+    .getByRole("button", { name: /Charger les tranches précédentes/ })
+    .click();
+  await expect(region).toContainText("300 tranches affichées");
+  await page.reload();
+  await expect(
+    region.getByLabel("Granularité du graphique", { exact: true }),
+  ).toHaveValue("1m");
+  await region
+    .getByLabel("Plage du graphique", { exact: true })
+    .selectOption("1h");
+  const markers = region.getByRole("region", {
+    name: "Marqueurs et changements",
+    exact: true,
+  });
+  await expect(markers).toContainText("Mention exacte");
+  await markers
+    .getByRole("link", { name: "Ouvrir la publication", exact: true })
+    .first()
+    .click();
+  await expect(page).toHaveURL(/conversation=DEMO_POST_ROOT/);
+  await page.goto("/#/tokens/base/0xDEMO" + "0".repeat(34) + "42");
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect
+    .poll(() =>
+      page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
+    )
+    .toBe(true);
+  await region
+    .getByLabel("État du graphique démo", { exact: true })
+    .selectOption("unavailable");
+  await expect(region).toContainText("Fournisseur fictif indisponible");
+  await page.goto("/#/tokens/base/ORB");
+  await expect(
+    page.getByRole("region", { name: "Erreur de route token", exact: true }),
+  ).toContainText("invalides");
+  await page.goto("/#/tokens/base/0x" + "1".repeat(40));
+  await expect(
+    page.getByRole("region", { name: "Erreur de route token", exact: true }),
+  ).toBeVisible();
+  expect(errors).toEqual([]);
+  expect(external).toEqual([]);
+});

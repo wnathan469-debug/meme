@@ -935,6 +935,163 @@
       ]
     },
     {
+      "name": "chart_cache_windows",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "default": "gen_random_uuid()",
+          "generated": false,
+          "primary": true
+        },
+        {
+          "name": "data_origin",
+          "type": "data_origin",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "knowledge_kind",
+          "type": "knowledge_kind",
+          "nullable": false,
+          "default": "'OBSERVED'::memeradar.knowledge_kind",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "default": "now()",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "default": "now()",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "token_id",
+          "type": "uuid",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "pool_address",
+          "type": "text",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "interval",
+          "type": "text",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "starts_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "ends_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "provider",
+          "type": "text",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "trades_status",
+          "type": "text",
+          "nullable": false,
+          "default": "'not_requested'::text",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "trades_error_code",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "fetched_at",
+          "type": "timestamptz",
+          "nullable": true,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "status",
+          "type": "text",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "error_code",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "source_url",
+          "type": "http_url",
+          "nullable": true,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "lease_id",
+          "type": "uuid",
+          "nullable": true,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "lease_expires_at",
+          "type": "timestamptz",
+          "nullable": true,
+          "default": null,
+          "generated": false,
+          "primary": false
+        }
+      ]
+    },
+    {
       "name": "conversation_authors",
       "columns": [
         {
@@ -2344,6 +2501,83 @@
       ]
     },
     {
+      "name": "market_request_controls",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "default": "gen_random_uuid()",
+          "generated": false,
+          "primary": true
+        },
+        {
+          "name": "data_origin",
+          "type": "data_origin",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "knowledge_kind",
+          "type": "knowledge_kind",
+          "nullable": false,
+          "default": "'CALCULATED'::memeradar.knowledge_kind",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "default": "now()",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "default": "now()",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "provider",
+          "type": "text",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "window_start",
+          "type": "timestamptz",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "requests",
+          "type": "int4",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "blocked_until",
+          "type": "timestamptz",
+          "nullable": true,
+          "default": null,
+          "generated": false,
+          "primary": false
+        }
+      ]
+    },
+    {
       "name": "notification_deliveries",
       "columns": [
         {
@@ -2764,6 +2998,256 @@
       ]
     },
     {
+      "name": "pool_market_samples",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "default": "gen_random_uuid()",
+          "generated": false,
+          "primary": true
+        },
+        {
+          "name": "data_origin",
+          "type": "data_origin",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "knowledge_kind",
+          "type": "knowledge_kind",
+          "nullable": false,
+          "default": "'OBSERVED'::memeradar.knowledge_kind",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "default": "now()",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "default": "now()",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "token_id",
+          "type": "uuid",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "pool_address",
+          "type": "text",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "metric",
+          "type": "text",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "observed_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "value",
+          "type": "exact_nonnegative",
+          "nullable": true,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "missing_reason",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "provider",
+          "type": "text",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "fetched_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "source_url",
+          "type": "http_url",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        }
+      ]
+    },
+    {
+      "name": "pool_trades",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "default": "gen_random_uuid()",
+          "generated": false,
+          "primary": true
+        },
+        {
+          "name": "data_origin",
+          "type": "data_origin",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "knowledge_kind",
+          "type": "knowledge_kind",
+          "nullable": false,
+          "default": "'OBSERVED'::memeradar.knowledge_kind",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "default": "now()",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "default": "now()",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "token_id",
+          "type": "uuid",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "pool_address",
+          "type": "text",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "external_id",
+          "type": "text",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "occurred_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "side",
+          "type": "text",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "usd",
+          "type": "exact_nonnegative",
+          "nullable": true,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "token_amount",
+          "type": "exact_nonnegative",
+          "nullable": true,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "wallet_address",
+          "type": "text",
+          "nullable": true,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "provider",
+          "type": "text",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "fetched_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "source_url",
+          "type": "http_url",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        }
+      ]
+    },
+    {
       "name": "pools",
       "columns": [
         {
@@ -2883,6 +3367,22 @@
           "type": "timestamptz",
           "nullable": false,
           "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "price_token_side",
+          "type": "text",
+          "nullable": false,
+          "default": "'base'::text",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "market_provider",
+          "type": "text",
+          "nullable": false,
+          "default": "'legacy'::text",
           "generated": false,
           "primary": false
         }
@@ -3233,6 +3733,14 @@
           "name": "fetched_at",
           "type": "timestamptz",
           "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "source_url",
+          "type": "http_url",
+          "nullable": true,
           "default": null,
           "generated": false,
           "primary": false

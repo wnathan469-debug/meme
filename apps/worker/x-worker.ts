@@ -1,3 +1,4 @@
+import { createChartRuntime } from "../api/chart-runtime";
 import { PgSocialRepository } from "../../packages/db/social-repository";
 import { PgEventRepository } from "../../packages/db/event-repository";
 import { PgConversationRepository } from "../../packages/db/conversation-repository";
@@ -14,7 +15,11 @@ import { XCollector } from "../../packages/collection/collector";
 import { XSearchService } from "../../packages/collection/search-service";
 import { FeedHub } from "../../packages/collection/feed";
 import { ProviderError } from "../../packages/shared/errors";
-export async function createXWorker(config: XConfig, ownerId: string) {
+export async function createXWorker(
+  config: XConfig,
+  ownerId: string,
+  marketEnabled = false,
+) {
   if (
     !/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(
       ownerId,
@@ -69,6 +74,12 @@ export async function createXWorker(config: XConfig, ownerId: string) {
     { ...config.collection, maxResults: config.maxResults },
   );
   return {
+    charts: createChartRuntime(
+      pool,
+      ownerId,
+      runtime.provider.dataOrigin,
+      marketEnabled,
+    ),
     social: new PgSocialRepository(pool, ownerId, runtime.provider.dataOrigin),
     events: new PgEventRepository(pool, ownerId, runtime.provider.dataOrigin),
     conversations: new ConversationService(

@@ -2,7 +2,7 @@
   "name": "memeradar",
   "version": "0.1.0",
   "private": true,
-  "description": "MemeRadar \u2014 veille explicable, d\u00e9monstration hors ligne",
+  "description": "MemeRadar — veille explicable, démonstration hors ligne",
   "author": "MemeRadar",
   "license": "UNLICENSED",
   "main": "apps/desktop/main.cjs",
@@ -21,7 +21,7 @@
     "dist:win": "npm run build && node scripts/build-windows.cjs",
     "dist:zip": "npm run build && electron-builder --win zip --x64",
     "test:desktop": "node tests/e2e/desktop.mjs",
-    "format:check": "prettier --check scripts apps packages/db/*.ts packages/db/migrations/manifest.json packages/collection packages/conversations packages/events packages/social packages/people packages/core packages/shared packages/connectors tests/unit tests/contract tests/e2e/*.ts tests/e2e/*.mjs tests/integration/*.ts tests/fixtures *.ts *.json",
+    "format:check": "prettier --check scripts apps packages/db/*.ts packages/db/migrations/manifest.json packages/collection packages/conversations packages/events packages/social packages/charts packages/people packages/core packages/shared packages/connectors tests/unit tests/contract tests/e2e/*.ts tests/e2e/*.mjs tests/integration/*.ts tests/fixtures *.ts *.json",
     "x:diagnose": "tsx scripts/x-diagnose.ts",
     "test:redis": "node scripts/test-x-redis.mjs",
     "db:migrate": "tsx scripts/db-migrate.ts",
@@ -33,6 +33,7 @@
     "drizzle-orm": "0.45.4",
     "ioredis": "5.11.1",
     "ipaddr.js": "2.2.0",
+    "lightweight-charts": "5.2.1",
     "pg": "8.23.1",
     "react": "19.3.1",
     "react-dom": "19.3.1",
@@ -71,7 +72,8 @@
       "assets/icon.ico",
       "THIRD_PARTY_NOTICES.md",
       "docs/INDICATORS.md",
-      "docs/SECURITY.md"
+      "docs/SECURITY.md",
+      "licenses/**/*"
     ],
     "asar": true,
     "win": {

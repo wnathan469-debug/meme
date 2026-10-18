@@ -142,3 +142,8 @@ Conserver le tableau de bord et les calculs d’origine, préciser leur périmè
 ## Phase 7 — chaîne exacte, connaissances privées et revue du sens
 
 L’extraction ne choisit jamais une chaîne EVM d’après le symbole ou l’unicité du registre ; une URL autorisée ou un contexte opérateur explicite est nécessaire. Les URL de pools ne prouvent pas une adresse de token. L’implémentation EIP-55 utilise un Keccak borné testé sur les huit vecteurs ERC-55, sans dépendance ajoutée. Les premières apparitions restent privées dans le résultat calculé pour ne pas révéler la veille d’un autre propriétaire. Le moteur V1 est conservé ; les règles sociales s’ajoutent séparément. Une attestation d’identité officielle seule ne prouve pas le sens d’une publication : la confirmation exige une revue explicite de son objet, liée à sa source actuelle et révocable. Aucun contrat officiel n’est inventé dans la démo. Voir [phase 7](V2_PHASE7.md).
+
+
+## Phase 8 — analyse et graphique
+
+Lightweight Charts 5.2.1 (Apache-2.0), Fancy Canvas 2.1.0 (MIT), versions verrouillées et attribution/licences embarquées. Graphique chargé à la demande. Calculs financiers en décimales BigInt ; Number réservé au dessin borné, chaînes exactes conservées. Le seuil est comparé avant arrondi. Cache public par pool et période, marqueurs privés par propriétaire ; pool vérifié et côté de prix explicite. Pas de FDV déguisée en capitalisation, pas de retrait de liquidité déduit d’une seule variation. Voir [phase 8](V2_PHASE8.md).

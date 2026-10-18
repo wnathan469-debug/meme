@@ -43,5 +43,10 @@
     "version": "0009_social_tokens",
     "upSha256": "f5daf8cdb973466457d5d64152ae9035ca04d7de2a8a12626edbed349fad0af9",
     "downSha256": "e56b09d687c5c91edeaee8b9bd2e5cfb52b2679bd12deae67753121b8a80a3a5"
+  },
+  {
+    "version": "0010_token_charts",
+    "upSha256": "abac1b809b04bfa426a440a4182fd75cb6949e439f7d78db5f7ae04cae8a88b8",
+    "downSha256": "1b68693a0d1fabbe79a35cf3d4989cbee3ada34bae9212824ad65763422436b1"
   }
 ]

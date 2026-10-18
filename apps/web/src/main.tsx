@@ -1,3 +1,4 @@
+import { OpenChart } from "./TokenLink";
 import { SocialProofs } from "./SocialProofs";
 import { EVENT_TITLE as V2_EVENT_TITLE } from "../../../packages/events/model";
 import {
@@ -37,6 +38,9 @@ import type {
 import { defaultState, loadState, persistState, ruleSchema } from "./state";
 import type { SavedState } from "./state";
 import "./style.css";
+const TokenAnalysis = React.lazy(() =>
+  import("./TokenAnalysis").then((m) => ({ default: m.TokenAnalysis })),
+);
 
 type Page =
   | "dashboard"
@@ -46,11 +50,13 @@ type Page =
   | "sources"
   | "settings"
   | "people"
-  | "conversations";
+  | "conversations"
+  | "analysis";
 const navigation: { id: Page; icon: string; label: string }[] = [
   { id: "dashboard", icon: "◈", label: "Tableau de bord" },
   { id: "events", icon: "◎", label: "Événements" },
   { id: "tokens", icon: "⬡", label: "Tokens détectés" },
+  { id: "analysis", icon: "▥", label: "Analyse token" },
   { id: "alerts", icon: "♧", label: "Alertes" },
   { id: "conversations", icon: "◌", label: "Conversations" },
   { id: "people", icon: "♙", label: "Personnes suivies" },
@@ -58,16 +64,27 @@ const navigation: { id: Page; icon: string; label: string }[] = [
   { id: "settings", icon: "⚙", label: "Paramètres" },
 ];
 function readRoute() {
-  const params = new URLSearchParams(location.hash.slice(1));
+  const hash = location.hash.slice(1);
+  const params = new URLSearchParams(
+    hash.startsWith("/tokens") ? (hash.split("?")[1] ?? "") : hash,
+  );
   const raw = params.get("page");
+  const chartPath = location.hash.slice(1).startsWith("/tokens")
+    ? location.hash.slice(1).split("?")[0]
+    : null;
   return {
-    page: navigation.some((n) => n.id === raw) ? (raw as Page) : "dashboard",
+    chartPath,
+    page: chartPath
+      ? ("analysis" as Page)
+      : navigation.some((n) => n.id === raw)
+        ? (raw as Page)
+        : "dashboard",
     query: params.get("q") ?? "",
     chain: params.get("chain") ?? "Toutes",
     confidence: params.get("confidence") ?? "Tous",
-    event: params.get("event"),
-    token: params.get("token"),
-    conversation: params.get("conversation"),
+    event: chartPath ? null : params.get("event"),
+    token: chartPath ? null : params.get("token"),
+    conversation: chartPath ? null : params.get("conversation"),
   };
 }
 function Badge({
@@ -206,6 +223,13 @@ function App() {
     location.hash = params.toString();
   };
   const filter = (key: string, value: string) => {
+    if (route.chartPath) {
+      const p = new URLSearchParams(location.hash.split("?")[1] ?? "");
+      if (value) p.set(key, value);
+      else p.delete(key);
+      location.hash = route.chartPath + (p.size ? "?" + p.toString() : "");
+      return;
+    }
     const params = new URLSearchParams(location.hash.slice(1));
     params.set("page", route.page);
     if (value) params.set(key, value);
@@ -480,11 +504,13 @@ function App() {
                         ? "De l’actualité aux associations : retracez chaque source."
                         : route.page === "tokens"
                           ? "Une identité, des preuves et des limites pour chaque token."
-                          : route.page === "alerts"
-                            ? "Des déclenchements documentés, sans recommandations financières."
-                            : route.page === "sources"
-                              ? "Comprenez la couverture et la provenance des données."
-                              : "Personnalisez votre observatoire sur cet appareil."}
+                          : route.page === "analysis"
+                            ? "Prix, liquidité et mentions : des observations datées, avec leurs limites."
+                            : route.page === "alerts"
+                              ? "Des déclenchements documentés, sans recommandations financières."
+                              : route.page === "sources"
+                                ? "Comprenez la couverture et la provenance des données."
+                                : "Personnalisez votre observatoire sur cet appareil."}
               </p>
             </div>
             <Badge tone="demo">Environnement fictif</Badge>
@@ -541,6 +567,30 @@ function App() {
               }}
             />
           </section>
+          {route.page === "analysis" &&
+            (route.chartPath ? (
+              <React.Suspense
+                fallback={<p role="status">Chargement du graphique local…</p>}
+              >
+                <TokenAnalysis
+                  path={route.chartPath}
+                  minute={minute}
+                  zone={saved.timezone}
+                  theme={saved.theme}
+                  socialDisabled={socialDisabled}
+                  indexerDisabled={saved.disabledSources.includes("indexer")}
+                />
+              </React.Suspense>
+            ) : (
+              <section className="panel">
+                <h2>Choisissez un token à analyser</h2>
+                <p>
+                  Ouvrez son graphique depuis une carte ou une mention ; la
+                  chaîne et l’adresse identifient la fiche.
+                </p>
+                <a href="#page=tokens">Voir les tokens détectés</a>
+              </section>
+            ))}
           {route.page === "dashboard" && (
             <>
               <div className="stats">
@@ -764,7 +814,10 @@ function App() {
                             <span className="muted">{t.symbol}</span>
                           </div>
                         </td>
-                        <td>{t.chain}</td>
+                        <td>
+                          {t.chain}
+                          <OpenChart chain={t.chain} address={t.address} />
+                        </td>
                         <td>
                           <Badge
                             tone={
@@ -1259,15 +1312,17 @@ function App() {
                   {tokens
                     .filter((t) => t.event_id === event.id)
                     .map((t) => (
-                      <button
-                        className="secondary"
-                        key={t.id}
-                        onClick={() => go("tokens", { token: t.id })}
-                      >
-                        <span>{t.name}</span>
-                        <Badge>{LABELS[associate(t).level]}</Badge>
-                        <span>→</span>
-                      </button>
+                      <div key={t.id}>
+                        <button
+                          className="secondary"
+                          onClick={() => go("tokens", { token: t.id })}
+                        >
+                          <span>{t.name}</span>
+                          <Badge>{LABELS[associate(t).level]}</Badge>
+                          <span>→</span>
+                        </button>
+                        <OpenChart chain={t.chain} address={t.address} />
+                      </div>
                     ))}
                 </div>
                 <EventAlertForm
@@ -1384,6 +1439,7 @@ function TokenDetail({
         </div>
         <code>{token.address}</code>
       </div>
+      <OpenChart chain={token.chain} address={token.address} />
       <h3>
         Association avec l’événement <Badge>{LABELS[link.level]}</Badge>
       </h3>

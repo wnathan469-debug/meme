@@ -1628,3 +1628,92 @@ footer p {
   white-space: normal;
   overflow-wrap: anywhere;
 }
+
+.chart-open {
+  display: inline-block;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  margin: 6px 0;
+  font-weight: 600;
+}
+.token-analysis {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.token-analysis .stats {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+.token-analysis .stats .panel {
+  min-width: 0;
+}
+.token-analysis .address-box {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+.token-analysis .address-box code {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.chart-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin: 20px 0;
+}
+.chart-controls label {
+  min-width: 120px;
+  max-width: 100%;
+}
+.chart-controls select {
+  max-width: 100%;
+}
+.financial-canvas {
+  width: 100%;
+  height: 380px;
+  min-width: 0;
+  position: relative;
+}
+.token-analysis .table-wrap {
+  max-width: 100%;
+  margin: 12px 0;
+}
+.token-analysis details {
+  margin: 18px 0;
+}
+.token-analysis .panel {
+  margin: 18px 0;
+}
+
+.chart-controls label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.financial-wrapper {
+  position: relative;
+}
+.gap-marker-lane {
+  position: absolute;
+  top: 4px;
+  left: 0;
+  right: 60px;
+  height: 32px;
+  overflow: hidden;
+  pointer-events: none;
+}
+.gap-marker-lane button {
+  position: absolute;
+  pointer-events: auto;
+  transform: translateX(-50%);
+  color: var(--text);
+  background: var(--panel);
+  border: 1px dashed var(--muted);
+  border-radius: 4px;
+  font: inherit;
+  font-size: 10px;
+  padding: 3px;
+}

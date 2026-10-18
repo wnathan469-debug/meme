@@ -1,3 +1,4 @@
+import { OpenChart } from "./TokenLink";
 import { demoSocialSnapshot } from "../../../packages/social/demo-data";
 import { SocialProofs } from "./SocialProofs";
 import React, { useRef, useEffect, useState } from "react";
@@ -342,6 +343,7 @@ export function EventInsights({
                   <a href={`#page=tokens&token=${s.token.id}`}>
                     Voir les preuves du token {s.token.name} · {s.token.chain}
                   </a>
+                  <OpenChart chain={s.token.chain} address={s.token.address} />
                 </p>
               ))}
             {(p.conversationId === "DEMO_POST_ROOT" ||

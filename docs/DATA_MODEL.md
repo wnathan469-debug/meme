@@ -109,3 +109,8 @@ Migration additive 0008 : 60 tables applicatives. `event_watches`, `event_watch_
 ## Phase 7 — migration 0009
 
 62 tables applicatives plus le registre. `post_token_mentions` reçoit propriétaire, version et preuve de source ; ses anciennes lignes globales sont conservées. `social_token_candidates` conserve l’extraction privée et les ambiguïtés ; `social_contract_attestations` lie une revue manuelle à la révision d’un événement, au token, à l’auteur et à la publication. Les FK préservent origine/propriétaire. Première apparition et nouvelles associations sont calculées dans les résultats privés, sans écraser les champs globaux historiques. SQL immuable 0001–0008 ; ORM/snapshot régénérés et contrôlés. Détails et bornes dans [phase 7](V2_PHASE7.md).
+
+
+## Phase 8 — analyse et graphique
+
+Migration 0010 : 66 tables applicatives plus le registre ; côté de prix/fournisseur sur pools, URL de bougie, fenêtres de cache/baux, observations de marché par pool, transactions et contrôle partagé des tentatives. FK token/pool/origine, exactitude décimale et rollback conservateur ; SQL 0001–0009 immuable, ORM/snapshot alignés. Voir [phase 8](V2_PHASE8.md).

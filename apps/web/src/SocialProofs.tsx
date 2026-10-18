@@ -1,3 +1,4 @@
+import { OpenChart } from "./TokenLink";
 import React, { useState } from "react";
 import { demoSocialSnapshot } from "../../../packages/social/demo-data";
 import { METHOD_LABELS, type Method } from "../../../packages/social/model";
@@ -92,6 +93,7 @@ export function SocialProofs({
             méthode {s.algorithm_version}
           </p>
           <code className="social-address">{s.token.address}</code>
+          <OpenChart chain={s.token.chain} address={s.token.address} />
           <p>
             Première apparition observée dans les données collectées :{" "}
             <strong>{date(s.first_social_seen_at)}</strong>.

@@ -192,6 +192,38 @@ try {
   await page.screenshot({
     path: path.join(root, "tests/e2e/desktop-social.png"),
   });
+  await page.goto(
+    "memeradar://app/index.html#/tokens/base/0xDEMO" + "0".repeat(34) + "42",
+  );
+  const analysis = page.getByRole("region", {
+    name: "Analyse et graphique du token",
+    exact: true,
+  });
+  await analysis.waitFor();
+  await analysis.locator("canvas").first().waitFor();
+  assert.match(await analysis.textContent(), /Nébula Étincelle/);
+  assert.match(await analysis.textContent(), /tranches sans données/);
+  await analysis
+    .getByRole("button", { name: "Copier l’adresse", exact: true })
+    .click();
+  assert.equal(
+    await app.evaluate(({ clipboard }) => clipboard.readText()),
+    "0xDEMO" + "0".repeat(34) + "42",
+  );
+  await analysis
+    .getByLabel("Pool du graphique", { exact: true })
+    .selectOption("0xDEMO" + "0".repeat(32) + "0802");
+  assert.match(page.url(), /pool=/);
+  await analysis
+    .getByRole("img", { name: /Bougies OHLC/ })
+    .scrollIntoViewIfNeeded();
+  await page.screenshot({
+    path: path.join(root, "tests/e2e/desktop-chart.png"),
+  });
+  await page.goto("memeradar://app/index.html#/tokens/base/INVALID");
+  await page
+    .getByRole("region", { name: "Erreur de route token", exact: true })
+    .waitFor();
   await page.goto("memeradar://app/index.html#page=alerts");
   assert.match(
     await page

@@ -173,3 +173,11 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+
+## lightweight-charts 5.2.1 and fancy-canvas 2.1.0
+
+TradingView Lightweight Charts™
+Copyright (с) 2025 TradingView, Inc. https://www.tradingview.com/
+
+Lightweight Charts is distributed under Apache-2.0; its full license and attribution notice are bundled in `licenses/lightweight-charts-LICENSE.txt` and `licenses/lightweight-charts-NOTICE.txt`. Fancy Canvas is distributed under MIT; its full license is bundled in `licenses/fancy-canvas-LICENSE.txt` (Copyright (c) 2019 TradingView, Inc.). The chart page displays the attribution and a link to TradingView; all chart code runs locally with no iframe or CDN. The attribution logo is enabled.

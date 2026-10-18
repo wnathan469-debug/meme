@@ -13,6 +13,8 @@ export default defineConfig({
         "packages/conversations/model.ts",
         "packages/events/model.ts",
         "packages/social/*.ts",
+        "packages/charts/{decimal,model,service}.ts",
+        "packages/connectors/market/*.ts",
         "packages/shared/*.ts",
       ],
       thresholds: { lines: 80, functions: 80, statements: 80, branches: 80 },

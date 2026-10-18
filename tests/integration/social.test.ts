@@ -373,7 +373,7 @@ it("uses explicit rule context, rejects stale attestation revisions, supports re
   expect(
     (await pool.query("SELECT count(*) FROM memeradar.schema_migrations"))
       .rows[0].count,
-  ).toBe("9");
+  ).toBe("10");
 });
 it("enforces RLS without context and across owners with a non-bypass application role", async () => {
   await pool.query(

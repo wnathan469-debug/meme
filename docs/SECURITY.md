@@ -47,3 +47,8 @@ Les preuves de couverture portent révision, règle, dates et date d’enregistr
 ## Phase 7 — preuves sociales privées
 
 Migration 0009 : RLS forcée sur mentions, candidats et attestations ; lectures filtrées explicitement même en connexion administrateur. Aucun envoi externe ni nouvelle dépendance. EIP-55/Keccak borné, base58 décodé, URL HTTPS de tokens par liste blanche ; aucune URL de pool ou raccourcisseur résolu. Une adresse dans une URL non autorisée ne devient pas une preuve en texte. La confirmation exige une revue opérateur explicite d’une publication exacte d’un auteur officiellement attesté ; elle cesse après changement de contenu/révision, indisponibilité ou révocation. Les colonnes globales de première apparition ne sont pas alimentées par une collecte privée. Voir [phase 7](V2_PHASE7.md) pour limites et procédures.
+
+
+## Phase 8 — analyse et graphique
+
+Graphique chargé localement sans iframe/CDN. Source REAL exacte HTTPS api.geckoterminal.com, DNS épinglé, redirections refusées, délai/corps bornés, aucune activation implicite. Requêtes réservées dans le contrôle partagé ; 429 sans boucle de retry. Cache public séparé des marqueurs privés, filtrés par propriétaire même en connexion administrateur. Adresses validées par chaîne, URL explorateur centralisées, HTML échappé et contrôles/bidi neutralisés. Aucune clé ou transaction crypto ajoutée. Voir [phase 8](V2_PHASE8.md).

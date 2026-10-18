@@ -1,3 +1,5 @@
+import { OpenChart } from "./TokenLink";
+import { demoChartRegistry } from "../../../packages/charts/demo-data";
 import { DEMO_EVENT_ID } from "../../../packages/events/model";
 import React, { useState } from "react";
 import {
@@ -386,6 +388,12 @@ function PostCard({ post }: { post: ConversationPost }) {
           Adresse candidate non vérifiée : {addresses.join(", ")}
         </p>
       )}
+      {post.tokenIds
+        .map((id) => demoChartRegistry.find((t) => t.id === id))
+        .filter((t) => !!t)
+        .map((t) => (
+          <OpenChart key={t!.id} chain={t!.chain} address={t!.address} />
+        ))}
       {post.tokenIds.map((id) => (
         <a key={id} href={`#page=tokens&token=${encodeURIComponent(id)}`}>
           Voir le token lié

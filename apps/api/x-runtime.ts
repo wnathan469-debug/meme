@@ -61,7 +61,7 @@ export async function createXRuntime(config: XConfig): Promise<XRuntime> {
     });
     pool.on("error", () => {});
     const schema = await pool.query(
-      "SELECT 1 FROM memeradar.schema_migrations WHERE version='0009_social_tokens'",
+      "SELECT 1 FROM memeradar.schema_migrations WHERE version='0010_token_charts'",
     );
     if (schema.rowCount !== 1) throw new Error();
   } catch {
