@@ -1,3 +1,4 @@
+import { SocialProofs } from "./SocialProofs";
 import { EVENT_TITLE as V2_EVENT_TITLE } from "../../../packages/events/model";
 import {
   EventInsights,
@@ -691,6 +692,20 @@ function App() {
           )}
           {route.page === "tokens" && (
             <>
+              <SocialProofs
+                minute={minute}
+                zone={saved.timezone}
+                socialDisabled={socialDisabled}
+                indexerDisabled={saved.disabledSources.includes("indexer")}
+                query={route.query}
+                chain={route.chain}
+                confidence={route.confidence}
+                selected={
+                  route.token?.startsWith("00000000-0000-4000-8000-00000000007")
+                    ? route.token
+                    : null
+                }
+              />
               <Filters query={route.query} onQuery={(v) => filter("q", v)}>
                 <label>
                   Chaîne

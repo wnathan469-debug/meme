@@ -65,8 +65,12 @@ const ownPost = (minute: number, index: number, baseline = false) => {
     text: baseline
       ? "[DÉMO] Nébula Mobile : préparatifs fictifs, sans annonce nouvelle."
       : minute === 12
-        ? `[DÉMO] Nébula Mobile : adresse fictive ${demoContract}, aucun soutien officiel.`
-        : "[DÉMO] Réaction au produit inventé Nébula Mobile #NebulaProduit.",
+        ? `[DÉMO] Nébula Mobile : adresse fictive ${demoContract} https://demo.memeradar.invalid/token/base/${demoContract} $NEB, aucun soutien officiel.`
+        : minute === 3
+          ? "[DÉMO] Nébula Mobile $NEB : un symbole partagé ne suffit pas."
+          : minute === 31
+            ? `[DÉMO] Nébula Mobile : ancien token ${"0xDEMO" + "0".repeat(34) + "44"} https://demo.memeradar.invalid/token/base/${"0xDEMO" + "0".repeat(34) + "44"}, aucun soutien.`
+            : "[DÉMO] Réaction au produit inventé Nébula Mobile #NebulaProduit.",
     authorId: actor.id,
     publishedAt: eventAt(minute),
     collectedAt: eventAt(minute + 0.25),

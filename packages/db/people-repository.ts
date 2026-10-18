@@ -1,3 +1,4 @@
+import { socialVisibility } from "./social-visibility";
 import type { Pool, PoolClient } from "pg";
 import { withUserContext } from "./client";
 import { ProviderError } from "../shared/errors";
@@ -282,8 +283,8 @@ export class PgPeopleRepository implements PeopleRepository {
       }
       const tokens = (
         await c.query(
-          `SELECT token_id,detection_method,count(DISTINCT post_id)::text AS publications FROM memeradar.post_token_mentions WHERE data_origin=$1 AND post_id=ANY($2::uuid[]) GROUP BY token_id,detection_method ORDER BY publications DESC,token_id,detection_method LIMIT 100`,
-          [this.origin, ids],
+          `SELECT m.token_id,m.detection_method,count(DISTINCT m.post_id)::text AS publications FROM memeradar.post_token_mentions m JOIN memeradar.x_posts p ON p.id=m.post_id AND p.data_origin=m.data_origin WHERE m.data_origin=$1 AND m.post_id=ANY($2::uuid[]) AND ${socialVisibility("m", "p", "$3")} GROUP BY m.token_id,m.detection_method ORDER BY publications DESC,token_id,detection_method LIMIT 100`,
+          [this.origin, ids, this.ownerId],
         )
       ).rows;
       const events = (

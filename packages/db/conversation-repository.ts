@@ -1,3 +1,4 @@
+import { socialVisibility } from "./social-visibility";
 import type { Pool, PoolClient } from "pg";
 import { withUserContext } from "./client";
 import { ProviderError } from "../shared/errors";
@@ -192,7 +193,7 @@ export class PgConversationRepository {
       const rows = (
         await c.query(
           `SELECT p.*,a.x_user_id AS display_author_id,a.username,a.display_name,
-   ARRAY(SELECT DISTINCT t.token_id::text FROM memeradar.post_token_mentions t WHERE t.data_origin=p.data_origin AND t.post_id=p.id) AS tokens,
+   ARRAY(SELECT DISTINCT t.token_id::text FROM memeradar.post_token_mentions t WHERE t.data_origin=p.data_origin AND t.post_id=p.id AND ${socialVisibility("t", "p", "$2")}) AS tokens,
    ARRAY(SELECT DISTINCT e.event_id::text FROM memeradar.post_event_links e WHERE e.data_origin=p.data_origin AND e.post_id=p.id AND (e.owner_user_id IS NULL OR e.owner_user_id=$2) AND (e.watch_id IS NULL OR EXISTS(SELECT 1 FROM memeradar.event_watches ew WHERE ew.id=e.watch_id AND ew.data_origin=e.data_origin AND ew.owner_user_id=e.owner_user_id AND ew.revision=e.watch_revision))) AS events,
    EXISTS(SELECT 1 FROM memeradar.tracked_people t WHERE t.data_origin=p.data_origin AND t.owner_user_id=$2 AND t.x_user_id=coalesce(p.author_x_user_id,p.unresolved_author_x_user_id)) AS followed
    FROM memeradar.x_posts p JOIN memeradar.x_post_rules link ON link.post_id=p.id AND link.data_origin=p.data_origin AND link.rule_id=$4

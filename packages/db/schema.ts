@@ -749,6 +749,11 @@ export const postTokenMentions = memeradar.table("post_token_mentions", {
   detectionMethod: text("detection_method").notNull(),
   confidence: fraction("confidence").notNull(),
   notes: text("notes"),
+  ownerUserId: uuid("owner_user_id"),
+  algorithmVersion: text("algorithm_version")
+    .default(sql.raw("'legacy'::text"))
+    .notNull(),
+  evidence: jsonb("evidence").default(sql.raw("'{}'::jsonb")).notNull(),
 });
 export const priceCandles = memeradar.table("price_candles", {
   id: uuid("id").default(sql.raw("gen_random_uuid()")).primaryKey(),
@@ -986,6 +991,57 @@ export const sessions = memeradar.table("sessions", {
   }).notNull(),
   revokedAt: timestamp("revoked_at", { withTimezone: true, mode: "date" }),
 });
+export const socialContractAttestations = memeradar.table(
+  "social_contract_attestations",
+  {
+    id: uuid("id").default(sql.raw("gen_random_uuid()")).primaryKey(),
+    dataOrigin: dataOrigin("data_origin").notNull(),
+    knowledgeKind: knowledgeKind("knowledge_kind")
+      .default(sql.raw("'OBSERVED'::memeradar.knowledge_kind"))
+      .notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "date" })
+      .default(sql.raw("now()"))
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" })
+      .default(sql.raw("now()"))
+      .notNull(),
+    ownerUserId: uuid("owner_user_id").notNull(),
+    watchId: uuid("watch_id").notNull(),
+    watchRevision: integer("watch_revision").notNull(),
+    eventId: uuid("event_id").notNull(),
+    tokenId: uuid("token_id").notNull(),
+    postId: uuid("post_id").notNull(),
+    authorXUserId: text("author_x_user_id").notNull(),
+    evidenceUrl: httpUrl("evidence_url").notNull(),
+    reviewedAt: timestamp("reviewed_at", {
+      withTimezone: true,
+      mode: "date",
+    }).notNull(),
+    purpose: text("purpose").notNull(),
+    evidence: jsonb("evidence").notNull(),
+  },
+);
+export const socialTokenCandidates = memeradar.table(
+  "social_token_candidates",
+  {
+    id: uuid("id").default(sql.raw("gen_random_uuid()")).primaryKey(),
+    dataOrigin: dataOrigin("data_origin").notNull(),
+    knowledgeKind: knowledgeKind("knowledge_kind")
+      .default(sql.raw("'OBSERVED'::memeradar.knowledge_kind"))
+      .notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "date" })
+      .default(sql.raw("now()"))
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" })
+      .default(sql.raw("now()"))
+      .notNull(),
+    ownerUserId: uuid("owner_user_id").notNull(),
+    postId: uuid("post_id").notNull(),
+    candidates: jsonb("candidates").notNull(),
+    algorithmVersion: text("algorithm_version").notNull(),
+    evidence: jsonb("evidence").notNull(),
+  },
+);
 export const sourceCursors = memeradar.table("source_cursors", {
   id: uuid("id").default(sql.raw("gen_random_uuid()")).primaryKey(),
   dataOrigin: dataOrigin("data_origin").notNull(),
@@ -1602,6 +1658,8 @@ export const schemaTables = {
   riskFindings,
   schemaMigrations,
   sessions,
+  socialContractAttestations,
+  socialTokenCandidates,
   sourceCursors,
   sources,
   tokenChartMarkers,

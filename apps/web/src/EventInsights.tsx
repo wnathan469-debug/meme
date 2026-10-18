@@ -1,3 +1,5 @@
+import { demoSocialSnapshot } from "../../../packages/social/demo-data";
+import { SocialProofs } from "./SocialProofs";
 import React, { useRef, useEffect, useState } from "react";
 import { z } from "zod";
 import {
@@ -70,6 +72,7 @@ export function EventInsights({
   }, [id]);
   if (id !== DEMO_EVENT_ID) return null;
   const snapshot = demoEventSnapshot(minute, socialDisabled, indexerDisabled),
+    social = demoSocialSnapshot(minute, socialDisabled, indexerDisabled),
     filtered = snapshot.posts.filter(
       (p) =>
         (category === "all" || p.category === category) &&
@@ -325,6 +328,22 @@ export function EventInsights({
             <span>
               Publication fictive : https://demo.memeradar.invalid/post/{p.id}
             </span>
+            {social
+              .filter((s) =>
+                s.mentions.some(
+                  (m) =>
+                    m.postId === p.id &&
+                    (m.method === "exact_address" ||
+                      m.method === "token_page_url"),
+                ),
+              )
+              .map((s) => (
+                <p key={s.token.id}>
+                  <a href={`#page=tokens&token=${s.token.id}`}>
+                    Voir les preuves du token {s.token.name} · {s.token.chain}
+                  </a>
+                </p>
+              ))}
             {(p.conversationId === "DEMO_POST_ROOT" ||
               p.id === "DEMO_POST_ROOT") && (
               <p>
@@ -342,6 +361,12 @@ export function EventInsights({
           </p>
         )}
       </section>
+      <SocialProofs
+        minute={minute}
+        zone={zone}
+        socialDisabled={socialDisabled}
+        indexerDisabled={indexerDisabled}
+      />
       <EventAlertForm eventId={DEMO_EVENT_ID} defaultSubject="Nébula Mobile" />
     </section>
   );

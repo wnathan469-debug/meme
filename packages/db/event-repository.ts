@@ -1,3 +1,4 @@
+import { socialVisibility } from "./social-visibility";
 import type { Pool, PoolClient } from "pg";
 import { withUserContext } from "./client";
 import { ProviderError } from "../shared/errors";
@@ -305,7 +306,7 @@ export class PgEventRepository {
       const tokens = (
         await c.query(
           `SELECT DISTINCT t.id,t.created_at_onchain,
- (SELECT min(p.published_at) FROM memeradar.post_token_mentions m JOIN memeradar.x_posts p ON p.id=m.post_id AND p.data_origin=m.data_origin WHERE m.token_id=t.id AND m.data_origin=t.data_origin AND m.detection_method IN ('exact_address','token_page_url') AND p.availability_status='available' AND p.collected_at<=$3 AND EXISTS(SELECT 1 FROM memeradar.x_post_rules pr JOIN memeradar.x_rules xr ON xr.id=pr.rule_id AND xr.data_origin=pr.data_origin WHERE pr.post_id=p.id AND pr.data_origin=p.data_origin AND xr.owner_user_id=$4)) AS first_mention_at
+ (SELECT min(p.published_at) FROM memeradar.post_token_mentions m JOIN memeradar.x_posts p ON p.id=m.post_id AND p.data_origin=m.data_origin WHERE m.token_id=t.id AND m.data_origin=t.data_origin AND m.detection_method IN ('exact_address','token_page_url') AND ${socialVisibility("m", "p", "$4")} AND p.availability_status='available' AND p.collected_at<=$3 AND EXISTS(SELECT 1 FROM memeradar.x_post_rules pr JOIN memeradar.x_rules xr ON xr.id=pr.rule_id AND xr.data_origin=pr.data_origin WHERE pr.post_id=p.id AND pr.data_origin=p.data_origin AND xr.owner_user_id=$4)) AS first_mention_at
  FROM memeradar.token_event_links l JOIN memeradar.tokens t ON t.id=l.token_id AND t.data_origin=l.data_origin WHERE l.event_id=$1 AND l.data_origin=$2`,
           [id, this.origin, asOf, this.ownerId],
         )

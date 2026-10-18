@@ -174,6 +174,24 @@ try {
   await page.screenshot({
     path: path.join(root, "tests/e2e/desktop-event.png"),
   });
+  const social = eventDetail.getByRole("region", {
+    name: "Preuves sociales des tokens",
+    exact: true,
+  });
+  await social.waitFor();
+  assert.match(await social.textContent(), /Nébula Étincelle/);
+  assert.match(
+    await social.textContent(),
+    /Première apparition observée dans les données collectées/,
+  );
+  assert.match(
+    await social.textContent(),
+    /0xDEMO000000000000000000000000000000000042/,
+  );
+  await social.scrollIntoViewIfNeeded();
+  await page.screenshot({
+    path: path.join(root, "tests/e2e/desktop-social.png"),
+  });
   await page.goto("memeradar://app/index.html#page=alerts");
   assert.match(
     await page

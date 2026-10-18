@@ -1,3 +1,4 @@
+import { socialVisibility } from "./social-visibility";
 import type { Pool, PoolClient } from "pg";
 import { createHash, randomUUID } from "node:crypto";
 import { withUserContext } from "./client";
@@ -597,7 +598,7 @@ export class PgXCollectionRepository implements CollectionRepository {
       );
     if (f.tokenId)
       where.push(
-        `EXISTS(SELECT 1 FROM memeradar.post_token_mentions t WHERE t.post_id=p.id AND t.data_origin=p.data_origin AND t.token_id=${bind(f.tokenId)})`,
+        `EXISTS(SELECT 1 FROM memeradar.post_token_mentions t WHERE t.post_id=p.id AND t.data_origin=p.data_origin AND t.token_id=${bind(f.tokenId)} AND ${socialVisibility("t", "p", "$2")})`,
       );
     if (f.ruleId)
       where.push(

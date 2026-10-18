@@ -1,3 +1,4 @@
+import { PgSocialRepository } from "../../packages/db/social-repository";
 import { PgEventRepository } from "../../packages/db/event-repository";
 import { PgConversationRepository } from "../../packages/db/conversation-repository";
 import { ConversationService } from "../../packages/conversations/service";
@@ -68,6 +69,7 @@ export async function createXWorker(config: XConfig, ownerId: string) {
     { ...config.collection, maxResults: config.maxResults },
   );
   return {
+    social: new PgSocialRepository(pool, ownerId, runtime.provider.dataOrigin),
     events: new PgEventRepository(pool, ownerId, runtime.provider.dataOrigin),
     conversations: new ConversationService(
       runtime.provider,

@@ -216,8 +216,20 @@ export function Conversations({ id }: { id: string }) {
             </label>
             <label>
               Token lié
-              <select aria-label="Token lié" disabled>
-                <option>Aucun lien de token enregistré</option>
+              <select
+                aria-label="Token lié"
+                value={filters.tokenId ?? ""}
+                onChange={(e) =>
+                  setFilters({
+                    ...filters,
+                    tokenId: e.target.value || undefined,
+                  })
+                }
+              >
+                <option value="">Tous les tokens</option>
+                <option value="00000000-0000-4000-8000-000000000071">
+                  [DÉMO] Nébula Étincelle · Base · adresse exacte
+                </option>
               </select>
             </label>
             <label>
@@ -239,9 +251,9 @@ export function Conversations({ id }: { id: string }) {
               </select>
             </label>
             <p>
-              Les liens d’événement sont interprétés ; les liens de tokens
-              seront ajoutés en phase 7. Une adresse candidate ne prouve pas un
-              contrat légitime.
+              Les liens d’événement sont interprétés ; les tokens sont liés par
+              chaîne et adresse exacte dans le registre fictif. Une adresse
+              candidate ne prouve pas un contrat légitime.
             </p>
             <div role="group" aria-label="Mode de lecture">
               <button

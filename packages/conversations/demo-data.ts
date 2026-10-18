@@ -1,3 +1,4 @@
+import { extractCandidates } from "../social/model";
 import { DEMO_EVENT_ID, matchEvent } from "../events/model";
 /** Deterministic public fiction, shared by the browser and private DEMO provider. */
 import { demoPosts, demoUsers } from "../connectors/x/demo-data";
@@ -65,7 +66,13 @@ export function demoConversationSnapshot(): ConversationPost[] {
       author: user
         ? { id: user.id, username: user.username, name: user.name }
         : null,
-      tokenIds: [],
+      tokenIds: extractCandidates(
+        normalizePost(post, "DEMO", "2026-01-15T14:40:00.000Z"),
+        "DEMO",
+        "base",
+      ).some((c) => c.address === demoContract && c.chain === "base")
+        ? ["00000000-0000-4000-8000-000000000071"]
+        : [],
       eventIds: matchEvent(
         normalizePost(post, "DEMO", "2026-01-15T14:40:00.000Z"),
         [{ kind: "phrase", text: "Nébula Mobile" }],

@@ -513,3 +513,88 @@ test("événement V2 : ligne de base, trou visible, liens interprétés et règl
   ).toContainText("Indisponible : source X exclue");
   expect(external).toEqual([]);
 });
+
+test("preuves sociales V2 : adresse complète, indices faibles, première observation et navigation sans réseau", async ({
+  page,
+}) => {
+  const external: string[] = [];
+  page.on("request", (r) => {
+    if (
+      !r.url().startsWith("http://127.0.0.1:5173") &&
+      !r.url().startsWith("data:")
+    )
+      external.push(r.url());
+  });
+  const id = "00000000-0000-4000-8000-000000000071";
+  await page.goto("/#page=tokens");
+  const region = page.getByRole("region", {
+    name: "Preuves sociales des tokens",
+    exact: true,
+  });
+  await expect(region).toBeVisible();
+  const main = region
+    .getByRole("article")
+    .filter({ has: page.getByRole("heading", { name: /Nébula Étincelle/ }) })
+    .first();
+  await expect(main).toContainText("Plausible");
+  await expect(main).toContainText("0xDEMO" + "0".repeat(34) + "42");
+  await expect(main).toContainText("DEMO_EVENT_AFTER_8");
+  await expect(region).toContainText("Alphabets mêlés");
+  await expect(region).toContainText("Token créé avant");
+  await expect(region).toContainText("Âge des auteurs : inconnu");
+  await main.getByText(/Publications associées et méthodes/).click();
+  await region.getByLabel("Méthode de preuve").selectOption("token_page_url");
+  await expect(main.getByRole("article")).toContainText(
+    "Page de token autorisée",
+  );
+  await main
+    .getByRole("link", { name: "Voir l’événement Nébula Mobile", exact: true })
+    .click();
+  await expect(
+    page.getByRole("region", { name: "Fiche événement enrichie", exact: true }),
+  ).toBeVisible();
+  await page
+    .getByRole("link", { name: /Voir les preuves du token.*Nébula Étincelle/ })
+    .first()
+    .click();
+  await expect(page).toHaveURL(new RegExp(id));
+  await expect(
+    region.getByRole("heading", { name: /Nébula Étincelle/ }),
+  ).toBeVisible();
+  await expect(
+    region.getByRole("heading", { name: /Ancienne Étincelle/ }),
+  ).toHaveCount(0);
+  await page.getByRole("slider").fill("10");
+  await expect(region).toContainText(
+    "Première apparition observée dans les données collectées : Inconnue",
+  );
+  await page.getByRole("slider").fill("60");
+  await page.goto("/#page=conversations&conversation=DEMO_POST_ROOT");
+  await page
+    .getByRole("button", { name: "Préparer le chargement", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Confirmer le chargement démo", exact: true })
+    .click();
+  await page.getByLabel("Token lié", { exact: true }).selectOption(id);
+  await expect(
+    page.getByRole("link", { name: "Voir le token lié", exact: true }).first(),
+  ).toBeVisible();
+  await page
+    .getByRole("link", { name: "Voir le token lié", exact: true })
+    .first()
+    .click();
+  await expect(region).toBeVisible();
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect
+    .poll(() =>
+      page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
+    )
+    .toBe(true);
+  await page.goto("/#page=sources");
+  await page.getByLabel("Inclure dans les vues de sources").nth(2).uncheck();
+  await page.goto("/#page=tokens");
+  await expect(region.getByRole("status")).toContainText("Source X exclue");
+  await expect(region).toContainText("Données insuffisantes");
+  expect(external).toEqual([]);
+});

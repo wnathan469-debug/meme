@@ -104,3 +104,8 @@ La migration additive 0007 ajoute `conversation_views` et `conversation_authors`
 ## Évolution V2 — phase 6
 
 Migration additive 0008 : 60 tables applicatives. `event_watches`, `event_watch_rules` et `event_coverage_windows` définissent un périmètre privé révisé et des preuves par règle/date. `post_event_links` conserve les lignes publiques antérieures et ajoute propriétaire, configuration, révision et éléments privés pour les nouveaux liens. RLS forcée sur ces tables ainsi que les règles d’alerte ; les FK incluent origine/propriétaire et l’événement de la configuration. Les séries sont calculées dans le périmètre du propriétaire ; le snapshot d’attention partagé historique ne devient pas une couverture privée inventée. Versions 0001–0007 immuables, ORM régénéré depuis SQL, downgrade bloqué si les nouvelles données sont utilisées. Voir [V2_PHASE6.md](V2_PHASE6.md).
+
+
+## Phase 7 — migration 0009
+
+62 tables applicatives plus le registre. `post_token_mentions` reçoit propriétaire, version et preuve de source ; ses anciennes lignes globales sont conservées. `social_token_candidates` conserve l’extraction privée et les ambiguïtés ; `social_contract_attestations` lie une revue manuelle à la révision d’un événement, au token, à l’auteur et à la publication. Les FK préservent origine/propriétaire. Première apparition et nouvelles associations sont calculées dans les résultats privés, sans écraser les champs globaux historiques. SQL immuable 0001–0008 ; ORM/snapshot régénérés et contrôlés. Détails et bornes dans [phase 7](V2_PHASE7.md).

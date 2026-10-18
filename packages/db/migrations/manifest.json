@@ -38,5 +38,10 @@
     "version": "0008_event_attention",
     "upSha256": "3a59c93329757c0d0c16914378b84df798197501c3ac430d1389a491e8de0d40",
     "downSha256": "5104e729c08c3ea7717291a16f352ec8d59986201b91dfe933080231396efcee"
+  },
+  {
+    "version": "0009_social_tokens",
+    "upSha256": "f5daf8cdb973466457d5d64152ae9035ca04d7de2a8a12626edbed349fad0af9",
+    "downSha256": "e56b09d687c5c91edeaee8b9bd2e5cfb52b2679bd12deae67753121b8a80a3a5"
   }
 ]

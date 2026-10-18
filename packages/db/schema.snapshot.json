@@ -3079,6 +3079,30 @@
           "default": null,
           "generated": false,
           "primary": false
+        },
+        {
+          "name": "owner_user_id",
+          "type": "uuid",
+          "nullable": true,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "algorithm_version",
+          "type": "text",
+          "nullable": false,
+          "default": "'legacy'::text",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "evidence",
+          "type": "jsonb",
+          "nullable": false,
+          "default": "'{}'::jsonb",
+          "generated": false,
+          "primary": false
         }
       ]
     },
@@ -4094,6 +4118,224 @@
           "name": "revoked_at",
           "type": "timestamptz",
           "nullable": true,
+          "default": null,
+          "generated": false,
+          "primary": false
+        }
+      ]
+    },
+    {
+      "name": "social_contract_attestations",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "default": "gen_random_uuid()",
+          "generated": false,
+          "primary": true
+        },
+        {
+          "name": "data_origin",
+          "type": "data_origin",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "knowledge_kind",
+          "type": "knowledge_kind",
+          "nullable": false,
+          "default": "'OBSERVED'::memeradar.knowledge_kind",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "default": "now()",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "default": "now()",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "owner_user_id",
+          "type": "uuid",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "watch_id",
+          "type": "uuid",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "watch_revision",
+          "type": "int4",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "event_id",
+          "type": "uuid",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "token_id",
+          "type": "uuid",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "post_id",
+          "type": "uuid",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "author_x_user_id",
+          "type": "text",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "evidence_url",
+          "type": "http_url",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "reviewed_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "purpose",
+          "type": "text",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "evidence",
+          "type": "jsonb",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        }
+      ]
+    },
+    {
+      "name": "social_token_candidates",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "default": "gen_random_uuid()",
+          "generated": false,
+          "primary": true
+        },
+        {
+          "name": "data_origin",
+          "type": "data_origin",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "knowledge_kind",
+          "type": "knowledge_kind",
+          "nullable": false,
+          "default": "'OBSERVED'::memeradar.knowledge_kind",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "default": "now()",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "default": "now()",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "owner_user_id",
+          "type": "uuid",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "post_id",
+          "type": "uuid",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "candidates",
+          "type": "jsonb",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "algorithm_version",
+          "type": "text",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "evidence",
+          "type": "jsonb",
+          "nullable": false,
           "default": null,
           "generated": false,
           "primary": false

@@ -770,6 +770,7 @@ input[type="checkbox"] {
   height: 15px;
 }
 .table-wrap {
+  position: relative;
   padding: 0;
   overflow-x: auto;
 }
@@ -1612,4 +1613,18 @@ footer p {
 .event-insights .event-milestone {
   border-left: 2px solid var(--accent);
   padding: 12px;
+}
+
+.social-proofs {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.social-token {
+  border-top: 1px solid var(--border);
+  padding: 20px 0;
+}
+.social-address {
+  display: block;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
