@@ -1,3 +1,5 @@
+import { useDemoSession } from "./DemoSession";
+import { sessionSource } from "../../../packages/demo/scenario";
 import React, { useState } from "react";
 import { useUrlFilters } from "./useUrlFilters";
 import { filterHref } from "./navigation";
@@ -52,6 +54,7 @@ export function WatchPage({
   zone: string;
   socialDisabled: boolean;
 }) {
+  const session = useDemoSession();
   const url = useUrlFilters(),
     [people] = useState(readPeople);
   const parsed = watchFilters.safeParse(
@@ -60,11 +63,27 @@ export function WatchPage({
     ),
   );
   const f = parsed.success ? parsed.data : watchFilters.parse({});
-  const state = url.params.get("watchState") ?? "normal",
+  const localState = url.params.get("watchState") ?? "normal";
+  const state =
+      session.state.fault !== "normal"
+        ? session.state.fault
+        : [
+              "normal",
+              "quota",
+              "budget",
+              "disconnect",
+              "error",
+              "unconfigured",
+              "partial",
+            ].includes(localState)
+          ? "normal"
+          : localState,
     rows =
       socialDisabled || state === "empty"
         ? []
-        : selectWatch(f, minute, people.data.people);
+        : selectWatch(f, minute, people.data.people).filter(
+            (p) => !url.params.get("post") || p.id === url.params.get("post"),
+          );
   const states: Record<string, string> = {
     normal: "Instantané disponible",
     loading: "Chargement",
@@ -74,6 +93,8 @@ export function WatchPage({
     quota: "Quota épuisé",
     stale: "Données anciennes",
     partial: "Couverture partielle",
+    budget: "Budget atteint",
+    disconnect: "Flux déconnecté",
   };
   const messages: Record<string, string> = {
     loading: "Chargement simulé des publications locales…",
@@ -85,12 +106,23 @@ export function WatchPage({
     stale:
       "Données anciennes : instantané fictif, aucune synchronisation en direct.",
     partial: "Données partielles : la couverture de X n’est pas exhaustive.",
+    budget: "Budget strict fictif atteint : nouvelles collectes suspendues.",
+    disconnect:
+      "Flux déconnecté simulé : instantané conservé, aucune donnée en direct.",
   };
   const blocked =
     !(state in states) ||
-    ["loading", "error", "unconfigured", "quota"].includes(state);
+    ["loading", "error", "unconfigured", "quota", "budget"].includes(state);
   return (
     <section aria-label="Veille X locale" className="watch-page">
+      {url.params.get("post") && (
+        <p>
+          Publication sélectionnée : {url.params.get("post")} ·{" "}
+          <button onClick={() => url.set("post", "")}>
+            Voir tout l’extrait
+          </button>
+        </p>
+      )}
       <p className="notice">
         DÉMO — Publications inventées, recherche locale uniquement. Aucun appel
         à X ni dépense. Les filtres de ce jeu de publications sont conservés
@@ -101,7 +133,26 @@ export function WatchPage({
         État de la veille démo
         <select
           value={state}
-          onChange={(e) => url.set("watchState", e.target.value)}
+          onChange={(e) => {
+            url.set(
+              "watchState",
+              ["loading", "empty", "stale"].includes(e.target.value)
+                ? e.target.value
+                : "",
+            );
+            session.setFault(
+              [
+                "quota",
+                "budget",
+                "disconnect",
+                "error",
+                "unconfigured",
+                "partial",
+              ].includes(e.target.value)
+                ? (e.target.value as typeof session.state.fault)
+                : "normal",
+            );
+          }}
         >
           {Object.entries(states).map(([v, label]) => (
             <option key={v} value={v}>
@@ -340,6 +391,7 @@ export function DashboardV2({
   zone: string;
   socialDisabled: boolean;
 }) {
+  const session = useDemoSession();
   const [people] = useState(readPeople),
     [connection] = useState(() => {
       try {
@@ -357,7 +409,10 @@ export function DashboardV2({
         };
       }
     });
-  const x = demoSource(connection.s, "x"),
+  const x = demoSource(
+      { ...connection.s, ...sessionSource(session.state) },
+      "x",
+    ),
     last = selectWatch({}, minute, people.data.people)
       .filter((p) =>
         people.data.people.some(

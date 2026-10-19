@@ -30,6 +30,7 @@ export const demoSourcesSchema = z.object({
   version: z.literal(1),
   scenario: z.enum(scenarios),
   clock: z.iso.datetime(),
+  scenarioAt: z.iso.datetime().optional(),
   entries: z.object({ x: entry, gecko: entry, goplus: entry }),
   rules: z
     .array(
@@ -88,7 +89,18 @@ export function demoSource(s: DemoSources, p: ProviderId) {
   const e = s.entries[p],
     origin = "DEMO" as const,
     asOf = s.clock,
-    at = e.lastTest ?? eventAt(60),
+    at =
+      e.lastTest && Date.parse(e.lastTest) <= Date.parse(s.clock)
+        ? e.lastTest
+        : new Date(
+            Math.min(
+              Date.parse(s.clock),
+              Date.parse(s.scenarioAt ?? eventAt(60)),
+            ),
+          ).toISOString(),
+    anchor = s.scenarioAt ? Date.parse(s.scenarioAt) : Date.parse(eventAt(60)),
+    reset = new Date(anchor + 15 * 60000).toISOString(),
+    retry = new Date(anchor + 2 * 60000).toISOString(),
     code =
       p === "x"
         ? s.scenario === "quota"
@@ -118,17 +130,22 @@ export function demoSource(s: DemoSources, p: ProviderId) {
         ? {
             limit: 300,
             remaining: code === "RATE_LIMITED" ? 0 : 285,
-            resetAt: eventAt(75),
+            resetAt: reset,
           }
         : null,
-    retryAt: code ? eventAt(62) : null,
+    retryAt: code ? retry : null,
   });
   const configured = !(p === "x" && s.scenario === "unconfigured"),
-    blockedUntil =
-      code === "RATE_LIMITED" ? eventAt(75) : code ? eventAt(62) : null;
+    blockedUntil = code === "RATE_LIMITED" ? reset : code ? retry : null;
   const extra = BigInt(e.cost),
     daily = (
-      BigInt(s.scenario === "budget" ? "1000000" : "350000") + extra
+      BigInt(
+        s.scenario === "budget"
+          ? s.scenarioAt
+            ? e.settings.budget.daily
+            : "1000000"
+          : "350000",
+      ) + extra
     ).toString(),
     monthly = (1800000n + extra).toString();
   return {
@@ -141,7 +158,9 @@ export function demoSource(s: DemoSources, p: ProviderId) {
     configured,
     hostAllowed: true,
     blockedUntil,
-    lastSuccess: code ? eventAt(58) : at,
+    lastSuccess: code
+      ? new Date(Math.min(Date.parse(asOf), anchor - 120000)).toISOString()
+      : at,
     lastError: code ? at : null,
     diagnostics: [d],
     partial: false,

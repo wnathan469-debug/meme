@@ -86,7 +86,7 @@ it("combines exact hashtags, keyword, known chain and period instead of matching
     true,
   );
   expect(selectWatch({ q: "NO_MATCH" }, 60)).toEqual([]);
-  expect(selectWatch({ chain: "Solana" }, 60)).toEqual([]);
+  expect(selectWatch({ chain: "Solana" }, 60)).toHaveLength(1);
   expect(
     selectWatch({ period: "15" }, 60).every(
       (p) => Date.parse(p.publishedAt!) >= Date.parse(eventAt(45)),

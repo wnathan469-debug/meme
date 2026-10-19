@@ -645,9 +645,9 @@ it("composes an executable DEMO worker and searches its committed results withou
       status: "active",
     });
     const result = await worker.collector.tick();
-    expect(result.calls).toBe(1);
+    expect(result.calls).toBe(2);
     expect((await worker.search.local({ ruleId: rule.id })).posts).toHaveLength(
-      3,
+      20,
     );
     expect(worker.collector.status.mode).toBe("demo");
   } finally {

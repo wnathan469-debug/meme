@@ -1,9 +1,6 @@
+import { scenarioPosts } from "../../../packages/demo/scenario";
 import { z } from "zod";
-import {
-  eventAt,
-  eventDemoPosts,
-  eventTerms,
-} from "../../../packages/events/demo-data";
+import { eventAt, eventTerms } from "../../../packages/events/demo-data";
 import { DEMO_EVENT_ID, matchEvent } from "../../../packages/events/model";
 import { demoChartRegistry } from "../../../packages/charts/demo-data";
 import { contractCandidates } from "../../../packages/conversations/model";
@@ -37,7 +34,7 @@ export function selectWatch(
 ) {
   const f = watchFilters.parse(raw),
     at = Date.parse(eventAt(minute));
-  return [...new Map(eventDemoPosts.map((p) => [p.id, p])).values()]
+  return [...new Map(scenarioPosts.map((p) => [p.id, p])).values()]
     .filter((p) => {
       const acquired = Date.parse(p.collectedAt),
         published = p.publishedAt ? Date.parse(p.publishedAt) : null;

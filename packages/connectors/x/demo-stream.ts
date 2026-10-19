@@ -2,7 +2,11 @@ import type { XProvider } from "./contracts";
 import type { XStreamProvider, RuleSyncResult } from "./stream-contracts";
 import type { Clock } from "../../shared/runtime";
 import { ProviderError } from "../../shared/errors";
-export function demoStream(provider: XProvider, clock: Clock): XStreamProvider {
+export function demoStream(
+  provider: XProvider,
+  clock: Clock,
+  check = () => {},
+): XStreamProvider {
   let rules: { localId: string; query: string }[] = [];
   return {
     async setRules(next) {
@@ -25,6 +29,7 @@ export function demoStream(provider: XProvider, clock: Clock): XStreamProvider {
           for (const post of page.data) {
             if (stopped || options.signal?.aborted)
               return { reason: "stopped" as const, posts };
+            check();
             await clock.sleep(1);
             await onPage({ ...page, data: [post] }, [rule.localId]);
             posts++;

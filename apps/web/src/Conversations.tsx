@@ -1,3 +1,5 @@
+import { useDemoSession } from "./DemoSession";
+import { eventAt } from "../../../packages/events/demo-data";
 import { useUrlFilters } from "./useUrlFilters";
 import { OpenX } from "./PublicationLink";
 import { OpenChart } from "./TokenLink";
@@ -19,11 +21,28 @@ import {
   type ConversationFilters,
   type ConversationPost,
 } from "../../../packages/conversations/model";
-export function Conversations({ id }: { id: string }) {
+export function Conversations({
+  id,
+  minute = 60,
+}: {
+  id: string;
+  minute?: number;
+}) {
+  const session = useDemoSession();
   const [confirmed, setConfirmed] = useState(false),
     [quoted, setQuoted] = useState(false),
     [view, setView] = useState<"tree" | "list">("tree"),
-    [simulation, setSimulation] = useState("normal");
+    [localSimulation, setSimulation] = useState("normal");
+  const simulation =
+    session.state.fault === "quota"
+      ? "rate_limit"
+      : session.state.fault === "budget"
+        ? "budget"
+        : session.state.fault === "unconfigured"
+          ? "unavailable"
+          : ["window", "unknown_count"].includes(localSimulation)
+            ? localSimulation
+            : "normal";
   const url = useUrlFilters();
   const decoded = conversationFilters.safeParse({
     text: url.params.get("convText") ?? "",
@@ -58,7 +77,11 @@ export function Conversations({ id }: { id: string }) {
         </a>
       </section>
     );
-  const all = confirmed ? demoConversationSnapshot() : [];
+  const all = confirmed
+    ? demoConversationSnapshot().filter(
+        (p) => Date.parse(p.collectedAt) <= Date.parse(eventAt(minute)),
+      )
+    : [];
   const posts =
     simulation === "unavailable"
       ? all.filter((p) => p.id !== id)
@@ -74,8 +97,12 @@ export function Conversations({ id }: { id: string }) {
     summary = commenterSummary(posts, id);
   const status = coverage(
     replies.length,
-    confirmed && simulation !== "unknown_count" && simulation !== "unavailable"
-      ? "120"
+    confirmed &&
+      root &&
+      root.metrics.replies !== null &&
+      simulation !== "unknown_count" &&
+      simulation !== "unavailable"
+      ? String(root.metrics.replies)
       : null,
     simulation === "window",
   );
@@ -102,6 +129,21 @@ export function Conversations({ id }: { id: string }) {
         inventés. Instantané du 15 janvier 2026. Aucun appel à X et aucune
         dépense.
       </p>
+      <p>
+        Horloge partagée : {eventAt(minute)} UTC. Les données acquises après ce
+        point ne sont pas affichées.
+      </p>
+      {session.state.fault === "disconnect" && (
+        <p role="status">
+          Flux déconnecté simulé : instantané conservé, aucune donnée en direct.
+        </p>
+      )}
+      {session.state.fault === "error" && (
+        <p role="alert">
+          Erreur fournisseur simulée : instantané conservé, aucun nouvel appel
+          réseau.
+        </p>
+      )}
       {!confirmed && (
         <section className="panel">
           <h2>Charger une conversation</h2>
@@ -151,7 +193,18 @@ export function Conversations({ id }: { id: string }) {
               <select
                 aria-label="Simuler un état"
                 value={simulation}
-                onChange={(e) => setSimulation(e.target.value)}
+                onChange={(e) => {
+                  setSimulation(e.target.value);
+                  session.setFault(
+                    e.target.value === "rate_limit"
+                      ? "quota"
+                      : e.target.value === "budget"
+                        ? "budget"
+                        : e.target.value === "unavailable"
+                          ? "unconfigured"
+                          : "normal",
+                  );
+                }}
               >
                 <option value="normal">Données partielles</option>
                 <option value="window">Fenêtre temporelle dépassée</option>

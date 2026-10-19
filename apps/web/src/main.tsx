@@ -1,3 +1,8 @@
+import {
+  DemoSessionProvider,
+  DemoScenarioControls,
+  useDemoSession,
+} from "./DemoSession";
 import { matchesControls } from "./control-filters";
 import { routeParams } from "./navigation";
 import { navigation, readRoute, pageHref, type Page } from "./navigation";
@@ -141,8 +146,10 @@ function App() {
   const [ready, setReady] = useState(false),
     [warning, setWarning] = useState(""),
     [notice, setNotice] = useState("");
-  const [minute, setMinute] = useState(60),
-    [playing, setPlaying] = useState(false),
+  const session = useDemoSession(),
+    minute = session.state.minute,
+    setMinute = session.setMinute;
+  const [playing, setPlaying] = useState(false),
     [tab, setTab] = useState<"history" | "rules">("history");
   const [showSuppressed, setShowSuppressed] = useState(false),
     [newWatch, setNewWatch] = useState("");
@@ -167,20 +174,20 @@ function App() {
     document.documentElement.dataset.theme = saved.theme;
   }, [saved.theme]);
   useEffect(() => {
-    if (!playing) return;
+    if (!playing || session.error) return;
     const id = setInterval(
       () =>
         setMinute((value) => {
-          if (value >= 120) {
+          if (value >= 4320) {
             setPlaying(false);
-            return 120;
+            return 4320;
           }
-          return Math.min(120, value + 5);
+          return Math.min(4320, value + 5);
         }),
       1000,
     );
     return () => clearInterval(id);
-  }, [playing]);
+  }, [playing, session.error]);
   useEffect(() => {
     if (!ready) return;
     const label =
@@ -530,11 +537,14 @@ function App() {
             <div>
               <span className="replay-symbol">◷</span>
               <strong>Chronologie démo</strong>
-              <span className="muted">15 janv. 2026 · T+{minute} min</span>
+              <span className="muted">
+                Début : 15 janv. 2026 · T+{minute} min
+              </span>
             </div>
             <div className="row">
               <button
                 className="secondary small"
+                disabled={!!session.error}
                 onClick={() => {
                   setMinute(0);
                   setPlaying(false);
@@ -544,17 +554,19 @@ function App() {
               </button>
               <button
                 className="secondary small"
+                disabled={!!session.error}
                 onClick={() => setPlaying(!playing)}
               >
                 {playing ? "Ⅱ Pause" : "▷ Rejouer ×300"}
               </button>
             </div>
             <input
+              disabled={!!session.error}
               aria-label="Temps simulé en minutes"
               type="range"
               min="0"
-              max="120"
-              step="5"
+              max="4320"
+              step="1"
               value={minute}
               onChange={(e) => {
                 setMinute(Number(e.target.value));
@@ -562,6 +574,7 @@ function App() {
               }}
             />
           </section>
+          <DemoScenarioControls />
           <PageBoundary key={route.page + (route.chartPath ?? "")}>
             {route.error ? (
               <section className="panel" role="alert">
@@ -1186,10 +1199,11 @@ function App() {
                 {route.page === "conversations" && (
                   <Conversations
                     key={route.conversation}
+                    minute={minute}
                     id={route.conversation ?? demoConversationId}
                   />
                 )}
-                {route.page === "people" && <People />}
+                {route.page === "people" && <People minute={minute} />}
                 {route.page === "settings" && (
                   <div className="settings-grid">
                     <section className="panel form-panel">
@@ -1810,4 +1824,8 @@ function Empty({ title, text }: { title: string; text: string }) {
     </div>
   );
 }
-createRoot(document.getElementById("root")!).render(<App />);
+createRoot(document.getElementById("root")!).render(
+  <DemoSessionProvider>
+    <App />
+  </DemoSessionProvider>,
+);

@@ -33,6 +33,14 @@ export const socialDemoTokens: SocialToken[] = [
     symbol: "OLDNEB",
     createdAt: eventAt(-120),
   },
+  {
+    id: "00000000-0000-4000-8000-000000000074",
+    chain: "solana",
+    address: "DEMo" + "B".repeat(32),
+    name: "[DÉMO] Écho Boréal",
+    symbol: "ECHO",
+    createdAt: eventAt(20),
+  },
 ];
 /** Shared event fixtures, no extra posts or pretend official endorsement. Explicit Base context is fictional operator configuration. */
 export function demoSocialSnapshot(

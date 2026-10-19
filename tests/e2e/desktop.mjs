@@ -328,6 +328,39 @@ try {
   await watch.getByLabel("État de la veille démo").selectOption("quota");
   assert.match(await watch.textContent(), /Quota X fictif épuisé/);
   assert.equal(await watch.getByRole("article").count(), 0);
+  await page
+    .getByRole("combobox", { name: "État global de la démo", exact: true })
+    .selectOption("normal");
+  await page
+    .getByRole("slider", { name: "Temps simulé en minutes" })
+    .fill("12");
+  await page.reload();
+  assert.equal(
+    await page
+      .getByRole("slider", { name: "Temps simulé en minutes" })
+      .inputValue(),
+    "12",
+  );
+  await page.goto("memeradar://app/index.html#page=sources");
+  assert.equal(
+    await page
+      .getByRole("slider", { name: "Temps simulé en minutes" })
+      .inputValue(),
+    "12",
+  );
+  await page
+    .getByRole("region", { name: "Sources et API V2", exact: true })
+    .getByLabel("État des API démo")
+    .selectOption("quota");
+  await page.goto("memeradar://app/index.html#page=watch");
+  assert.match(await watch.textContent(), /Quota X fictif épuisé/);
+  await page.getByRole("slider", { name: "Temps simulé en minutes" }).fill("0");
+  assert.equal(
+    await page
+      .getByRole("combobox", { name: "État global de la démo", exact: true })
+      .inputValue(),
+    "normal",
+  );
   console.log(
     "PASS: Electron sandbox, IPC validation, persistent preferences across restart, clipboard, deep link and blocked main/renderer network.",
   );

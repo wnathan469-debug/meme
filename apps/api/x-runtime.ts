@@ -1,4 +1,4 @@
-import { DemoConversationProvider } from "../../packages/connectors/x/demo-conversations";
+import { createScenarioProvider } from "../../packages/demo/provider";
 /** Composition only: no HTTP listener, no background collection, no paid startup probe. */
 import Redis from "ioredis";
 import { SafeStreamTransport } from "../../packages/shared/stream-http";
@@ -24,7 +24,10 @@ export interface XRuntime {
 export async function createXRuntime(config: XConfig): Promise<XRuntime> {
   if (config.mode === "demo")
     return {
-      provider: new DemoConversationProvider(),
+      provider: createScenarioProvider({
+        now: () => Date.parse("2026-01-15T15:00:00.000Z"),
+        sleep: async () => {},
+      }),
       status: "demo",
       close: async () => undefined,
     };

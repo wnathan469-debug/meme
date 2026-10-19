@@ -1,5 +1,6 @@
 import { useUrlFilters } from "./useUrlFilters";
-import { demoUsers, demoPosts } from "../../../packages/connectors/x/demo-data";
+import { scenarioUsers, scenarioPosts } from "../../../packages/demo/scenario";
+import { eventAt } from "../../../packages/events/demo-data";
 import { normalizePost } from "../../../packages/connectors/x/contracts";
 import React, { useState } from "react";
 import { z } from "zod";
@@ -39,8 +40,8 @@ const blank: PersonInput = {
   priority: "normal",
   status: "paused",
 };
-const profiles = demoUsers;
-export function People() {
+const profiles = scenarioUsers;
+export function People({ minute = 60 }: { minute?: number }) {
   const [duplicateId, setDuplicateId] = useState<string | null>(null);
   const [initial] = useState(() => {
     try {
@@ -417,7 +418,7 @@ export function People() {
             <p style={{ whiteSpace: "pre-wrap" }}>
               {p.privateNote || "Aucune note"}
             </p>
-            <PersonObservations person={p} />
+            <PersonObservations person={p} minute={minute} />
             <span>
               Profil fictif : https://demo.memeradar.invalid/{p.username}
             </span>
@@ -474,12 +475,20 @@ export function People() {
   );
 }
 
-function PersonObservations({ person }: { person: RecordPerson }) {
+function PersonObservations({
+  person,
+  minute,
+}: {
+  person: RecordPerson;
+  minute: number;
+}) {
   const [text, setText] = useState(""),
     [type, setType] = useState("");
-  const posts = demoPosts
-    .filter((p) => p.author_id === person.xUserId)
-    .map((p) => normalizePost(p, "DEMO", "2026-01-15T14:10:00.000Z"));
+  const posts = scenarioPosts.filter(
+    (p) =>
+      p.authorId === person.xUserId &&
+      Date.parse(p.collectedAt) <= Date.parse(eventAt(minute)),
+  );
   const visible = posts.filter(
     (p) =>
       p.text.toLowerCase().includes(text.toLowerCase()) &&
@@ -494,6 +503,11 @@ function PersonObservations({ person }: { person: RecordPerson }) {
   return (
     <section aria-label={`Publications de ${person.username}`}>
       <h3>Publications observées en DÉMO</h3>
+      <p>
+        Horloge partagée : {eventAt(minute)} UTC. Comptes de parcours
+        disponibles : @demo_analyste_julie, @demo_fondateur_marc et
+        @demo_trader_k.
+      </p>
       <p>
         Instantané fictif du 15 janvier 2026 ; {posts.length} publications
         uniques dans ces fixtures. Couverture partielle, publications manquées
@@ -587,9 +601,9 @@ function PersonObservations({ person }: { person: RecordPerson }) {
         ))}
       </details>
       <p>
-        Liens vers événements et tokens : aucun enregistré dans ces fixtures.
-        Alertes de personnes : prévues en phase 10. Mention observée, sans
-        soutien déduit.
+        Liens vers événements et tokens : consultez la Veille X pour les
+        adresses complètes reconnues et leurs fiches. Alertes de personnes :
+        prévues en phase 10. Mention observée, sans soutien déduit.
       </p>
     </section>
   );

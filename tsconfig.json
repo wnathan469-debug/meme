@@ -33,6 +33,7 @@
     "packages/charts",
     "packages/risks",
     "packages/alerts",
+    "packages/demo",
     "packages/sources",
     "packages/people",
     "apps/worker"

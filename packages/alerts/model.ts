@@ -291,7 +291,7 @@ export function candidateLinks(c: AlertCandidate) {
       href:
         c.origin === "REAL"
           ? `https://x.com/i/web/status/${c.postId}`
-          : "#page=conversations&conversation=DEMO_POST_ROOT",
+          : `#page=watch&post=${encodeURIComponent(c.postId)}`,
     });
   return links;
 }

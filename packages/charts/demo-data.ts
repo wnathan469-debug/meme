@@ -92,7 +92,7 @@ export function demoChartSnapshot(input: {
         {
           address: token.chain === "solana" ? demoSolPool : demoPool(801),
           dex: "[DÉMO] Pool principal",
-          tokenSide: "base",
+          tokenSide: "base" as const,
           quote: "[DÉMO] USD fictif",
           liquidity: "18000",
           createdAt: eventAt(
@@ -118,7 +118,9 @@ export function demoChartSnapshot(input: {
                 updatedAt,
               },
             ]),
-      ];
+      ].filter(
+        (p) => !p.createdAt || Date.parse(p.createdAt) <= Date.parse(asOf),
+      );
   const selected = input.pool
     ? (pools.find((p) => p.address === input.pool) ?? null)
     : defaultPool(pools);
@@ -218,7 +220,13 @@ export function demoChartSnapshot(input: {
         side: i % 3 === 0 ? ("sell" as const) : ("buy" as const),
         usd: i === 5 ? null : String(20 + i * 3),
         tokenAmount: String(1000 + i * 10),
-        wallet: "0xDEMO" + "0".repeat(32) + String(i + 1).padStart(4, "0"),
+        wallet:
+          token.chain === "solana"
+            ? "DEMo" +
+              "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"[
+                i
+              ].repeat(32)
+            : "0xDEMO" + "0".repeat(32) + String(i + 1).padStart(4, "0"),
         source: "[DÉMO] Transactions préenregistrées",
       })).filter(
         (t) =>
@@ -252,17 +260,21 @@ export function demoChartSnapshot(input: {
           at: m.publishedAt!,
           label:
             "Mention exacte · auteur du scénario " + (m.authorId ?? "inconnu"),
-          target: "#page=conversations&conversation=DEMO_POST_ROOT",
+          target: "#page=watch&post=" + encodeURIComponent(m.postId),
           knowledge: "OBSERVED" as const,
         })) ?? []),
-      {
-        id: "pool",
-        kind: "pool_created",
-        at: eventAt(8),
-        label: "[DÉMO] Création du pool",
-        target: null,
-        knowledge: "OBSERVED",
-      },
+      ...(selected?.createdAt
+        ? [
+            {
+              id: "pool",
+              kind: "pool_created" as const,
+              at: selected.createdAt,
+              label: "[DÉMO] Création du pool",
+              target: null,
+              knowledge: "OBSERVED" as const,
+            },
+          ]
+        : []),
       {
         id: "alert",
         kind: "alert",

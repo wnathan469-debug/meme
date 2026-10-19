@@ -1,3 +1,6 @@
+import { advanceScenario } from "../../../packages/demo/alerts";
+import { useDemoSession } from "./DemoSession";
+import { sessionAt } from "../../../packages/demo/scenario";
 import React, { useState } from "react";
 import { z } from "zod";
 import {
@@ -70,6 +73,7 @@ const reasons: Record<string, string> = {
   out_of_order: "Observation antérieure au dernier état connu",
 };
 export function AlertsV2() {
+  const session = useDemoSession();
   const [initial] = useState(() => {
     try {
       return { data: load(), error: "" };
@@ -138,27 +142,40 @@ export function AlertsV2() {
   };
   function run(minutes: number) {
     try {
+      if (Date.parse(sessionAt(session.state)) < Date.parse(store.clock))
+        throw new Error();
       const end = new Date(
-        Date.parse(store.clock) + minutes * 60000,
+        Date.parse(sessionAt(session.state)) + minutes * 60000,
       ).toISOString();
       if (Date.parse(end) > Date.parse(demoStart) + 3 * 86400000)
         throw new Error();
       const states = Object.fromEntries(
         store.rules.map((r) => [
           r.id,
-          advanceDemo(r, store.states[r.id] ?? emptyState(), end, context(r)),
+          advanceScenario(
+            r,
+            store.states[r.id] ?? emptyState(),
+            end,
+            context(r),
+          ),
         ]),
       );
-      if (save({ ...store, clock: end, states }))
+      if (save({ ...store, clock: end, states })) {
+        session.setMinute(
+          Math.round((Date.parse(end) - Date.parse(demoStart)) / 60000),
+        );
         setMessage(
           "Scénario évalué : notifications et raisons conservées localement.",
         );
+      }
     } catch {
       setMessage(
         "Évaluation refusée : état invalide ou limite du scénario atteinte (trois jours, 1 000 décisions par règle).",
       );
     }
   }
+  const historyVisible =
+    Date.parse(sessionAt(session.state)) >= Date.parse(store.clock);
   const field = <K extends keyof AlertRule>(k: K, v: AlertRule[K]) =>
     setDraft({ ...draft, [k]: v });
   const editing = store.rules.some((r) => r.id === draft.id);
@@ -171,17 +188,34 @@ export function AlertsV2() {
         externe.
       </p>
       <p>
-        Horloge propre au scénario d’alertes : {date(store.clock)}. Elle est
-        distincte du curseur des graphiques.
+        Horloge partagée : {date(sessionAt(session.state))}. Dernière évaluation
+        des alertes : {date(store.clock)}. Les décisions sont conservées ;
+        revenir en arrière ne les efface pas.
       </p>
+      {Date.parse(sessionAt(session.state)) < Date.parse(store.clock) && (
+        <p role="status">
+          Le curseur précède les décisions conservées. Les éléments futurs sont
+          masqués ; reprenez l’horloge à la dernière évaluation avant de traiter
+          de nouvelles observations.
+        </p>
+      )}
       <div className="row">
-        <button disabled={!!initial.error} onClick={() => run(5)}>
+        <button
+          disabled={!!initial.error || !!session.error}
+          onClick={() => run(5)}
+        >
           Avancer les alertes de 5 minutes
         </button>
-        <button disabled={!!initial.error} onClick={() => run(60)}>
+        <button
+          disabled={!!initial.error || !!session.error}
+          onClick={() => run(60)}
+        >
           Avancer les alertes d’une heure
         </button>
-        <button disabled={!!initial.error} onClick={() => run(1440)}>
+        <button
+          disabled={!!initial.error || !!session.error}
+          onClick={() => run(1440)}
+        >
           Avancer les alertes d’un jour
         </button>
       </div>
@@ -214,7 +248,10 @@ export function AlertsV2() {
             ? store.states
             : {
                 ...store.states,
-                [draft.id]: { ...emptyState(), clock: store.clock },
+                [draft.id]: {
+                  ...emptyState(),
+                  clock: sessionAt(session.state),
+                },
               };
           if (save({ ...store, rules, states })) {
             setMessage(
@@ -451,7 +488,7 @@ export function AlertsV2() {
           ; plusieurs termes sont reliés par « ou ». Une personne en pause ne
           déclenche aucune alerte.
         </p>
-        <button type="submit" disabled={!!initial.error}>
+        <button type="submit" disabled={!!initial.error || !!session.error}>
           Enregistrer l’alerte V2
         </button>
         {editing && (
@@ -482,7 +519,7 @@ export function AlertsV2() {
               Modifier {r.name}
             </button>
             <button
-              disabled={!!initial.error}
+              disabled={!!initial.error || !!session.error}
               onClick={() => {
                 if (
                   save({
@@ -505,61 +542,68 @@ export function AlertsV2() {
       <section aria-label="Notifications V2 dans l’application">
         <h3>Notifications dans l’application</h3>
         {store.rules.flatMap((r) =>
-          (store.states[r.id]?.notifications ?? []).map((n) => (
-            <article className="alert-card" key={n.id}>
-              <strong>
-                {displayText(r.name)} · {n.entryIds.length} observation(s)
-                regroupée(s)
-              </strong>
-              <p>
-                {date(n.at, r.zone)} · {n.read ? "Lue" : "Non lue"}
-              </p>
-              <details>
-                <summary>Voir les observations du résumé</summary>
-                {n.entryIds.map((id) => {
-                  const e = store.states[r.id].entries.find(
-                    (e) => e.id === id,
-                  )!;
-                  return (
-                    <div key={id}>
-                      <p>{displayText(e.reason)}</p>
-                      <p>
-                        {displayText(e.candidate.source)} ·{" "}
-                        {date(e.candidate.at, r.zone)}
-                      </p>
-                      {candidateLinks(e.candidate).map((l) => (
-                        <p key={l.href}>
-                          <a href={l.href}>{l.label}</a>
+          (store.states[r.id]?.notifications ?? [])
+            .filter(
+              (n) =>
+                historyVisible &&
+                Date.parse(n.at) <= Date.parse(sessionAt(session.state)),
+            )
+            .map((n) => (
+              <article className="alert-card" key={n.id}>
+                <strong>
+                  {displayText(r.name)} · {n.entryIds.length} observation(s)
+                  regroupée(s)
+                </strong>
+                <p>
+                  {date(n.at, r.zone)} · {n.read ? "Lue" : "Non lue"}
+                </p>
+                <details>
+                  <summary>Voir les observations du résumé</summary>
+                  {n.entryIds.map((id) => {
+                    const e = store.states[r.id].entries.find(
+                      (e) => e.id === id,
+                    )!;
+                    return (
+                      <div key={id}>
+                        <p>{displayText(e.reason)}</p>
+                        <p>
+                          {displayText(e.candidate.source)} ·{" "}
+                          {date(e.candidate.at, r.zone)}
                         </p>
-                      ))}
-                      {e.candidate.token && <p>{WARNING}</p>}
-                    </div>
-                  );
-                })}
-              </details>
-              <button
-                disabled={n.read || !!initial.error}
-                onClick={() =>
-                  save({
-                    ...store,
-                    states: {
-                      ...store.states,
-                      [r.id]: feedback(
-                        store.states[r.id],
-                        n.id,
-                        "read",
-                        store.clock,
-                      ),
-                    },
-                  })
-                }
-              >
-                Marquer comme lue
-              </button>
-            </article>
-          )),
+                        {candidateLinks(e.candidate).map((l) => (
+                          <p key={l.href}>
+                            <a href={l.href}>{l.label}</a>
+                          </p>
+                        ))}
+                        {e.candidate.token && <p>{WARNING}</p>}
+                      </div>
+                    );
+                  })}
+                </details>
+                <button
+                  disabled={n.read || !!initial.error}
+                  onClick={() =>
+                    save({
+                      ...store,
+                      states: {
+                        ...store.states,
+                        [r.id]: feedback(
+                          store.states[r.id],
+                          n.id,
+                          "read",
+                          store.clock,
+                        ),
+                      },
+                    })
+                  }
+                >
+                  Marquer comme lue
+                </button>
+              </article>
+            )),
         )}
-        {!Object.values(store.states).some((s) => s.notifications.length) && (
+        {(!historyVisible ||
+          !Object.values(store.states).some((s) => s.notifications.length)) && (
           <p>Aucune notification livrée. Avancez l’horloge des alertes.</p>
         )}
       </section>
@@ -575,6 +619,11 @@ export function AlertsV2() {
         </label>
         {store.rules.flatMap((r) =>
           (store.states[r.id]?.entries ?? [])
+            .filter(
+              (e) =>
+                historyVisible &&
+                Date.parse(e.at) <= Date.parse(sessionAt(session.state)),
+            )
             .filter((e) => suppressed || e.status !== "suppressed")
             .map((e) => (
               <article key={e.id} className="alert-card">
@@ -616,7 +665,7 @@ export function AlertsV2() {
                   {e.status !== "suppressed" &&
                     e.status !== "false_positive" && (
                       <button
-                        disabled={!!initial.error}
+                        disabled={!!initial.error || !!session.error}
                         onClick={() => {
                           if (
                             save({

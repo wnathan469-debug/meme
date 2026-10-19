@@ -682,7 +682,12 @@ test("graphique token : identité, pools, périodes manquantes, sources et marqu
     .getByRole("link", { name: "Ouvrir la publication", exact: true })
     .first()
     .click();
-  await expect(page).toHaveURL(/conversation=DEMO_POST_ROOT/);
+  await expect(page).toHaveURL(/page=watch&post=DEMO_/);
+  await expect(
+    page
+      .getByRole("region", { name: "Veille X locale", exact: true })
+      .getByRole("article"),
+  ).toHaveCount(1);
   await page.goto("/#/tokens/base/0xDEMO" + "0".repeat(34) + "42");
   await page.setViewportSize({ width: 390, height: 844 });
   await expect
@@ -906,7 +911,11 @@ test("alertes V2 : pause d’une personne et stockage corrompu préservé", asyn
   await history.getByLabel("Afficher les décisions supprimées V2").check();
   await expect(
     history.getByRole("article").filter({ hasText: "Julie en pause" }),
-  ).toContainText("Personne en pause");
+  ).toContainText([
+    "Personne en pause",
+    "Personne en pause",
+    "Personne en pause",
+  ]);
   await page.evaluate(() =>
     localStorage.setItem(
       "memeradar-demo-alerts-phase10-v1",
@@ -1226,7 +1235,12 @@ test("navigation V2 : lien invalide et échec de vue conservent les autres pages
       level: 1,
     }),
   ).toBeVisible();
-  await page.route("**/src/TokenAnalysis.tsx", (route) => route.abort());
+  const lazyModule = /\/src\/TokenAnalysis\.tsx(?:\?.*)?$/;
+  let failedLoads = 0;
+  await page.route(lazyModule, (route) => {
+    failedLoads++;
+    return route.abort();
+  });
   await page.goto("/#/tokens/base/0xDEMO" + "0".repeat(34) + "42");
   await expect(
     page.getByRole("heading", {
@@ -1237,7 +1251,8 @@ test("navigation V2 : lien invalide et échec de vue conservent les autres pages
   await expect(page.getByRole("contentinfo")).toContainText(
     "ne constitue pas un conseil financier",
   );
-  await page.unroute("**/src/TokenAnalysis.tsx");
+  expect(failedLoads).toBeGreaterThan(0);
+  await page.unroute(lazyModule);
   await page
     .getByRole("button", { name: "Recharger la vue", exact: true })
     .click();
@@ -1279,4 +1294,239 @@ test("navigation démo : les références externes affichent un motif sans ouvri
   await expect(
     page.getByRole("region", { name: "Veille X locale", exact: true }),
   ).toBeVisible();
+});
+
+test("démo unifiée : personne, veille, conversation, adresse, graphique, risques, alerte et quota", async ({
+  page,
+}) => {
+  const external: string[] = [],
+    errors: string[] = [];
+  page.on("request", (r) => {
+    if (
+      !r.url().startsWith("http://127.0.0.1:5173") &&
+      !r.url().startsWith("data:")
+    )
+      external.push(r.url());
+  });
+  page.on("pageerror", (e) => errors.push(e.message));
+  await page.goto("/#page=people");
+  await page
+    .getByLabel("Identifiant X ou URL de profil")
+    .fill("@demo_analyste_julie");
+  await page
+    .getByRole("button", { name: "Vérifier le compte", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Confirmer l’ajout", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Réactiver demo_analyste_julie", exact: true })
+    .click();
+  await page.goto("/#page=watch");
+  const watch = page.getByRole("region", {
+    name: "Veille X locale",
+    exact: true,
+  });
+  await watch
+    .getByRole("combobox", { name: "Personne suivie", exact: true })
+    .selectOption({ index: 1 });
+  const root = watch
+    .getByRole("article")
+    .filter({ hasText: "Une annonce entièrement fictive sur Nébula Mobile." });
+  await root
+    .getByRole("link", { name: "Voir la conversation fictive", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Préparer le chargement", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Confirmer le chargement démo", exact: true })
+    .click();
+  await expect(
+    page.getByRole("region", {
+      name: "Couverture de la conversation",
+      exact: true,
+    }),
+  ).toContainText("35 réponses récupérées sur environ 120");
+  await page
+    .getByLabel("Réponses contenant une adresse candidate", { exact: true })
+    .check();
+  await page
+    .getByRole("region", { name: "Réponses récupérées", exact: true })
+    .getByRole("link", { name: "Ouvrir le graphique", exact: true })
+    .first()
+    .click();
+  const analysis = page.getByRole("region", {
+    name: "Analyse et graphique du token",
+    exact: true,
+  });
+  await expect(analysis).toBeVisible();
+  await expect(analysis.locator("canvas").first()).toBeVisible();
+  await expect(
+    analysis.getByRole("region", {
+      name: "Analyse des risques du token",
+      exact: true,
+    }),
+  ).toContainText("non une certification de sécurité");
+  await page.goto("/#page=alerts");
+  const center = page.getByRole("region", {
+      name: "Centre d’alertes V2",
+      exact: true,
+    }),
+    form = center.getByRole("form", { name: "Configurer une alerte V2" });
+  await form.getByLabel("Nom de l’alerte V2").fill("Parcours unifié");
+  await form
+    .getByLabel("Termes (séparés par des virgules)")
+    .fill("Nébula Mobile");
+  await form
+    .getByRole("button", { name: "Enregistrer l’alerte V2", exact: true })
+    .click();
+  await center
+    .getByRole("button", {
+      name: "Avancer les alertes de 5 minutes",
+      exact: true,
+    })
+    .click();
+  await expect(
+    page.getByRole("slider", { name: "Temps simulé en minutes" }),
+  ).toHaveValue("65");
+  const history = center.getByRole("region", {
+    name: "Historique des alertes V2",
+    exact: true,
+  });
+  const entry = history
+    .getByRole("article")
+    .filter({ hasText: "Parcours unifié" })
+    .first();
+  await expect(entry).toContainText("Nébula");
+  await entry
+    .getByRole("link", { name: "Voir la publication", exact: true })
+    .click();
+  await expect(page).toHaveURL(/page=watch&post=DEMO_EVENT_AFTER_/);
+  await expect(watch.getByRole("article")).toHaveCount(1);
+  await expect(watch.getByRole("article")).toContainText(
+    "Réaction au produit inventé",
+  );
+  await page.goto("/#page=tokens");
+  await expect(
+    page.getByRole("region", {
+      name: "Preuves sociales des tokens",
+      exact: true,
+    }),
+  ).toContainText("Écho Boréal");
+  await page.goto("/#page=sources");
+  const sources = page.getByRole("region", {
+    name: "Sources et API V2",
+    exact: true,
+  });
+  await sources.getByLabel("État des API démo").selectOption("quota");
+  await expect(
+    sources.getByRole("region", { name: "Fournisseur X", exact: true }),
+  ).toContainText("RATE_LIMITED");
+  await page.goto("/#page=watch");
+  await expect(watch).toContainText("Quota X fictif épuisé");
+  await expect(watch.getByRole("article")).toHaveCount(0);
+  await expect(
+    page.getByRole("combobox", { name: "État global de la démo", exact: true }),
+  ).toHaveValue("quota");
+  expect(external).toEqual([]);
+  expect(errors).toEqual([]);
+});
+
+test("démo unifiée : horloge conservée et observations futures masquées après retour en arrière", async ({
+  page,
+}) => {
+  await page.goto("/#page=watch");
+  const slider = page.getByRole("slider", { name: "Temps simulé en minutes" });
+  await slider.fill("10");
+  await page.reload();
+  await expect(slider).toHaveValue("10");
+  await page.goto("/#page=conversations");
+  await expect(slider).toHaveValue("10");
+  await page
+    .getByRole("button", { name: "Préparer le chargement", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Confirmer le chargement démo", exact: true })
+    .click();
+  await expect(
+    page
+      .getByRole("region", { name: "Réponses récupérées", exact: true })
+      .getByRole("article"),
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole("region", {
+      name: "Couverture de la conversation",
+      exact: true,
+    }),
+  ).toContainText("Couverture observée : inconnue");
+  await page.goto("/#page=sources");
+  await page
+    .getByRole("button", {
+      name: "Avancer les diagnostics de deux minutes",
+      exact: true,
+    })
+    .click();
+  await expect(slider).toHaveValue("12");
+  await page.goto("/#page=watch");
+  await expect(slider).toHaveValue("12");
+  await expect(
+    page.getByRole("region", { name: "Veille X locale", exact: true }),
+  ).not.toContainText("Écho Boréal");
+  const watch = page.getByRole("region", {
+    name: "Veille X locale",
+    exact: true,
+  });
+  await watch.getByLabel("État de la veille démo").selectOption("quota");
+  await page
+    .getByRole("combobox", { name: "État global de la démo", exact: true })
+    .selectOption("normal");
+  await expect(watch.getByLabel("État de la veille démo")).toHaveValue(
+    "normal",
+  );
+  expect(await watch.getByRole("article").count()).toBeGreaterThan(0);
+  await page
+    .getByRole("combobox", { name: "État global de la démo", exact: true })
+    .selectOption("disconnect");
+  await expect(
+    page.getByRole("region", { name: "Veille X locale", exact: true }),
+  ).toContainText("Flux déconnecté simulé");
+  await slider.fill("0");
+  await expect(
+    page.getByRole("combobox", { name: "État global de la démo", exact: true }),
+  ).toHaveValue("normal");
+  await page.goto("/#page=people");
+  await expect(slider).toHaveValue("0");
+  await page.reload();
+  await expect(slider).toHaveValue("0");
+});
+
+test("démo unifiée : session corrompue conservée, commandes verrouillées", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.evaluate(() =>
+    localStorage.setItem(
+      "memeradar-demo-session-phase13-v1",
+      "{invalid-preserved",
+    ),
+  );
+  await page.reload();
+  await expect(
+    page.getByRole("region", {
+      name: "Scénario partagé de démonstration",
+      exact: true,
+    }),
+  ).toContainText("Session de démonstration illisible");
+  await expect(
+    page.getByRole("slider", { name: "Temps simulé en minutes" }),
+  ).toBeDisabled();
+  await expect(
+    page.getByRole("combobox", { name: "État global de la démo", exact: true }),
+  ).toBeDisabled();
+  expect(
+    await page.evaluate(() =>
+      localStorage.getItem("memeradar-demo-session-phase13-v1"),
+    ),
+  ).toBe("{invalid-preserved");
 });

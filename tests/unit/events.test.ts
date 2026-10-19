@@ -226,7 +226,7 @@ it("classifies accounts only from explicit attestations and follows, while demo 
   expect(disabled.posts).toEqual([]);
   expect(disabled.attention.baselineMean).toBeNull();
   expect(disabled.tokens).toEqual([]);
-  expect(eventDemoPosts).toHaveLength(60);
+  expect(eventDemoPosts).toHaveLength(63);
   expect(watchInput.safeParse({ terms: [], ruleIds: [] }).success).toBe(false);
 });
 

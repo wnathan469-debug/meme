@@ -65,7 +65,7 @@ export function SocialProofs({
     >
       <h2>Preuves sociales des tokens · DÉMO V2</h2>
       <p>
-        Trois tokens inventés du scénario Nébula Mobile, distincts des cartes
+        Quatre tokens inventés du scénario Nébula Mobile, distincts des cartes
         V1. Identification par chaîne et adresse complète. Ces adresses fictives
         ne sont utilisables sur aucune chaîne.
       </p>

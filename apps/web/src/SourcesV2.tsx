@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import { useDemoSession } from "./DemoSession";
+import { sessionSource } from "../../../packages/demo/scenario";
+import React, { useEffect, useState } from "react";
 import {
   providers,
   states,
@@ -39,8 +41,10 @@ export function SourcesV2({ zone }: { zone: string }) {
       };
     }
   });
-  const [s, setS] = useState<DemoSources>(initial.s),
-    [message, setMessage] = useState(initial.error),
+  const session = useDemoSession();
+  const [stored, setS] = useState<DemoSources>(initial.s);
+  const s: DemoSources = { ...stored, ...sessionSource(session.state) };
+  const [message, setMessage] = useState(initial.error),
     [draft, setDraft] = useState<Record<ProviderId, ProviderSettings>>({
       x: s.entries.x.settings,
       gecko: s.entries.gecko.settings,
@@ -52,6 +56,7 @@ export function SourcesV2({ zone }: { zone: string }) {
       revision: number;
       expiresAt: number;
     } | null>(null);
+  useEffect(() => setQuote(null), [session.state.minute, session.state.fault]);
   const date = (at: string | null) =>
     at
       ? `${new Intl.DateTimeFormat("fr-CA", { timeZone: zone, dateStyle: "medium", timeStyle: "short" }).format(new Date(at))} (${zone}) · ${at} UTC`
@@ -120,10 +125,16 @@ export function SourcesV2({ zone }: { zone: string }) {
         État des API démo
         <select
           value={s.scenario}
-          disabled={!!initial.error}
+          disabled={!!initial.error || !!session.error}
           onChange={(e) => {
             setQuote(null);
-            save({ ...s, scenario: e.target.value as DemoSources["scenario"] });
+            if (
+              save({
+                ...s,
+                scenario: e.target.value as DemoSources["scenario"],
+              })
+            )
+              session.setFault(e.target.value as DemoSources["scenario"]);
           }}
         >
           <option value="normal">Fonctionnement normal</option>
@@ -139,13 +150,11 @@ export function SourcesV2({ zone }: { zone: string }) {
         déduit. Heure du scénario : {date(s.clock)}.
       </p>
       <button
-        disabled={!!initial.error}
+        disabled={!!initial.error || !!session.error}
         onClick={() => {
           setQuote(null);
-          save({
-            ...s,
-            clock: new Date(Date.parse(s.clock) + 120000).toISOString(),
-          });
+          if (session.state.minute <= 4318)
+            session.setMinute(session.state.minute + 2);
         }}
       >
         Avancer les diagnostics de deux minutes
@@ -216,7 +225,7 @@ export function SourcesV2({ zone }: { zone: string }) {
                   <input
                     type="checkbox"
                     checked={d.enabled}
-                    disabled={!!initial.error}
+                    disabled={!!initial.error || !!session.error}
                     onChange={(e) =>
                       set(p, { ...d, enabled: e.target.checked })
                     }
@@ -393,7 +402,10 @@ export function SourcesV2({ zone }: { zone: string }) {
                     </label>
                   ))}
                 </details>
-                <button type="submit" disabled={!!initial.error}>
+                <button
+                  type="submit"
+                  disabled={!!initial.error || !!session.error}
+                >
                   Enregistrer les réglages {providers[p].name}
                 </button>
               </form>
@@ -510,7 +522,10 @@ export function SourcesV2({ zone }: { zone: string }) {
                   </p>
                 </details>
               )}
-              <button disabled={!!initial.error} onClick={() => prepare(p)}>
+              <button
+                disabled={!!initial.error || !!session.error}
+                onClick={() => prepare(p)}
+              >
                 Préparer le test {providers[p].name}
               </button>
               {quote?.provider === p && (
@@ -576,7 +591,7 @@ export function SourcesV2({ zone }: { zone: string }) {
               type="number"
               min={60}
               max={86400}
-              disabled={!!initial.error}
+              disabled={!!initial.error || !!session.error}
               value={r.seconds}
               onChange={(e) => {
                 const seconds = Number(e.target.value);

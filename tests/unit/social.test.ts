@@ -275,7 +275,7 @@ it("replays only collected social evidence, preserves missing sources and does n
   const { demoSocialSnapshot } =
     await import("../../packages/social/demo-data");
   const at60 = demoSocialSnapshot(60);
-  expect(at60).toHaveLength(3);
+  expect(at60).toHaveLength(4);
   expect(at60.some((s) => s.level === "CONFIRMED")).toBe(false);
   expect(at60[0].level).toBe("PLAUSIBLE");
   expect(at60[0].first_social_seen_at).toBe(at(12));

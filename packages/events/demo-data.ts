@@ -58,19 +58,21 @@ const ownPost = (minute: number, index: number, baseline = false) => {
         username: "demo_public_avant",
         name: "[DÉMO] Compte public inventé",
       }
-    : actors[minute === 12 ? 2 : index % 4];
+    : actors[minute > 60 ? 1 : minute === 12 ? 2 : index % 4];
   const repost = !baseline && index % 6 === 5;
   return {
     id: `DEMO_EVENT_${baseline ? "BEFORE" : "AFTER"}_${index}`,
     text: baseline
       ? "[DÉMO] Nébula Mobile : préparatifs fictifs, sans annonce nouvelle."
-      : minute === 12
-        ? `[DÉMO] Nébula Mobile : adresse fictive ${demoContract} https://demo.memeradar.invalid/token/base/${demoContract} $NEB, aucun soutien officiel.`
-        : minute === 3
-          ? "[DÉMO] Nébula Mobile $NEB : un symbole partagé ne suffit pas."
-          : minute === 31
-            ? `[DÉMO] Nébula Mobile : ancien token ${"0xDEMO" + "0".repeat(34) + "44"} https://demo.memeradar.invalid/token/base/${"0xDEMO" + "0".repeat(34) + "44"}, aucun soutien.`
-            : "[DÉMO] Réaction au produit inventé Nébula Mobile #NebulaProduit.",
+      : minute === 41
+        ? `[DÉMO] Nébula Mobile : autre adresse fictive Solana ${"DEMo" + "B".repeat(32)} https://demo.memeradar.invalid/token/solana/${"DEMo" + "B".repeat(32)} #NebulaProduit. Aucun soutien officiel.`
+        : minute === 12
+          ? `[DÉMO] Nébula Mobile : adresse fictive ${demoContract} https://demo.memeradar.invalid/token/base/${demoContract} $NEB, aucun soutien officiel.`
+          : minute === 3
+            ? "[DÉMO] Nébula Mobile $NEB : un symbole partagé ne suffit pas."
+            : minute === 31
+              ? `[DÉMO] Nébula Mobile : ancien token ${"0xDEMO" + "0".repeat(34) + "44"} https://demo.memeradar.invalid/token/base/${"0xDEMO" + "0".repeat(34) + "44"}, aucun soutien.`
+              : "[DÉMO] Réaction au produit inventé Nébula Mobile #NebulaProduit.",
     authorId: actor.id,
     publishedAt: eventAt(minute),
     collectedAt: eventAt(minute + 0.25),
@@ -98,6 +100,7 @@ export const eventDemoPosts = [
   ...[1, 2, 3, 4, 6, 8, 9, 11, 12, 13, 16, 21, 26, 31, 41, 46, 51].map((m, i) =>
     ownPost(m, i),
   ),
+  ...[61, 62, 63].map((m, i) => ownPost(m, 18 + i)),
 ];
 export const eventDemoWindows: CoverageWindow[] = [
   {

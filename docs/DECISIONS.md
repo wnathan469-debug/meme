@@ -165,3 +165,7 @@ Séparer les états observés de la présence d’une configuration. Journal tec
 ## Phase 12 — navigation et portée des filtres
 
 Neuf pages, fiche d’analyse rattachée aux tokens, anciens deep links conservés. Filtres dans l’URL avec contexte partagé explicite et contrôle privé des notes ; pas de score global de risque inventé. Nouvelle veille intégrée aux fixtures existantes, titres/focus clavier et erreur de vue isolée. Les liens externes restent désactivés dans l’édition DEMO, y compris les références documentaires par clic ordinaire ; aucun droit Electron élargi. Le raccordement serveur envisagé auparavant n’est pas livré par ce lot Navigation/UI ; son absence est documentée, sans annoncer une activation REAL dans la livraison démo. Voir [phase 12](V2_PHASE12.md).
+
+## Phase 13 — catalogue, acquisition et horloge de démonstration
+
+Catalogue Nébula de 63 publications uniques, quatre tokens Base/Solana et trois profils nommés, sans ajout automatique de personnes. XProvider simulé réutilisant ce catalogue, pages et auteurs minimaux, flux fini interrompable. Horloge locale partagée et persistante, pannes globales explicites, retour arrière sans destruction d’historique. Les nouvelles alertes de publication démarrent au point courant et utilisent les observations du catalogue ; autres cas d’alertes et compteurs restent pédagogiques explicitement distincts des calculs de marché. Aucun raccordement REAL implicite, aucune publication publique de paquet à cette phase. Voir [phase 13](V2_PHASE13.md).
