@@ -7,7 +7,7 @@ permissions:
 jobs:
   offline-contracts-and-shared-controls:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
@@ -21,6 +21,10 @@ jobs:
       - run: npm run test:db
       - run: npm run test:db:v2
       - run: npm run test:redis
+      - name: Construire le serveur et vérifier la reprise hors ligne
+        run: |
+          docker build -f deploy/Dockerfile -t memeradar-server:step4 .
+          npm run test:deploy
       - run: npm run x:diagnose
       - run: npm run x:collect
       - run: npm audit --omit=dev --audit-level=moderate

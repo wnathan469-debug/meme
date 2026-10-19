@@ -79,3 +79,7 @@ Catalogue entièrement inventé, XProvider sans transport et auteurs limités à
 ## Serveur local — données réelles, étape 3
 
 API séparée, sessions opaques et mots de passe Argon2id natifs ; SQL sans superuser/BYPASSRLS, HTTPS obligatoire en production, origine fixe et absence de cookies. Migration 0013 : contrôles, politiques et compteurs sous RLS ; refus des configurations/prix/consentements absents, arrêt durable, rollback sans perte. Aucun secret fournisseur ni session Windows ajoutés. Voir [le rapport serveur](REAL_DATA_STEP3_SERVER.md) pour les garanties testées et limites avant hébergement. Le client 0.2.0 demeure hors ligne.
+
+## Déploiement préparé — étape 4
+
+API conteneurisée non privilégiée, système de fichiers en lecture seule, rôle SQL restreint ; aucun port PostgreSQL/Redis publié. Secrets montés séparément de l’image. Sauvegardes CMS AES-256-GCM, clé privée de restauration conservée hors serveur ; vérification d’intégrité obligatoire avant usage. Voir [les limites et procédures](REAL_DATA_STEP4_HOSTING.md) : aucune production Internet ou supervision extérieure livrée à ce stade.

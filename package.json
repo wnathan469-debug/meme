@@ -21,7 +21,7 @@
     "dist:win": "npm run build && node scripts/build-windows.cjs",
     "dist:zip": "npm run build && electron-builder --win zip --x64",
     "test:desktop": "node tests/e2e/desktop.mjs",
-    "format:check": "prettier --check scripts apps packages/db/*.ts packages/db/migrations/manifest.json packages/collection packages/conversations packages/events packages/social packages/risks packages/alerts packages/sources packages/demo packages/charts packages/people packages/core packages/shared packages/connectors tests/unit tests/contract tests/e2e/*.ts tests/e2e/*.mjs tests/integration/*.ts tests/fixtures *.ts *.json",
+    "format:check": "prettier --check deploy/*.mjs deploy/*.yaml scripts apps packages/db/*.ts packages/db/migrations/manifest.json packages/collection packages/conversations packages/events packages/social packages/risks packages/alerts packages/sources packages/demo packages/charts packages/people packages/core packages/shared packages/connectors tests/unit tests/contract tests/e2e/*.ts tests/e2e/*.mjs tests/integration/*.ts tests/fixtures *.ts *.json",
     "x:diagnose": "tsx scripts/x-diagnose.ts",
     "test:redis": "node scripts/test-x-redis.mjs",
     "db:migrate": "tsx scripts/db-migrate.ts",
@@ -32,7 +32,8 @@
     "api:admin": "tsx scripts/api-admin.ts",
     "api:build": "vite build --config vite.server.config.ts",
     "api:start": "node server-dist/server.js",
-    "api:admin:built": "node server-dist/admin.js"
+    "api:admin:built": "node server-dist/admin.js",
+    "test:deploy": "node scripts/test-deployment.mjs"
   },
   "dependencies": {
     "drizzle-orm": "0.45.4",

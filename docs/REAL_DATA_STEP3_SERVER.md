@@ -1,5 +1,7 @@
 # Données réelles — étape 3 : serveur sécurisé local
 
+**Étape validée par l’utilisateur le 19 octobre 2026.** La [préparation de l’hébergement](REAL_DATA_STEP4_HOSTING.md) est engagée, sans validation financière ni activation de collecte.
+
 La reprise demandée par l’utilisateur permet de développer et tester le serveur sans achat ni collecte payante. **Les choix financiers de l’étape 2, les prix/droits fournisseurs et les trois comptes restent à valider.** real-pilot.proposal.json demeure une proposition non chargée et non approuvée.
 
 L’API fonctionne localement sur PostgreSQL dans le banc de test. **Aucun serveur Internet n’est déployé, aucune interface Windows n’est raccordée, aucune publication réelle n’est validée, aucun nouvel installateur n’est publié.** Windows 0.2.0 demeure en démo. Les données d’origine REAL en test sont synthétiques : le marqueur d’origine n’est pas une preuve de collecte.

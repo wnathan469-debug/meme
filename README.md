@@ -26,6 +26,8 @@ Le nouveau programme suit douze étapes, avec validation à chaque étape. [Inve
 
 [Serveur sécurisé — étape 3](docs/REAL_DATA_STEP3_SERVER.md) : API et contrôles testés localement, sans hébergement ni collecte activée. La reprise technique ne valide pas le budget proposé. Construction serveur séparée : npm run api:build ; démarrage avec configuration serveur sécurisée : npm run api:start.
 
+[Préparation de l’hébergement — étape 4](docs/REAL_DATA_STEP4_HOSTING.md) : conteneurs HTTPS, base/Redis privés, sauvegarde chiffrée et recette de restauration/panne. Hébergeur, devis et accès de production encore à fournir ; aucune dépense ni collecte réelle activée.
+
 ## Développer
 
 Node 24 et npm requis. Depuis la racine :

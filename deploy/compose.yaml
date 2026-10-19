@@ -1,0 +1,128 @@
+name: memeradar-server
+services:
+  db:
+    image: postgres:16-bookworm@sha256:0ea6700a3b4f0ae6ce746519073558aed4d88a79d8d07622a9a644946c7319c4
+    environment:
+      POSTGRES_DB: memeradar
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+    secrets: [postgres_password]
+    volumes: [postgres_data:/var/lib/postgresql/data]
+    networks: [private]
+    restart: unless-stopped
+    mem_limit: 768m
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -h 127.0.0.1 -U postgres -d memeradar"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    logging: &logging
+      driver: json-file
+      options: { max-size: 10m, max-file: "3" }
+  redis:
+    image: redis:7.2-alpine@sha256:29e8589c3f9ba699b5f7aa4b3c7733c58852a3626439e619aa0ee78de08c6ca0
+    command:
+      [
+        redis-server,
+        --appendonly,
+        "yes",
+        --maxmemory,
+        64mb,
+        --maxmemory-policy,
+        noeviction,
+      ]
+    volumes: [redis_data:/data]
+    networks: [private]
+    restart: unless-stopped
+    mem_limit: 128m
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    logging: *logging
+  api:
+    image: ${MEMERADAR_SERVER_IMAGE:-memeradar-server:local}
+    build: { context: .., dockerfile: deploy/Dockerfile }
+    environment: &api_environment
+      DATABASE_URL_FILE: /run/secrets/api_database_url
+      MEMERADAR_API_ORIGIN: REAL
+      MEMERADAR_API_PORT: "8787"
+      MEMERADAR_API_PUBLIC_ORIGIN: ${MEMERADAR_PUBLIC_ORIGIN:?HTTPS origin required}
+      MEMERADAR_API_TLS_CERT_FILE: /run/secrets/tls_cert
+      MEMERADAR_API_TLS_KEY_FILE: /run/secrets/tls_key
+      MEMERADAR_MONITOR_CA_FILE: /run/secrets/tls_cert
+    secrets: [api_database_url, tls_cert, tls_key]
+    ports:
+      ["${MEMERADAR_BIND_ADDRESS:-0.0.0.0}:${MEMERADAR_HTTPS_PORT:-443}:8787"]
+    networks: [private, ingress]
+    read_only: true
+    tmpfs: ["/tmp:size=16m,noexec,nosuid"]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 512m
+    pids_limit: 100
+    restart: unless-stopped
+    stop_grace_period: 20s
+    depends_on:
+      db: { condition: service_healthy }
+    healthcheck:
+      test: [CMD, node, deploy/entrypoint.mjs, health]
+      interval: 30s
+      timeout: 8s
+      retries: 3
+      start_period: 20s
+    logging: *logging
+  tools:
+    image: ${MEMERADAR_SERVER_IMAGE:-memeradar-server:local}
+    profiles: [operator]
+    environment:
+      DATABASE_URL_FILE: /run/secrets/admin_database_url
+      MEMERADAR_API_ORIGIN: REAL
+      MEMERADAR_ADMIN_EMAIL: ${MEMERADAR_ADMIN_EMAIL:-}
+      MEMERADAR_ADMIN_PASSWORD_FILE: /run/secrets/admin_password
+    secrets: [admin_database_url, api_database_url, admin_password]
+    networks: [private]
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 512m
+    command: [migrate]
+    logging: *logging
+  backup:
+    image: postgres:16-bookworm@sha256:0ea6700a3b4f0ae6ce746519073558aed4d88a79d8d07622a9a644946c7319c4
+    profiles: [operator]
+    entrypoint: [bash, /ops/backup.sh]
+    environment:
+      PGHOST: db
+      PGDATABASE: memeradar
+      PGUSER: postgres
+      BACKUP_PASSWORD_FILE: /run/secrets/postgres_password
+      BACKUP_CERT_FILE: /run/secrets/backup_cert
+    secrets: [postgres_password, backup_cert]
+    volumes: ["./backup.sh:/ops/backup.sh:ro", "backups:/backups"]
+    networks: [private]
+    read_only: true
+    tmpfs: ["/tmp:size=16m,noexec,nosuid"]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 256m
+    restart: unless-stopped
+    logging: *logging
+networks:
+  private: { internal: true }
+  ingress: {}
+volumes:
+  postgres_data: {}
+  redis_data: {}
+  backups: {}
+secrets:
+  postgres_password:
+    {
+      file: "${MEMERADAR_SECRETS_DIR:?Secrets directory required}/postgres_password",
+    }
+  api_database_url: { file: "${MEMERADAR_SECRETS_DIR}/api_database_url" }
+  admin_database_url: { file: "${MEMERADAR_SECRETS_DIR}/admin_database_url" }
+  admin_password: { file: "${MEMERADAR_SECRETS_DIR}/admin_password" }
+  tls_cert: { file: "${MEMERADAR_SECRETS_DIR}/tls_cert.pem" }
+  tls_key: { file: "${MEMERADAR_SECRETS_DIR}/tls_key.pem" }
+  backup_cert: { file: "${MEMERADAR_SECRETS_DIR}/backup_cert.pem" }
