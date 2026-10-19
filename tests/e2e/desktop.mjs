@@ -1,5 +1,6 @@
 import { _electron as electron } from "playwright";
 import assert from "node:assert/strict";
+import { DatabaseSync } from "node:sqlite";
 import { mkdtemp, readFile, rm, mkdir } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -91,6 +92,12 @@ try {
   assert.equal(localState.state.usage.requestsDay, 0);
   assert.equal(localState.state.posts.length, 0);
   const testKey = "TEST_LOCAL_KEY_DO_NOT_USE_12345";
+  if (process.platform === "win32")
+    assert.equal(
+      localState.state.secureStorage,
+      true,
+      "La protection Windows doit être disponible dans la recette native.",
+    );
   if (localState.state.secureStorage) {
     await page.getByLabel("Jeton Bearer X", { exact: true }).fill(testKey);
     await page
@@ -111,25 +118,25 @@ try {
       ).includes(testKey),
       false,
     );
-    const secure = await app.evaluate(({ app, safeStorage }, value) => {
-      const { DatabaseSync } = require("node:sqlite");
-      const db = new DatabaseSync(
-        require("node:path").join(
-          app.getPath("userData"),
-          "local-data-v1.sqlite",
-        ),
-        { readOnly: true },
-      );
-      const row = db
-        .prepare("SELECT value FROM local_kv WHERE key='encryptedKey'")
-        .get();
-      db.close();
-      return (
-        safeStorage.decryptString(
-          Buffer.from(JSON.parse(row.value), "base64"),
-        ) === value
-      );
-    }, testKey);
+    const dataDirectory = await app.evaluate(({ app }) =>
+      app.getPath("userData"),
+    );
+    const db = new DatabaseSync(
+      path.join(dataDirectory, "local-data-v1.sqlite"),
+      { readOnly: true },
+    );
+    const row = db
+      .prepare("SELECT value FROM local_kv WHERE key='encryptedKey'")
+      .get();
+    db.close();
+    const secure = await app.evaluate(
+      ({ safeStorage }, { encoded, value }) => {
+        return (
+          safeStorage.decryptString(Buffer.from(encoded, "base64")) === value
+        );
+      },
+      { encoded: JSON.parse(row.value), value: testKey },
+    );
     assert.equal(secure, true);
   } else {
     assert.equal(

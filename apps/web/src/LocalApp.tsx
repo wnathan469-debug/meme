@@ -153,7 +153,8 @@ export function LocalApp({ demo }: { demo: () => void }) {
           </p>
           <p>
             Dernière tentative : {date(state?.lastCollection ?? null)}. Données
-            affichées : {state?.posts.length ?? 0} publications conservées.
+            affichées : {state ? state.posts.length : "inconnues"} publications
+            conservées.
           </p>
           {state?.nextCollection && (
             <p>
@@ -207,10 +208,11 @@ export function LocalApp({ demo }: { demo: () => void }) {
             </button>
           </div>
           <p>
-            Réservations conservatrices : {state?.usage.dayReservedUsd ?? "0"}{" "}
-            USD aujourd’hui ; {state?.usage.monthReservedUsd ?? "0"} USD ce
-            mois-ci. {state?.usage.requestsDay ?? 0} requêtes aujourd’hui. Ce ne
-            sont pas des factures X.
+            Réservations conservatrices :{" "}
+            {state?.usage.dayReservedUsd ?? "Inconnu"} USD pour le jour UTC ;{" "}
+            {state?.usage.monthReservedUsd ?? "Inconnu"} USD pour le mois UTC.{" "}
+            {state?.usage.requestsDay ?? "Inconnu"} requêtes pour le jour UTC.
+            Ce ne sont pas des factures X.
           </p>
           {state?.usage.warning && (
             <p role="alert">
@@ -222,7 +224,13 @@ export function LocalApp({ demo }: { demo: () => void }) {
         {tab === "Veille locale" && (
           <section>
             <h2>Publications collectées sur ce PC</h2>
-            {!state?.posts.length && (
+            {!state && (
+              <p>
+                Lecture du stockage local en cours ou indisponible ; historique
+                inconnu.
+              </p>
+            )}
+            {state && !state.posts.length && (
               <p>
                 Aucune donnée réelle collectée. Configurez un accès X autorisé
                 dans « Sources et accès ». Aucun exemple fictif n’est ajouté
