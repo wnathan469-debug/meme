@@ -1,3 +1,20 @@
+# Vérification du téléchargement — Windows 0.3.2, correction des boutons
+
+Contrôle du 19 octobre 2026 : les deux fichiers publics ont été téléchargés entièrement avec HTTP 200. Leurs empreintes SHA-256 correspondent au manifeste publié ; les CRC du ZIP sont valides et l’installateur à l’intérieur est identique à l’EXE direct. En-tête Windows MZ présent.
+
+Source publiée : `f355faf7b4ef3fb88ca7d9fc107e7f5822ac84c3`. [Validation et publication réussies](https://github.com/wnathan469-debug/meme/actions/runs/39297424842) : compilation, 337 tests unitaires/contrats, 21 parcours navigateur dont le contrôle de contraste sombre/clair, et installation/lancement/redémarrage/désinstallation de l’application native Windows. Validation Linux historique réussie également. Le contrôle d’interface emploie un pont local simulé sans appels fournisseur ; le parcours natif utilise le moteur SQLite et le coffre Windows.
+
+Correction : couleurs explicites des boutons du mode local et du retour depuis la démo, y compris survol, sélection et état désactivé ; focus clavier vérifié. Contraste texte/fond d’au moins 4,5:1 sur les boutons contrôlés dans les deux thèmes. Aucun changement de schéma SQLite ou de fonctionnement de la collecte. La collecte X réelle reste non vérifiée.
+
+| Fichier | Octets | SHA-256 |
+|---|---:|---|
+| [MemeRadar-0.3.2-Windows-x64.exe](https://github.com/wnathan469-debug/meme/releases/download/v0.3.2/MemeRadar-0.3.2-Windows-x64.exe) | 114461389 | `a8f8ddc38c462528ddf18a213f7e13f7d491a3977c69ccc287a374f9787bff0e` |
+| [MemeRadar-0.3.2-Windows-x64-installer.zip](https://github.com/wnathan469-debug/meme/releases/download/v0.3.2/MemeRadar-0.3.2-Windows-x64-installer.zip) | 114473660 | `8798859d1b2e6f87212542f2892d0370ffbf71e4af8de01350c24733cb4c8080` |
+
+Pour mettre à jour : arrêter la collecte, fermer complètement MemeRadar, sauvegarder le dossier complet `%APPDATA%\MemeRadar`, extraire le ZIP et lancer le nouvel installateur avec le même compte Windows et le même dossier d’installation. Aucun outil de développement nécessaire. Ne pas désinstaller ni supprimer les données pour cette correction. Installateur non signé ; ne pas désactiver les protections Windows. La mise à niveau sur le PC particulier de l’utilisateur reste à confirmer.
+
+## Historique 0.3.1
+
 # Vérification du téléchargement — Windows autonome 0.3.1
 
 Contrôle du 19 octobre 2026 : fichiers téléchargés entièrement depuis leurs liens publics, HTTP 200, SHA-256 comparés au manifeste. ZIP contrôlé par CRC et contenu EXE comparé au téléchargement direct.
