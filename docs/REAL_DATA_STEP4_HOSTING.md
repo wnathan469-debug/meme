@@ -18,6 +18,8 @@ Redis est prêt pour les workers ultérieurs, mais **l’API ne l’utilise pas 
 
 ## Choix d’hébergement encore ouvert
 
+L’utilisateur n’a pas de compte et demande une offre précise. Voir la [proposition Railway Pro chiffrée](REAL_DATA_HOSTING_OFFER.md) : tarifs documentaires vérifiés, budget cible de 35 USD/mois, choix et engagement financier encore en attente. L’adaptation Railway reste à développer/tester avant souscription.
+
 La proposition Railway de l’étape 2 reste conditionnelle. Le présent conteneur attend **TLS dans Node**, avec certificat et clé montés en fichiers. Il est directement destiné à un hôte Linux Docker administré. **Le brancher tel quel derrière le port HTTP d’une plateforme Railway/Render ne fonctionne pas.** Une terminaison TLS gérée demande une adaptation testée ou un service TCP compatible, à confirmer avant de choisir l’offre. Ne jamais activer HTTP local en production pour contourner cela.
 
 Un VPS exige une personne responsable des mises à jour, certificats, pare-feu, sauvegardes et incidents. Ce n’est pas une opération à demander à un utilisateur Windows sans accompagnement. Aucun changement de prestataire ou achat de VPS n’est déduit de ce lot. Les estimations de l’étape 2 restent des estimations, pas des tarifs actuels vérifiés.

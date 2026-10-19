@@ -28,6 +28,8 @@ Le nouveau programme suit douze étapes, avec validation à chaque étape. [Inve
 
 [Préparation de l’hébergement — étape 4](docs/REAL_DATA_STEP4_HOSTING.md) : conteneurs HTTPS, base/Redis privés, sauvegarde chiffrée et recette de restauration/panne. Hébergeur, devis et accès de production encore à fournir ; aucune dépense ni collecte réelle activée.
 
+[Offre proposée : Railway Pro](docs/REAL_DATA_HOSTING_OFFER.md), budget cible de 35 USD/mois hors taxes pour l’hébergement. Tarifs vérifiés dans la documentation officielle ; proposition non approuvée, adaptation et devis du compte requis avant achat.
+
 ## Développer
 
 Node 24 et npm requis. Depuis la racine :
