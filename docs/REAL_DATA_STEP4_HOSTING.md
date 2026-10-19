@@ -69,6 +69,8 @@ En environnement de build avec proxy d’entreprise, les arguments Docker préd�
 Après provisionnement, activer **uniquement** le job de sauvegarde :
 
 ```bash
+# Code non secret : lecture requise pour le conteneur de sauvegarde.
+chmod 0644 deploy/backup.sh
 docker compose -f deploy/compose.yaml up -d backup
 docker compose -f deploy/compose.yaml logs --tail=20 backup
 ```
@@ -105,7 +107,7 @@ Test de panne après déploiement : prévenir l’opérateur, arrêter seulement
 
 ## Validation et limites
 
-Validation locale réussie le 19 octobre 2026 : image Docker construite avec base fixée par empreinte et vérification TLS ; **124 tests PostgreSQL/API** (couverture lignes 93,28 %, branches 85,24 %, seuils 80 % conservés), typecheck et formatage. **Onze contrôles de déploiement** vérifient les réseaux privés, les migrations compilées répétables, le provisionnement sans écrasement, le rôle SQL restreint, toutes les lectures privées, le certificat non approuvé refusé, le chiffrement et le refus d’une altération, la restauration effective, la révocation des sessions, la conservation des réservations, la panne simulée et le rétablissement. Le banc de déploiement est ajouté à la CI Linux.
+Validation locale réussie le 19 octobre 2026 : image Docker construite avec base fixée par empreinte et vérification TLS ; **124 tests PostgreSQL/API** (couverture lignes 93,28 %, branches 85,24 %, seuils 80 % conservés), typecheck et formatage. **Onze contrôles de déploiement** vérifient les réseaux privés, les migrations compilées répétables, le provisionnement sans écrasement, le rôle SQL restreint, toutes les lectures privées, le certificat non approuvé refusé, le chiffrement, le refus d’une altération et l’absence de fichier publié après un dump échoué, la restauration effective, la révocation des sessions, la conservation des réservations, la panne simulée et le rétablissement. Le banc de déploiement est ajouté à la CI Linux. La [CI Linux et Windows](https://github.com/wnathan469-debug/meme/actions/runs/39263991783) du commit `5ab6d9a` réussit les contrôles : 447 tests TypeScript distincts, 51 contrôles SQL, les onze contrôles de déploiement, vingt tests navigateur Windows et le parcours natif installation/lancement/désinstallation. Le paquet public 0.2.0 reste inchangé et en démo.
 
 Les certificats sont temporaires et approuvés par le seul client local de test ; aucun magasin de confiance global modifié. Les bases, volumes et clés du banc sont supprimés après la recette. Le script ne lance aucun appel fournisseur, ne crée aucun compte externe et ne publie pas de serveur Internet. La recette Internet, le certificat public, la copie extérieure, le test de restauration chez l’hébergeur et le canal d’alerte humain restent **non effectués**. Pas de nouvel installateur connecté, collecte réelle ou appel fournisseur.
 
