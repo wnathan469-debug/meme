@@ -48,3 +48,5 @@ Utiliser le panneau « Parcours guidé Nébula Mobile ». Ajouter/valider/active
 ## Serveur local — étape 3 du passage aux données réelles
 
 Sauvegarder puis migrer à 0013 avant les nouveaux programmes. Construire avec npm run api:build ; provisionner l’administrateur via variables sécurisées et api:admin:built, puis retirer ces secrets. Exécuter api:start avec un rôle SQL distinct sans superuser/BYPASSRLS et TLS configuré. POST /v1/collection/stop exige une session et un corps JSON vide ; l’arrêt est partagé et persistant. Aucune route de reprise ni politique financière n’est activée par défaut. Les réservations conservatrices ne sont pas une facture et ne doivent pas être effacées. Hébergement, proxy et restauration restent à valider. Guide complet : [étape 3](REAL_DATA_STEP3_SERVER.md).
+
+Après restauration d’une sauvegarde, maintenir les collectes arrêtées et rapprocher les réservations conservées des opérations/factures intervenues depuis cette sauvegarde avant toute réactivation. Une ancienne sauvegarde ne prouve pas l’absence de dépenses ultérieures.

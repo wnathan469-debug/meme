@@ -135,7 +135,7 @@ Validation locale réussie :
 
 Les premiers essais ont révélé un typage SQL numérique à expliciter et un nettoyage de connexions à terminer avant suppression de la base ; ils sont corrigés, les 124 tests passent sans erreur asynchrone. La fermeture du corps JSON trop volumineux a été contrôlée sans détruire prématurément la réponse. Aucun test désactivé, aucune assertion ou couverture abaissée.
 
-La CI sera référencée après son exécution. Aucun test ne prouve une collecte X ou marché réelle. Aucune donnée fournisseur collectée, aucun achat ni hébergement engagé.
+[CI complète réussie](https://github.com/wnathan469-debug/meme/actions/runs/39259932342) sur le code b1426fb : contrôles serveur Linux (build compilé, 124 tests PostgreSQL/API, Redis, SQL V1, audit), compilation et 316 tests unitaires Windows, vingt parcours navigateur Windows, installation/lancement/désinstallation natifs et vérification du ZIP. La publication existante v0.2.0 est préservée, aucun nouvel installateur connecté annoncé. Aucun test ne prouve une collecte X ou marché réelle. Aucune donnée fournisseur collectée, aucun achat ni hébergement engagé.
 
 ## 8. Statut et prochaine décision
 
