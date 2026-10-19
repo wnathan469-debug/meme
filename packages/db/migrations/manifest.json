@@ -58,5 +58,10 @@
     "version": "0012_provider_management",
     "upSha256": "e34404dbe594c00646a8dcc17cdd4a3368daeb466f4fbbd3693c129cc66fdc41",
     "downSha256": "f0011e03b8d730d9af884a11d84685b314531ccf0df53aca176fb73ec85aae2b"
+  },
+  {
+    "version": "0013_secure_api",
+    "upSha256": "63b176a1782b8b830ae26268d65fd04bf548cccb495d41f5948e6f177ac83bb7",
+    "downSha256": "2f4f811e0a3cc3d76b7a44ba4d1de0becd517855bd0f2614e366268a4d3b2871"
   }
 ]

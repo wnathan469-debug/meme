@@ -12,6 +12,7 @@ export default defineConfig({
       "tests/integration/risks.test.ts",
       "tests/integration/alerts.test.ts",
       "tests/integration/sources.test.ts",
+      "tests/integration/secure-api.test.ts",
     ],
     testTimeout: 20000,
     hookTimeout: 30000,
@@ -31,6 +32,9 @@ export default defineConfig({
         "packages/db/alert-repository.ts",
         "packages/db/source-repository.ts",
         "packages/db/provider-budget-policy.ts",
+        "packages/db/server-controls.ts",
+        "apps/api/auth.ts",
+        "apps/api/http-server.ts",
         "packages/db/social-visibility.ts",
         // Pure graph/filter/coverage functions have their own unit coverage target.
         "packages/conversations/service.ts",

@@ -4843,6 +4843,298 @@
       ]
     },
     {
+      "name": "server_collection_controls",
+      "columns": [
+        {
+          "name": "data_origin",
+          "type": "data_origin",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": true
+        },
+        {
+          "name": "knowledge_kind",
+          "type": "knowledge_kind",
+          "nullable": false,
+          "default": "'OBSERVED'::memeradar.knowledge_kind",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "default": "now()",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "default": "now()",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "stopped",
+          "type": "bool",
+          "nullable": false,
+          "default": "true",
+          "generated": false,
+          "primary": false
+        }
+      ]
+    },
+    {
+      "name": "server_provider_policies",
+      "columns": [
+        {
+          "name": "data_origin",
+          "type": "data_origin",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": true
+        },
+        {
+          "name": "provider",
+          "type": "text",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": true
+        },
+        {
+          "name": "namespace",
+          "type": "text",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": true
+        },
+        {
+          "name": "knowledge_kind",
+          "type": "knowledge_kind",
+          "nullable": false,
+          "default": "'OBSERVED'::memeradar.knowledge_kind",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "default": "now()",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "default": "now()",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "enabled",
+          "type": "bool",
+          "nullable": false,
+          "default": "false",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "verified_at",
+          "type": "timestamptz",
+          "nullable": true,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "paid_consent_at",
+          "type": "timestamptz",
+          "nullable": true,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "request_ceiling_micros",
+          "type": "raw_quantity",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "daily_limit_micros",
+          "type": "raw_quantity",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "monthly_limit_micros",
+          "type": "raw_quantity",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "max_requests_day",
+          "type": "int4",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        }
+      ]
+    },
+    {
+      "name": "server_provider_usage",
+      "columns": [
+        {
+          "name": "data_origin",
+          "type": "data_origin",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": true
+        },
+        {
+          "name": "provider",
+          "type": "text",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": true
+        },
+        {
+          "name": "namespace",
+          "type": "text",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": true
+        },
+        {
+          "name": "period",
+          "type": "text",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": true
+        },
+        {
+          "name": "knowledge_kind",
+          "type": "knowledge_kind",
+          "nullable": false,
+          "default": "'OBSERVED'::memeradar.knowledge_kind",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "default": "now()",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "default": "now()",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "reserved_micros",
+          "type": "raw_quantity",
+          "nullable": false,
+          "default": "0",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "requests",
+          "type": "int8",
+          "nullable": false,
+          "default": "0",
+          "generated": false,
+          "primary": false
+        }
+      ]
+    },
+    {
+      "name": "server_request_limits",
+      "columns": [
+        {
+          "name": "data_origin",
+          "type": "data_origin",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": true
+        },
+        {
+          "name": "key_hash",
+          "type": "text",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": true
+        },
+        {
+          "name": "window_start",
+          "type": "timestamptz",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": true
+        },
+        {
+          "name": "knowledge_kind",
+          "type": "knowledge_kind",
+          "nullable": false,
+          "default": "'OBSERVED'::memeradar.knowledge_kind",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "default": "now()",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "default": "now()",
+          "generated": false,
+          "primary": false
+        },
+        {
+          "name": "requests",
+          "type": "int4",
+          "nullable": false,
+          "default": null,
+          "generated": false,
+          "primary": false
+        }
+      ]
+    },
+    {
       "name": "sessions",
       "columns": [
         {

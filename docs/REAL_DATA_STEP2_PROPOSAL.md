@@ -2,7 +2,7 @@
 
 L’utilisateur a approuvé l’inventaire de l’étape 1 et demandé de commencer les travaux. Cette approbation permet de préparer cette étape 2. Elle n’autorise aucun achat, hébergement facturable ou appel API payant.
 
-**Proposition prête à examiner ; choix des fournisseurs, budget et trois comptes pilotes en attente de validation.** Le développement du serveur de l’étape 3 n’est pas commencé. MemeRadar 0.2.0 reste une démonstration hors ligne.
+**Proposition prête à examiner ; choix des fournisseurs, budget et trois comptes pilotes en attente de validation.** La reprise demandée a permis de développer le [serveur local de l’étape 3](REAL_DATA_STEP3_SERVER.md), sans dépense. Les choix financiers restent en attente. MemeRadar 0.2.0 reste une démonstration hors ligne.
 
 Fichiers : ce rapport, config/real-pilot.proposal.json, et liens/statuts dans le README et l’audit de l’étape 1. Le JSON est une proposition non secrète, **non chargée par l’application ou le worker**. Il ne constitue pas un plafond actif.
 
@@ -157,8 +157,8 @@ Les clés seront renseignées directement dans les variables sécurisées du ser
 | Clients X/GeckoTerminal/GoPlus et collecteurs privés | Code écrit, non raccordé |
 | Moteur d’alertes, budgets X et dépôts privés | Code écrit, non raccordé |
 | Installation, navigation et préférences locales 0.2.0 | Réel et vérifié |
-| API HTTP et authentification | Non commencé |
-| Arrêt général et nouveaux plafonds du pilote | Non commencé |
+| API HTTP et authentification | Code écrit, non raccordé |
+| Arrêt général serveur et nouveaux plafonds du pilote | Code écrit, non raccordé |
 | Hébergement, sauvegardes, surveillance et notifications externes | Non commencé |
 | Collecte réelle du pilote et nouvel installateur connecté | Non commencé |
 

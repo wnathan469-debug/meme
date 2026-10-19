@@ -6,6 +6,8 @@ Demande de référence : prompt-memeradar-donnees-reelles.md fourni par l’util
 
 État examiné : commit 6fc5b4892196ce33f31bb58d9cb40e9cad7ed6d1, application 0.2.0. Contrôles relancés le 19 octobre 2026 UTC. Les seuls changements de cette étape concernent ce rapport et son lien dans le README.
 
+Les constats techniques ci-dessous sont historiques à cet état du code. Depuis la reprise, consulter le [serveur local de l’étape 3](REAL_DATA_STEP3_SERVER.md) pour l’API, les sessions et les contrôles ajoutés.
+
 ## 1. Inventaire et réutilisation
 
 « Réutilisable » désigne une brique de code examinée, pas une fonction réelle opérationnelle. Les adaptateurs réseau restent à vérifier auprès des fournisseurs choisis.

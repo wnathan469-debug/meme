@@ -12,9 +12,11 @@ trap cleanup EXIT
 # Trust authentication is restricted to this network-less disposable container.
 docker run -d --name "$container" --network none \
   -e POSTGRES_HOST_AUTH_METHOD=trust -e POSTGRES_DB=memeradar_test "$image" >/dev/null
+# The entrypoint bootstrap server accepts sockets before the final server starts.
+# TCP readiness excludes that temporary server and prevents a shutdown race.
 ready=false
 for ((attempt=0; attempt<60; attempt++)); do
-  if docker exec "$container" pg_isready -U postgres -d memeradar_test >/dev/null 2>&1; then
+  if docker exec "$container" pg_isready -h 127.0.0.1 -U postgres -d memeradar_test >/dev/null 2>&1; then
     ready=true
     break
   fi

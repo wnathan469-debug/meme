@@ -410,5 +410,5 @@ it("refuses destructive rollback of populated provider settings", async () => {
         "SELECT count(*)::int n FROM memeradar.schema_migrations",
       )
     ).rows[0].n,
-  ).toBe(12);
+  ).toBe(13);
 });

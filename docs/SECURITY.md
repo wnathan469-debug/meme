@@ -74,3 +74,8 @@ Les nouveaux liens conservent seulement une liste de paramètres de contexte aut
 ## Démonstration unifiée — phase 13
 
 Catalogue entièrement inventé, XProvider sans transport et auteurs limités à ceux de la page. Horloge et simulations dans une clé locale versionnée bornée à trois jours ; stockage illisible conservé et commandes verrouillées. Les observations futures sont masquées ; reculer le curseur ne détruit ni notes ni décisions d’alertes. Pas d’ajout automatique de comptes, de donnée réelle, de secret, d’IPC, d’accès réseau ou de transaction. Les liens de publication sont des routes locales identifiées, et les portefeuilles fictifs des tableaux de transaction respectent la chaîne sans devenir des commandes de transfert. Le blocage réseau Electron et les tests de non-réseau sont conservés. Voir [phase 13](V2_PHASE13.md).
+
+
+## Serveur local — données réelles, étape 3
+
+API séparée, sessions opaques et mots de passe Argon2id natifs ; SQL sans superuser/BYPASSRLS, HTTPS obligatoire en production, origine fixe et absence de cookies. Migration 0013 : contrôles, politiques et compteurs sous RLS ; refus des configurations/prix/consentements absents, arrêt durable, rollback sans perte. Aucun secret fournisseur ni session Windows ajoutés. Voir [le rapport serveur](REAL_DATA_STEP3_SERVER.md) pour les garanties testées et limites avant hébergement. Le client 0.2.0 demeure hors ligne.

@@ -271,7 +271,7 @@ it("enforces RLS for conversation state and display authors and refuses a destru
   expect(
     (await pool.query("SELECT count(*) FROM memeradar.schema_migrations"))
       .rows[0].count,
-  ).toBe("12");
+  ).toBe("13");
 });
 it("rejects stale quotes, missing prices, invalid identifiers and unavailable capabilities without content requests", async () => {
   const q = await service.quote(id);

@@ -8,3 +8,5 @@ test-results/
 *.log
 coverage/
 tests/e2e/*.png
+
+server-dist/

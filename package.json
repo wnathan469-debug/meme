@@ -8,7 +8,7 @@
   "main": "apps/desktop/main.cjs",
   "type": "module",
   "engines": {
-    "node": ">=24 <25"
+    "node": ">=24.7 <25"
   },
   "scripts": {
     "dev": "vite --host 127.0.0.1",
@@ -25,9 +25,14 @@
     "x:diagnose": "tsx scripts/x-diagnose.ts",
     "test:redis": "node scripts/test-x-redis.mjs",
     "db:migrate": "tsx scripts/db-migrate.ts",
-    "test:db:v2": "node scripts/test-v2-database.mjs",
+    "test:db:v2": "npm run api:build && node scripts/test-v2-database.mjs",
     "db:schema": "tsx scripts/db-schema.ts",
-    "x:collect": "tsx scripts/x-collect.ts"
+    "x:collect": "tsx scripts/x-collect.ts",
+    "api:serve": "tsx scripts/api-serve.ts",
+    "api:admin": "tsx scripts/api-admin.ts",
+    "api:build": "vite build --config vite.server.config.ts",
+    "api:start": "node server-dist/server.js",
+    "api:admin:built": "node server-dist/admin.js"
   },
   "dependencies": {
     "drizzle-orm": "0.45.4",

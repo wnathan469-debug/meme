@@ -1167,6 +1167,88 @@ export const schemaMigrations = memeradar.table("schema_migrations", {
   checksum: text("checksum"),
   downChecksum: text("down_checksum"),
 });
+export const serverCollectionControls = memeradar.table(
+  "server_collection_controls",
+  {
+    dataOrigin: dataOrigin("data_origin").primaryKey(),
+    knowledgeKind: knowledgeKind("knowledge_kind")
+      .default(sql.raw("'OBSERVED'::memeradar.knowledge_kind"))
+      .notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "date" })
+      .default(sql.raw("now()"))
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" })
+      .default(sql.raw("now()"))
+      .notNull(),
+    stopped: boolean("stopped").default(sql.raw("true")).notNull(),
+  },
+);
+export const serverProviderPolicies = memeradar.table(
+  "server_provider_policies",
+  {
+    dataOrigin: dataOrigin("data_origin").primaryKey(),
+    provider: text("provider").primaryKey(),
+    namespace: text("namespace").primaryKey(),
+    knowledgeKind: knowledgeKind("knowledge_kind")
+      .default(sql.raw("'OBSERVED'::memeradar.knowledge_kind"))
+      .notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "date" })
+      .default(sql.raw("now()"))
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" })
+      .default(sql.raw("now()"))
+      .notNull(),
+    enabled: boolean("enabled").default(sql.raw("false")).notNull(),
+    verifiedAt: timestamp("verified_at", { withTimezone: true, mode: "date" }),
+    paidConsentAt: timestamp("paid_consent_at", {
+      withTimezone: true,
+      mode: "date",
+    }),
+    requestCeilingMicros: rawQuantity("request_ceiling_micros").notNull(),
+    dailyLimitMicros: rawQuantity("daily_limit_micros").notNull(),
+    monthlyLimitMicros: rawQuantity("monthly_limit_micros").notNull(),
+    maxRequestsDay: integer("max_requests_day").notNull(),
+  },
+);
+export const serverProviderUsage = memeradar.table("server_provider_usage", {
+  dataOrigin: dataOrigin("data_origin").primaryKey(),
+  provider: text("provider").primaryKey(),
+  namespace: text("namespace").primaryKey(),
+  period: text("period").primaryKey(),
+  knowledgeKind: knowledgeKind("knowledge_kind")
+    .default(sql.raw("'OBSERVED'::memeradar.knowledge_kind"))
+    .notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true, mode: "date" })
+    .default(sql.raw("now()"))
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" })
+    .default(sql.raw("now()"))
+    .notNull(),
+  reservedMicros: rawQuantity("reserved_micros")
+    .default(sql.raw("0"))
+    .notNull(),
+  requests: bigint("requests", { mode: "bigint" })
+    .default(sql.raw("0"))
+    .notNull(),
+});
+export const serverRequestLimits = memeradar.table("server_request_limits", {
+  dataOrigin: dataOrigin("data_origin").primaryKey(),
+  keyHash: text("key_hash").primaryKey(),
+  windowStart: timestamp("window_start", {
+    withTimezone: true,
+    mode: "date",
+  }).primaryKey(),
+  knowledgeKind: knowledgeKind("knowledge_kind")
+    .default(sql.raw("'OBSERVED'::memeradar.knowledge_kind"))
+    .notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true, mode: "date" })
+    .default(sql.raw("now()"))
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true, mode: "date" })
+    .default(sql.raw("now()"))
+    .notNull(),
+  requests: integer("requests").notNull(),
+});
 export const sessions = memeradar.table("sessions", {
   id: uuid("id").default(sql.raw("gen_random_uuid()")).primaryKey(),
   dataOrigin: dataOrigin("data_origin").notNull(),
@@ -1861,6 +1943,10 @@ export const schemaTables = {
   rawItems,
   riskFindings,
   schemaMigrations,
+  serverCollectionControls,
+  serverProviderPolicies,
+  serverProviderUsage,
+  serverRequestLimits,
   sessions,
   socialContractAttestations,
   socialTokenCandidates,

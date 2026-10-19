@@ -1,3 +1,5 @@
+import { PgSourceRepository } from "../../packages/db/source-repository";
+import { defaultSettings } from "../../packages/sources/model";
 import { PgEventRepository } from "../../packages/db/event-repository";
 import { beforeAll, afterAll, it, expect } from "vitest";
 import pg from "pg";
@@ -358,8 +360,25 @@ it("keeps social and alert markers private while market candles remain shareable
 });
 it("enforces a shared request gate across instances, keeps backoff after a new minute, and isolates origins", async () => {
   let clock = Date.parse(eventAt(60));
-  const a = new PgMarketGate(pool, "REAL", "test-gecko", () => clock),
-    b = new PgMarketGate(pool, "REAL", "test-gecko", () => clock);
+  const realOwner = "00000000-0000-4000-8000-000000000099";
+  await pool.query(
+    "INSERT INTO memeradar.users(id,data_origin,email,password_hash) VALUES($1,'REAL','gate-fixture@example.invalid','$argon2id$fixture')",
+    [realOwner],
+  );
+  await new PgSourceRepository(pool, realOwner, "REAL").initialize(
+    "gecko",
+    "default",
+    { ...defaultSettings(), enabled: true },
+  );
+  await pool.query(
+    "INSERT INTO memeradar.server_collection_controls(data_origin,stopped) VALUES('REAL',false)",
+  );
+  await pool.query(
+    "INSERT INTO memeradar.server_provider_policies(data_origin,provider,namespace,enabled,verified_at,request_ceiling_micros,daily_limit_micros,monthly_limit_micros,max_requests_day) VALUES('REAL','gecko','default',true,$1,0,0,0,150)",
+    [new Date(clock - 1000)],
+  );
+  const a = new PgMarketGate(pool, "REAL", "geckoterminal-v2", () => clock),
+    b = new PgMarketGate(pool, "REAL", "geckoterminal-v2", () => clock);
   const attempts = await Promise.allSettled(
     Array.from({ length: 21 }, (_, i) => (i % 2 ? a : b).reserve()),
   );
@@ -368,7 +387,12 @@ it("enforces a shared request gate across instances, keeps backoff after a new m
   await a.backoff(120);
   clock += 60001;
   await expect(b.reserve()).rejects.toMatchObject({ code: "RATE_LIMITED" });
-  await new PgMarketGate(pool, "DEMO", "test-gecko", () => clock).reserve();
+  await new PgMarketGate(
+    pool,
+    "DEMO",
+    "geckoterminal-v2",
+    () => clock,
+  ).reserve();
   clock += 60001;
   await b.reserve();
   await expect(a.backoff(3601)).rejects.toMatchObject({
@@ -426,5 +450,5 @@ it("works with a non-bypass application role and refuses destructive downgrade w
   expect(
     (await pool.query("SELECT count(*) FROM memeradar.schema_migrations"))
       .rows[0].count,
-  ).toBe("12");
+  ).toBe("13");
 });

@@ -1,3 +1,4 @@
+import { reserveServerRequest } from "./server-controls";
 import { ensureBudgetLimit } from "./provider-budget-policy";
 import { settingsSchema, diagnosticSchema } from "../sources/model";
 import { recordDiagnostic } from "./source-repository";
@@ -63,6 +64,13 @@ export class DurableXControlStore implements ControlStore {
     )
       throw new ProviderError("INVALID_INPUT");
     return this.transaction(async (client) => {
+      await reserveServerRequest(
+        client,
+        this.origin,
+        "x",
+        this.namespace,
+        value.amount,
+      );
       const policy = await client.query(
         "SELECT enabled,settings FROM memeradar.provider_controls WHERE data_origin=$1 AND provider='x' AND namespace=$2",
         [this.origin, this.namespace],

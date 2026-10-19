@@ -1,3 +1,4 @@
+import { reserveServerRequest } from "./server-controls";
 import { ensureBudgetLimit } from "./provider-budget-policy";
 import type { Pool, PoolClient } from "pg";
 import { randomUUID } from "node:crypto";
@@ -339,10 +340,13 @@ export async function publicAdmission(
   const c = await pool.connect();
   try {
     await c.query("BEGIN");
+    await reserveServerRequest(c, origin, p, ns, undefined, now);
     const lookup = await c.query(
       "SELECT owner_user_id FROM memeradar.provider_controls WHERE data_origin=$1 AND provider=$2 AND namespace=$3",
       [origin, p, ns],
     );
+    if (!lookup.rowCount && origin === "REAL")
+      throw new ProviderError("NOT_CONFIGURED");
     if (lookup.rowCount) {
       await c.query(
         "SELECT set_config('memeradar.user_id',$1,true),set_config('memeradar.data_origin',$2,true)",

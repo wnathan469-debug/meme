@@ -669,6 +669,8 @@ export class PgMarketGate implements MarketGate {
         : this.provider === "goplus-risk-v1"
           ? "goplus"
           : null;
+    if (this.origin === "REAL" && !provider)
+      throw new ProviderError("NOT_CONFIGURED");
     if (provider)
       await publicAdmission(this.pool, this.origin, provider, "default", n);
     const window = new Date(Math.floor(n / 60000) * 60000);

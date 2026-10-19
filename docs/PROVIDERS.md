@@ -1,5 +1,9 @@
 # Fournisseur X — socle V2, phases 1 à 3
 
+## Mise à jour du programme connecté
+
+Le runtime actuel exige la migration **0013_secure_api** et les nouvelles politiques d’arrêt/budget partagées. Les mentions de 0006 dans les sections historiques ci-dessous décrivent leurs anciens jalons. Aucun prix ou accès réel supplémentaire n’a été validé : voir la [proposition de fournisseurs](REAL_DATA_STEP2_PROPOSAL.md) et le [serveur local](REAL_DATA_STEP3_SERVER.md). Le client Windows reste en démo ; ces modules ne constituent pas une collecte activée.
+
 ## Périmètre et vérification
 
 Le client REST est implémenté et testé sur réponses synthétiques. Il n'est pas encore branché à l'interface Electron. Aucune collecte, connexion X ou dépense réelle n'a été effectuée ; aucun abonnement, accès ou tarif n'est présumé. Le flux et les collecteurs de la phase 3 sont implémentés sur contrats simulés, sans droit X ni borne de facturation présumés. Voir [V2_PHASE3.md](V2_PHASE3.md) ; aucune connexion REAL au flux sans enveloppe contractuelle vérifiée.

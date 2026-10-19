@@ -1,3 +1,4 @@
+import { allowTestProvider } from "../fixtures/server-policy";
 import { beforeAll, afterAll, it, expect, vi } from "vitest";
 import pg from "pg";
 import { migrate } from "../../packages/db/migrations";
@@ -506,6 +507,7 @@ it("quotes the conservative REAL cost without a probe, enforces changed pricing 
       new MemoryControlStore(),
       "collection-test",
     );
+  await allowTestProvider(pool, "collection-test");
   const provider = new XApiClient(cfg, transport, store, { clock }),
     realRepo = new PgXCollectionRepository(pool, realOwner, "REAL"),
     service = new XSearchService(provider, realRepo, cfg, clock);

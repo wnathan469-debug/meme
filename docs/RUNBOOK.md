@@ -43,3 +43,8 @@ Ouvrir Veille X depuis le menu : recherche locale, filtres dans l’URL, états 
 ## Scénario partagé — phase 13
 
 Utiliser le panneau « Parcours guidé Nébula Mobile ». Ajouter/valider/activer un profil fictif, puis Veille X → conversation → adresse → graphique → risques → alerte → Sources et API. L’horloge reste au même point après navigation/rechargement ; trois publications fictives à T+61–63 permettent d’essayer une alerte créée à T+60. Les boutons d’avancement des alertes et diagnostics pilotent cette horloge. « Recommencer » ne supprime pas les archives ; un traitement d’alerte est suspendu si le curseur précède leur dernière évaluation. Une session illisible dans `memeradar-demo-session-phase13-v1` est conservée et les commandes verrouillées ; sauvegarder le profil avant intervention, ne pas supprimer les autres préférences pour contourner un problème. Aucun service serveur nécessaire à la démonstration. Voir [phase 13](V2_PHASE13.md).
+
+
+## Serveur local — étape 3 du passage aux données réelles
+
+Sauvegarder puis migrer à 0013 avant les nouveaux programmes. Construire avec npm run api:build ; provisionner l’administrateur via variables sécurisées et api:admin:built, puis retirer ces secrets. Exécuter api:start avec un rôle SQL distinct sans superuser/BYPASSRLS et TLS configuré. POST /v1/collection/stop exige une session et un corps JSON vide ; l’arrêt est partagé et persistant. Aucune route de reprise ni politique financière n’est activée par défaut. Les réservations conservatrices ne sont pas une facture et ne doivent pas être effacées. Hébergement, proxy et restauration restent à valider. Guide complet : [étape 3](REAL_DATA_STEP3_SERVER.md).

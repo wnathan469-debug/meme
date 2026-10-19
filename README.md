@@ -24,6 +24,8 @@ Consultez [le guide Windows](docs/DESKTOP.md) pour les étapes, le stockage loca
 
 Le nouveau programme suit douze étapes, avec validation à chaque étape. [Inventaire et risques — étape 1](docs/REAL_DATA_STEP1_AUDIT.md) : inventaire validé. [Fournisseurs, budget et pilote — étape 2](docs/REAL_DATA_STEP2_PROPOSAL.md) : proposition à valider, sans achat ni collecte réelle activée. Le téléchargement 0.2.0 reste une démonstration ; aucun serveur connecté ou nouveau paquet réel n’est livré par cet inventaire.
 
+[Serveur sécurisé — étape 3](docs/REAL_DATA_STEP3_SERVER.md) : API et contrôles testés localement, sans hébergement ni collecte activée. La reprise technique ne valide pas le budget proposé. Construction serveur séparée : npm run api:build ; démarrage avec configuration serveur sécurisée : npm run api:start.
+
 ## Développer
 
 Node 24 et npm requis. Depuis la racine :

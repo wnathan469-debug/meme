@@ -1,3 +1,4 @@
+import { allowTestProvider } from "../fixtures/server-policy";
 import { beforeAll, afterAll, it, expect } from "vitest";
 import pg from "pg";
 import { execFileSync } from "node:child_process";
@@ -55,7 +56,7 @@ it("upgrades legacy populated V1, repeats safely, and preserves original data", 
  INSERT INTO memeradar.alert_rules(id,data_origin,user_id,type,conditions,channels,cooldown_seconds,min_confidence,min_data_quality) VALUES('00000000-0000-4000-8000-000000000012','DEMO','00000000-0000-4000-8000-000000000001','attention_acceleration','{}',ARRAY['in_app'],60,'WEAK',0.5);
  INSERT INTO memeradar.alerts(data_origin,rule_id,token_id,triggered_at,reason,observed_data,sources,fingerprint,status) VALUES('DEMO','00000000-0000-4000-8000-000000000012','00000000-0000-4000-8000-000000000011',now(),'Fixture V1','{}','[]','v1-preserved','pending');
  `);
-  expect(await migrate(pool)).toHaveLength(11);
+  expect(await migrate(pool)).toHaveLength(12);
   expect(await migrate(pool)).toEqual([]);
   expect(
     (
@@ -81,10 +82,10 @@ it("upgrades legacy populated V1, repeats safely, and preserves original data", 
         "SELECT count(*)::int AS n FROM information_schema.columns WHERE table_schema='memeradar' AND column_name='data_origin' AND is_nullable='NO'",
       )
     ).rows[0].n,
-  ).toBe(69);
+  ).toBe(73);
 });
 it("rolls back only V2, retains V1 data, then supports two concurrent upgrades", async () => {
-  expect(await migrate(pool, { rollback: true })).toHaveLength(11);
+  expect(await migrate(pool, { rollback: true })).toHaveLength(12);
   expect(
     (await pool.query("SELECT count(*)::int AS n FROM memeradar.users")).rows[0]
       .n,
@@ -97,7 +98,7 @@ it("rolls back only V2, retains V1 data, then supports two concurrent upgrades",
     ).rows[0].n,
   ).toBe(1);
   const results = await Promise.all([migrate(pool), migrate(pool)]);
-  expect(results.flat()).toHaveLength(11);
+  expect(results.flat()).toHaveLength(12);
 });
 
 it("matches the generated complete ORM snapshot to authoritative SQL", async () => {
@@ -136,7 +137,7 @@ it("indexes origins, timestamps and composite foreign keys across all V2 tables"
         "SELECT count(*)::int AS n FROM information_schema.columns WHERE table_schema='memeradar' AND column_name='updated_at' AND is_nullable='NO'",
       )
     ).rows[0].n,
-  ).toBe(69);
+  ).toBe(73);
 });
 it("refuses a downgrade atomically if any V2 row would be lost", async () => {
   await pool.query(
@@ -151,7 +152,7 @@ it("refuses a downgrade atomically if any V2 row would be lost", async () => {
         "SELECT count(*)::int AS n FROM memeradar.schema_migrations",
       )
     ).rows[0].n,
-  ).toBe(12);
+  ).toBe(13);
   expect(
     (
       await pool.query(
@@ -406,6 +407,7 @@ it("persists exact budget reservations under concurrency and across a fresh stor
       new DurableXControlStore(pool, new MemoryControlStore(), namespace),
       new DurableXControlStore(pool, new MemoryControlStore(), namespace),
     ];
+  await allowTestProvider(pool, namespace);
   const ids = Array.from({ length: 40 }, () => randomUUID());
   const reservation = (id: string, amount = "1", limit = "20") => ({
     id,
@@ -485,10 +487,12 @@ it("persists exact budget reservations under concurrency and across a fresh stor
       "different",
     ).settle(next, "0"),
   ).rejects.toMatchObject({ code: "STORE_UNAVAILABLE" });
+  const hugeNamespace = randomUUID();
+  await allowTestProvider(pool, hugeNamespace);
   const huge = new DurableXControlStore(
     pool,
     new MemoryControlStore(),
-    randomUUID(),
+    hugeNamespace,
   );
   const large = reservation(
     randomUUID(),
@@ -616,7 +620,7 @@ it("recovers from a deliberately failing V2 transaction on a fresh database", as
         )
       ).rows[0].n,
     ).toBe(1);
-    expect(await migrate(other)).toHaveLength(11);
+    expect(await migrate(other)).toHaveLength(12);
   } finally {
     await other.end();
     await rm(directory, { recursive: true, force: true });
@@ -713,6 +717,7 @@ it("records a durable request intent before a mock X response, then settles and 
   const namespace = randomUUID(),
     store = new DurableXControlStore(pool, new MemoryControlStore(), namespace),
     transport = new FakeTransport();
+  await allowTestProvider(pool, namespace);
   const client = new XApiClient(await config(), transport, store, {
     clock: new FakeClock(),
   });
@@ -741,10 +746,10 @@ it("records a durable request intent before a mock X response, then settles and 
 it("preserves the complete V1 integrity suite on the expanded schema", async () => {
   const { readFile } = await import("node:fs/promises");
   const sql = (await readFile("tests/integration/database.sql", "utf8"))
-    .replaceAll("count(*)=33", "count(*)=69")
+    .replaceAll("count(*)=33", "count(*)=73")
     .replace(
       "33 origin-scoped application tables",
-      "69 origin-scoped application tables",
+      "73 origin-scoped application tables",
     );
   const output = execFileSync(
     "docker",
@@ -764,7 +769,7 @@ it("preserves the complete V1 integrity suite on the expanded schema", async () 
     ],
     { input: sql, encoding: "utf8" },
   );
-  expect(output).toContain("69 origin-scoped application tables");
+  expect(output).toContain("73 origin-scoped application tables");
   expect(output).toContain("all foreign keys contain origin");
 });
 
@@ -829,6 +834,7 @@ it("rolls back all budget changes on feature exhaustion and fails closed without
   const { randomUUID } = await import("node:crypto");
   const namespace = randomUUID(),
     store = new DurableXControlStore(pool, new MemoryControlStore(), namespace);
+  await allowTestProvider(pool, namespace);
   const value = {
     id: randomUUID(),
     amount: "4",
@@ -938,11 +944,11 @@ it("blocks V2 alert loss on an otherwise empty upgrade and permits a compatible 
           "SELECT count(*)::int AS n FROM memeradar.schema_migrations",
         )
       ).rows[0].n,
-    ).toBe(12);
+    ).toBe(13);
     await other.query(
       "UPDATE memeradar.alert_rules SET type='attention_acceleration',delivery_mode='immediate',digest_interval_seconds=NULL",
     );
-    expect(await migrate(other, { rollback: true })).toHaveLength(11);
+    expect(await migrate(other, { rollback: true })).toHaveLength(12);
     expect(
       (await other.query("SELECT type FROM memeradar.alert_rules")).rows,
     ).toEqual([{ type: "attention_acceleration" }]);
