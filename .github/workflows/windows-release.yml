@@ -31,6 +31,11 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
+          trap {
+            $detail = $_.Exception.Message.Replace('%', '%25').Replace("`r", '%0D').Replace("`n", '%0A')
+            Write-Host "::error::$detail"
+            exit 1
+          }
           $version = (Get-Content package.json -Raw | ConvertFrom-Json).version
           $installer = (Resolve-Path "release/MemeRadar-$version-Windows-x64.exe").Path
           $installDir = Join-Path $env:RUNNER_TEMP 'MemeRadar-installed'
@@ -39,7 +44,7 @@ jobs:
           $env:MEMERADAR_EXECUTABLE = Join-Path $installDir 'MemeRadar.exe'
           if (!(Test-Path $env:MEMERADAR_EXECUTABLE)) { throw 'Exécutable installé absent' }
           npm run test:desktop
-          if ($LASTEXITCODE -ne 0) { throw 'Test de l’application installée échoué' }
+          if ($LASTEXITCODE -ne 0) { throw "Test de l'application installée échoué" }
           $uninstaller = Join-Path $installDir 'Uninstall MemeRadar.exe'
           if (!(Test-Path $uninstaller)) { throw 'Désinstalleur absent' }
           Start-Process -FilePath $uninstaller -ArgumentList '/S' -Wait

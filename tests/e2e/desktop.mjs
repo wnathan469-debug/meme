@@ -89,7 +89,7 @@ try {
     .selectOption("light");
   await page.getByRole("status").filter({ hasText: "enregistrées" }).waitFor();
   const statePath = await app.evaluate(({ app }) => app.getPath("userData"));
-  assert.equal(path.relative(dir, statePath).startsWith(".."), false);
+  assert.equal(path.relative(path.join(dir, "profile"), statePath), "");
   assert.equal(
     await page.evaluate(() => window.memeradar.version),
     JSON.parse(await readFile(path.join(root, "package.json"), "utf8")).version,
@@ -379,6 +379,16 @@ try {
   console.log(
     "PASS: Electron sandbox, IPC validation, persistent preferences across restart, clipboard, deep link and blocked main/renderer network.",
   );
+} catch (error) {
+  if (process.env.GITHUB_ACTIONS) {
+    console.error(
+      `::error::${String(error.stack || error)
+        .replaceAll("%", "%25")
+        .replaceAll("\r", "%0D")
+        .replaceAll("\n", "%0A")}`,
+    );
+  }
+  throw error;
 } finally {
   if (app) await app.close();
   await rm(dir, { recursive: true, force: true });
