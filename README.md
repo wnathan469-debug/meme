@@ -22,7 +22,7 @@ Consultez [le guide Windows](docs/DESKTOP.md) pour les étapes, le stockage loca
 
 ## Passage aux données réelles
 
-Le nouveau programme suit douze étapes, avec validation à chaque étape. [Inventaire et risques — étape 1](docs/REAL_DATA_STEP1_AUDIT.md) : audit du logiciel existant, en attente de validation utilisateur. Le téléchargement 0.2.0 reste une démonstration ; aucun serveur connecté ou nouveau paquet réel n’est livré par cet inventaire.
+Le nouveau programme suit douze étapes, avec validation à chaque étape. [Inventaire et risques — étape 1](docs/REAL_DATA_STEP1_AUDIT.md) : inventaire validé. [Fournisseurs, budget et pilote — étape 2](docs/REAL_DATA_STEP2_PROPOSAL.md) : proposition à valider, sans achat ni collecte réelle activée. Le téléchargement 0.2.0 reste une démonstration ; aucun serveur connecté ou nouveau paquet réel n’est livré par cet inventaire.
 
 ## Développer
 

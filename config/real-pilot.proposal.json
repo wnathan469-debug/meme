@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "documentType": "proposal-not-runtime-configuration",
+  "approvalState": "awaiting-user-validation",
+  "approvals": {
+    "inventoryApproved": true,
+    "providersApproved": false,
+    "budgetApproved": false,
+    "paidCallsApproved": false
+  },
+  "currency": "USD",
+  "taxesAndCurrencyConversionIncluded": false,
+  "planningBudgetMicros": {
+    "monthlyTotal": "60000000",
+    "hostingMonthly": "35000000",
+    "xMonthly": "20000000",
+    "unallocatedMonthlyReserve": "5000000"
+  },
+  "targetApiCapsMicros": {
+    "x": {
+      "daily": "1000000",
+      "monthly": "20000000"
+    },
+    "gecko": {
+      "daily": "0",
+      "monthly": "0"
+    },
+    "goplus": {
+      "daily": "0",
+      "monthly": "0"
+    },
+    "other": {
+      "daily": "0",
+      "monthly": "0"
+    }
+  },
+  "warningPercent": 80,
+  "pilot": {
+    "durationHours": 24,
+    "requiredPublicXAccounts": 3,
+    "publicXAccounts": [],
+    "priority": "low",
+    "intervalSeconds": 3600,
+    "maxResultsPerRequest": 10,
+    "maxPagesPerCycle": 1,
+    "maxRetries": 0,
+    "targetAllXRequestsPerUtcDay": 150,
+    "marketChainForLaterStage": "base",
+    "fullArchive": false,
+    "conversations": false,
+    "quotes": false,
+    "filteredStream": false,
+    "externalNotifications": false
+  },
+  "providerRecommendations": {
+    "x": "official X API: public user lookup and user timeline only",
+    "marketLater": "GeckoTerminal, subject to access and terms verification",
+    "riskLater": "GoPlus, subject to chain support and terms verification",
+    "hosting": "Railway, subject to a quote fitting the planning envelope"
+  },
+  "pricing": {
+    "verified": false,
+    "verifiedAt": null,
+    "x": null,
+    "gecko": null,
+    "goplus": null
+  },
+  "activation": {
+    "collectionEnabled": false,
+    "marketEnabled": false,
+    "riskEnabled": false,
+    "automaticConnectionProbe": false,
+    "runtimeWiringDelivered": false,
+    "softwareEnforcementValidated": false
+  },
+  "documentationCheck": {
+    "attemptDateUtc": "2026-10-19",
+    "result": "Official documentation requests blocked by cloud proxy CONNECT 403; vendor pricing, rights and quotas not verified"
+  },
+  "notes": [
+    "This proposal is not read by the existing application or worker.",
+    "Budget approval alone does not authorize paid requests or purchases.",
+    "Hosting and subscriptions cannot be hard-capped by stopping API collectors.",
+    "Paid sources must remain disabled until pricing, rights, shared caps and explicit paid-call consent are verified."
+  ]
+}

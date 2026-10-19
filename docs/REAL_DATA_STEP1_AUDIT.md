@@ -2,7 +2,7 @@
 
 L’application Windows 0.2.0 reste entièrement **Simulé (démo)**. Aucun mode connecté, déploiement ou résultat réel n’est livré par cet audit. Le code des adaptateurs privés existe ; sa présence ne prouve ni un accès fournisseur ni une collecte réelle.
 
-Demande de référence : prompt-memeradar-donnees-reelles.md fourni par l’utilisateur. Son paragraphe 7 demande : « Commence uniquement par l’étape 1 ». Le critère de sortie de cette étape est la validation de l’inventaire par l’utilisateur. **Audit produit ; validation utilisateur en attente. L’étape 2 n’est pas commencée.**
+Demande de référence : prompt-memeradar-donnees-reelles.md fourni par l’utilisateur. Son paragraphe 7 demande : « Commence uniquement par l’étape 1 ». Le critère de sortie de cette étape est la validation de l’inventaire par l’utilisateur. **Inventaire validé par l’utilisateur le 19 octobre 2026. L’étape 2 prépare désormais les fournisseurs, le budget et le pilote ; voir [la proposition](REAL_DATA_STEP2_PROPOSAL.md).**
 
 État examiné : commit 6fc5b4892196ce33f31bb58d9cb40e9cad7ed6d1, application 0.2.0. Contrôles relancés le 19 octobre 2026 UTC. Les seuls changements de cette étape concernent ce rapport et son lien dans le README.
 
@@ -145,4 +145,4 @@ Les statuts des fonctions de données décrivent leur disponibilité réelle dan
 | Données réelles dans l’application / pilote de 24 h | Non commencé | Zéro donnée réelle validée |
 | Nouvel installateur connecté et mise à niveau | Non commencé | Téléchargement actuel toujours en démo |
 
-**Étape 1 : inventaire prêt à examiner, critère de sortie en attente de validation utilisateur.**
+**Étape 1 : inventaire validé par l’utilisateur. Les constats et contrôles ci-dessus restent ceux de l’audit initial.**
