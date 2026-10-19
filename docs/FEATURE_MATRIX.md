@@ -1,3 +1,21 @@
+# Matrice fonctionnelle — 0.3.1 autonome sur PC
+
+La version actuelle ajoute le moteur local X sans hébergement. Aucun accès fournisseur n’est fourni et aucun appel réel n’a encore été vérifié sur un compte X. Voir [le guide local](LOCAL_WINDOWS.md).
+
+| Fonction du mode local | Livraison actuelle | Condition d’utilisation |
+|---|---|---|
+| Stockage, profils, publications et budgets | SQLite intégré, données conservées sur le PC | Application ouverte ; compte Windows protégé |
+| Clé X | Chiffrement safeStorage Windows, jamais renvoyée à l’interface | Protection système disponible ; saisie locale uniquement |
+| Profils publics et veille X | Trois profils, une page de dix publications par profil et par heure | Accès officiel, droits/tarifs vérifiés et autorisation explicite |
+| Plafonds, arrêt et redémarrage | Réservations avant appel, compteurs durables, collecte arrêtée au lancement | Limites propres à cette installation, hors abonnements et autres clients |
+| Conversations, événements, marché, risques, alertes et notifications | Non raccordés au mode local | Futurs travaux ; aucune substitution par des données fictives |
+| Démonstration historique | Disponible séparément, neuf pages et données fictives | Aucun accès API requis |
+| Installation Windows x64 | EXE et ZIP, runtime inclus, aucun outil de développement à installer | Windows 10/11 x64 ; paquet non signé |
+
+## Historique de la démonstration 0.2.0
+
+La matrice ci-dessous décrit l’ancienne version et son architecture cloud envisagée. Ses conditions « serveur obligatoire » ne s’appliquent pas au moteur local choisi depuis par l’utilisateur.
+
 # Matrice fonctionnelle — 0.2.0
 
 Le paquet Windows est autonome et entièrement **DEMO hors ligne**. « Implémenté en privé » signifie code serveur testé sur fixtures/bases jetables ; cela ne signifie pas service hébergé ni raccordement à l’interface.
