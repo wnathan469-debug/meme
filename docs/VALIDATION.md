@@ -1,4 +1,12 @@
-# Résultats de validation — édition 0.1.0
+# Résultats de validation
+
+## Version 0.2.0 — phase 14
+
+Contrôles locaux de la livraison (compilation et parcours répétés après la correction du menu) : compilation stricte et format réussis ; 316 tests unitaires/contrats (lignes 96,10 %, branches 91,86 %), 104 tests PostgreSQL (lignes 93,14 %, branches 84,82 %), sept tests Redis supplémentaires, soit **427 tests TypeScript distincts**. Référence SQL V1 : 51 contrôles avant/après rollback et contrôles de répétabilité/concurrence réussis. **20 parcours Chromium** réussis ; test Electron Linux réussi avec profil isolé, version du pont vérifiée, redémarrage et refus réseau/IPC. Audit npm de production : zéro vulnérabilité signalée ; diagnostics/collecte par défaut : zéro appel fournisseur.
+
+La [CI finale](https://github.com/wnathan469-debug/meme/actions/runs/39184827033) a également réussi les validations Linux et Windows, l’installation silencieuse, le test du programme installé et la désinstallation. Le menu reste accessible à 1024 × 600. Résultats de distribution Windows et vérifications publiques : [phase 14](V2_PHASE14.md) et [téléchargement](DOWNLOAD_VERIFICATION.md). Aucun résultat live, de serveur HTTP authentifié ou de connexion réelle du renderer n’est revendiqué.
+
+## Historique — édition 0.1.0
 
 Les résultats ci-dessous concernent l'environnement cloud Linux et les fichiers de cette livraison.
 

@@ -22,4 +22,10 @@ La matrice FEATURE_MATRIX.md distingue démonstration, code privé testé, accè
 
 ## Validation
 
-Les résultats finaux seront consignés après exécution locale, CI Windows et relecture des téléchargements publics. Aucun test live ni aucune dépense fournisseur autorisé par cette phase.
+Validation finale réussie : compilation/typecheck, format et audit de production (zéro vulnérabilité signalée), **316 tests unitaires/contrats + 104 PostgreSQL + sept Redis**, soit **427 tests TypeScript distincts** ; 51 contrôles SQL V1 et protections de migration ; **20 parcours navigateur**, dont navigation à 1024 × 600 ; test Electron Linux à 1024 × 768. Couvertures : unités lignes 96,10 %, branches 91,86 % ; PostgreSQL lignes 93,14 %, branches 84,82 % ; seuils de 80 % inchangés. Diagnostic/collecte par défaut : zéro appel fournisseur.
+
+[CI finale réussie](https://github.com/wnathan469-debug/meme/actions/runs/39184827033) sur `e10cf26` : validations Linux, vingt parcours navigateur Windows, NSIS, installation native silencieuse, test complet de l’EXE installé puis désinstallation ; création/extraction du ZIP et publication. Le contrôle natif a révélé un menu inaccessible sur fenêtre peu haute : ajout du défilement vertical à la barre latérale et vérification de l’accès aux paramètres puis retour au tableau de bord à 1024 × 600. La correction a été reconstruite et revalidée ; aucun test désactivé ni délai d’assertion augmenté.
+
+Version publique **v0.2.0** disponible, ZIP et EXE téléchargés intégralement sans authentification, HTTP 200, Content-Length et Content-Disposition vérifiés, CRC du ZIP et SHA-256 des deux EXE/manifeste concordants. Tailles/empreintes et limites du contrôle navigateur cloud : [DOWNLOAD_VERIFICATION.md](DOWNLOAD_VERIFICATION.md). Les liens du guide et du README pointent vers cette nouvelle publication ; 0.1.0 reste intacte.
+
+Pas de test manuel de l’assistant sur un PC Windows 10/11, de signature d’éditeur, de test complet de mise à niveau de l’ancien binaire, de backend HTTP authentifié, de collecte réelle ou de dépenses fournisseur. La phase 14 livre la démonstration Windows validée, pas l’activation REAL du cahier des charges.

@@ -94,3 +94,8 @@ Neuf pages et filtres URL, nouvelle veille locale, synthèse des personnes activ
 ## Démo unifiée V2 — phase 13
 
 Le scénario Nébula partage 63 publications, quatre tokens et une horloge persistante ; les scénarios V1 restent distincts. Les profils doivent être ajoutés explicitement. Simulation de quota/budget/déconnexion sans réseau ; aucune disponibilité réelle ou dépense ne peut en être déduite. Les alertes de publication sont liées au catalogue, tandis que les autres cas techniques et les compteurs restent pédagogiques. Le jeu de marché s’arrête à T+120, les données ne sont pas prolongées artificiellement sur les trois jours d’horloge. Retour arrière en lecture sans effacement d’archives ; rejoindre leur dernière évaluation avant de traiter de nouvelles alertes. Aucun raccordement au serveur REAL et aucun remplacement de la release Windows publique 0.1.0 ; livraison démo finale prévue en phase 14. Voir [phase 13](V2_PHASE13.md).
+
+
+## Distribution V2 — phase 14
+
+Le paquet Windows 0.2.0 inclut les vues démo des phases 1–13. Compilation, tests navigateur et installation/lancement/redémarrage/désinstallation silencieux sont validés en CI Windows Server. Le menu peut défiler sur écran peu haut. ZIP/EXE publics relus intégralement et comparés par SHA-256 ; voir DOWNLOAD_VERIFICATION.md. Cela ne valide pas l’assistant/SmartScreen sur tous les PC Windows 10/11, la mise à niveau depuis l’ancien binaire, la signature d’éditeur ni le mode REAL. Les anciennes mentions « pas de paquet V2 » ci-dessus restent historiques.
