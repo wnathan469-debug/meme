@@ -1,3 +1,4 @@
+import { useUrlFilters } from "./useUrlFilters";
 import { OpenChart } from "./TokenLink";
 import { demoSocialSnapshot } from "../../../packages/social/demo-data";
 import { SocialProofs } from "./SocialProofs";
@@ -65,8 +66,11 @@ export function EventInsights({
   indexerDisabled: boolean;
   pressDisabled: boolean;
 }) {
-  const [category, setCategory] = useState("all"),
-    [query, setQuery] = useState("");
+  const url = useUrlFilters(),
+    category = url.params.get("eventCategory") ?? "all",
+    query = url.params.get("eventQuery") ?? "",
+    setCategory = (v: string) => url.set("eventCategory", v),
+    setQuery = (v: string) => url.set("eventQuery", v);
   const heading = useRef<HTMLHeadingElement>(null);
   useEffect(() => {
     if (id === DEMO_EVENT_ID) heading.current?.focus();

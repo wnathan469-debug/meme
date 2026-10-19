@@ -1,3 +1,4 @@
+import { useUrlFilters } from "./useUrlFilters";
 import { demoUsers, demoPosts } from "../../../packages/connectors/x/demo-data";
 import { normalizePost } from "../../../packages/connectors/x/contracts";
 import React, { useState } from "react";
@@ -19,7 +20,7 @@ const recordSchema = personInput.extend({
     "suspended_or_unavailable",
   ]),
 });
-const storageSchema = z.object({
+export const storageSchema = z.object({
   people: z.array(recordSchema).max(1000),
   categories: z
     .array(
@@ -68,8 +69,10 @@ export function People() {
     [message, setMessage] = useState(initial.error),
     [categoryName, setCategoryName] = useState(""),
     [categoryEdit, setCategoryEdit] = useState<string | null>(null),
-    [replacement, setReplacement] = useState(""),
-    [filter, setFilter] = useState("");
+    [replacement, setReplacement] = useState("");
+  const url = useUrlFilters(),
+    filter = url.params.get("peopleQuery") ?? "",
+    setFilter = (value: string) => url.set("peopleQuery", value);
   function persist(next: RecordPerson[], cats: Category[]) {
     if (initial.error) return false;
     try {

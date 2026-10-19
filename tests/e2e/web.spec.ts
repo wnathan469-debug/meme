@@ -1052,3 +1052,231 @@ test("Sources et API : stockage illisible conservé sans écrasement", async ({
     ),
   ).toBe("{invalid-preserved");
 });
+
+test("navigation V2 : neuf pages, filtres URL, retour arrière, clavier et écran mobile", async ({
+  page,
+}) => {
+  const external: string[] = [],
+    errors: string[] = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  page.on("request", (r) => {
+    if (
+      !r.url().startsWith("http://127.0.0.1:5173") &&
+      !r.url().startsWith("data:")
+    )
+      external.push(r.url());
+  });
+  await page.goto("/#page=watch");
+  const nav = page.getByRole("navigation", { name: "Navigation principale" }),
+    watch = page.getByRole("region", { name: "Veille X locale", exact: true });
+  await expect(nav.getByRole("link")).toHaveCount(9);
+  await expect(
+    nav.getByRole("link", { name: "Veille X", exact: true }),
+  ).toHaveAttribute("aria-current", "page");
+  await watch.getByLabel("Hashtag exact").fill("NebulaProduit");
+  await expect(page).toHaveURL(/tag=NebulaProduit/);
+  const count = await watch.getByRole("article").count();
+  expect(count).toBeGreaterThan(0);
+  await watch.getByLabel("Mot-clé de la veille").fill("INEXISTANT");
+  await expect(
+    watch.getByRole("heading", {
+      name: "Aucune publication correspondante",
+      exact: true,
+    }),
+  ).toBeVisible();
+  await page.goBack();
+  await expect(watch.getByLabel("Mot-clé de la veille")).toHaveValue("");
+  await expect(watch.getByRole("article")).toHaveCount(count);
+  await page.reload();
+  await expect(watch.getByLabel("Hashtag exact")).toHaveValue("NebulaProduit");
+  await nav.getByRole("link", { name: "Événements", exact: true }).click();
+  await expect(page).toHaveURL(/tag=NebulaProduit/);
+  await expect(
+    page.getByRole("heading", { name: "Événements", exact: true, level: 1 }),
+  ).toBeFocused();
+  await nav.getByRole("link", { name: "Veille X", exact: true }).click();
+  await expect(watch.getByLabel("Hashtag exact")).toHaveValue("NebulaProduit");
+  await watch
+    .getByRole("button", { name: "Effacer les filtres de veille", exact: true })
+    .click();
+  await watch.getByLabel("Mot-clé de la veille").fill("Adresse fictive");
+  const card = watch
+    .getByRole("article")
+    .filter({
+      has: page.getByRole("link", { name: "Ouvrir le graphique", exact: true }),
+    })
+    .first();
+  await card
+    .getByRole("link", { name: "Ouvrir le graphique", exact: true })
+    .first()
+    .click();
+  await expect(
+    page.getByRole("region", {
+      name: "Analyse et graphique du token",
+      exact: true,
+    }),
+  ).toBeVisible();
+  await expect(
+    nav.getByRole("link", { name: "Tokens détectés", exact: true }),
+  ).toHaveAttribute("aria-current", "page");
+  await page.goto("/#page=watch");
+  await page
+    .getByRole("link", { name: "Aller au contenu principal", exact: true })
+    .focus();
+  await page.keyboard.press("Enter");
+  await expect(page.locator("#main")).toBeFocused();
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(
+    nav.getByRole("link", { name: "Veille X", exact: true }),
+  ).toBeVisible();
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+  await page
+    .getByRole("button", { name: "Changer de thème", exact: true })
+    .click();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  expect(external).toEqual([]);
+  expect(errors).toEqual([]);
+});
+
+test("veille X : états honnêtes, données suivies et résumés persistants sans réseau", async ({
+  page,
+}) => {
+  await page.goto("/#page=people");
+  await page
+    .getByLabel("Identifiant X ou URL de profil")
+    .fill("@demo_analyste_julie");
+  await page
+    .getByRole("button", { name: "Vérifier le compte", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Confirmer l’ajout", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Réactiver demo_analyste_julie", exact: true })
+    .click();
+  await page.goto("/#page=watch");
+  const watch = page.getByRole("region", {
+    name: "Veille X locale",
+    exact: true,
+  });
+  await watch
+    .getByRole("combobox", { name: "Personne suivie", exact: true })
+    .selectOption({ index: 1 });
+  await expect(watch.getByRole("article").first()).toContainText("Julie");
+  await expect(
+    watch
+      .getByRole("button", { name: "Ouvrir sur X (démo)", exact: true })
+      .first(),
+  ).toBeDisabled();
+  const state = watch.getByLabel("État de la veille démo");
+  for (const [value, text] of [
+    ["loading", "Chargement simulé"],
+    ["error", "Erreur simulée"],
+    ["unconfigured", "Accès X non configuré"],
+    ["quota", "Quota X fictif épuisé"],
+  ]) {
+    await state.selectOption(value);
+    await expect(watch).toContainText(text);
+    await expect(watch.getByRole("article")).toHaveCount(0);
+  }
+  for (const [value, text] of [
+    ["stale", "Données anciennes"],
+    ["partial", "Données partielles"],
+  ]) {
+    await state.selectOption(value);
+    await expect(watch).toContainText(text);
+  }
+  await state.selectOption("empty");
+  await expect(watch).toContainText("Aucune publication correspondante");
+  await page.goto("/#page=dashboard");
+  await expect(
+    page.getByRole("region", { name: "Synthèse de la veille X", exact: true }),
+  ).toContainText("Julie");
+  await expect(
+    page.getByRole("region", { name: "Synthèse de la veille X", exact: true }),
+  ).toContainText("Engagement quotidien");
+  await page.goto("/#page=people&peopleQuery=INEXISTANT");
+  await expect(page.getByLabel("Filtrer les personnes")).toHaveValue(
+    "INEXISTANT",
+  );
+  await page.reload();
+  await expect(page.getByLabel("Filtrer les personnes")).toHaveValue(
+    "INEXISTANT",
+  );
+});
+
+test("navigation V2 : lien invalide et échec de vue conservent les autres pages", async ({
+  page,
+}) => {
+  await page.goto("/#page=inconnue");
+  await expect(
+    page.getByRole("heading", { name: "Lien invalide", exact: true }),
+  ).toBeVisible();
+  await page
+    .getByRole("link", { name: "Revenir au tableau de bord", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", {
+      name: "Tableau de bord",
+      exact: true,
+      level: 1,
+    }),
+  ).toBeVisible();
+  await page.route("**/src/TokenAnalysis.tsx", (route) => route.abort());
+  await page.goto("/#/tokens/base/0xDEMO" + "0".repeat(34) + "42");
+  await expect(
+    page.getByRole("heading", {
+      name: "Cette vue n’a pas pu être affichée",
+      exact: true,
+    }),
+  ).toBeVisible();
+  await expect(page.getByRole("contentinfo")).toContainText(
+    "ne constitue pas un conseil financier",
+  );
+  await page.unroute("**/src/TokenAnalysis.tsx");
+  await page
+    .getByRole("button", { name: "Recharger la vue", exact: true })
+    .click();
+  await expect(
+    page.getByRole("region", {
+      name: "Analyse et graphique du token",
+      exact: true,
+    }),
+  ).toBeVisible();
+});
+
+test("navigation démo : les références externes affichent un motif sans ouvrir le réseau", async ({
+  page,
+  context,
+}) => {
+  const external: string[] = [];
+  page.on("request", (r) => {
+    if (
+      !r.url().startsWith("http://127.0.0.1:5173") &&
+      !r.url().startsWith("data:")
+    )
+      external.push(r.url());
+  });
+  await page.goto("/#page=sources");
+  await page
+    .getByRole("link", { name: "Documentation X", exact: true })
+    .click();
+  await expect(
+    page
+      .getByRole("status")
+      .filter({ hasText: "Les liens externes sont désactivés" }),
+  ).toBeVisible();
+  expect(context.pages()).toHaveLength(1);
+  expect(external).toEqual([]);
+  await page
+    .getByRole("navigation", { name: "Navigation principale" })
+    .getByRole("link", { name: "Veille X", exact: true })
+    .click();
+  await expect(
+    page.getByRole("region", { name: "Veille X locale", exact: true }),
+  ).toBeVisible();
+});

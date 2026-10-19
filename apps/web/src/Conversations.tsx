@@ -1,3 +1,5 @@
+import { useUrlFilters } from "./useUrlFilters";
+import { OpenX } from "./PublicationLink";
 import { OpenChart } from "./TokenLink";
 import { demoChartRegistry } from "../../../packages/charts/demo-data";
 import { DEMO_EVENT_ID } from "../../../packages/events/model";
@@ -7,6 +9,7 @@ import {
   demoConversationId,
 } from "../../../packages/conversations/demo-data";
 import {
+  conversationFilters,
   coverage,
   role,
   selectPosts,
@@ -21,12 +24,27 @@ export function Conversations({ id }: { id: string }) {
     [quoted, setQuoted] = useState(false),
     [view, setView] = useState<"tree" | "list">("tree"),
     [simulation, setSimulation] = useState("normal");
-  const [filters, setFilters] = useState<ConversationFilters>({
-    text: "",
-    sort: "date",
-    addressOnly: false,
-    followedOnly: false,
+  const url = useUrlFilters();
+  const decoded = conversationFilters.safeParse({
+    text: url.params.get("convText") ?? "",
+    sort: url.params.get("convSort") ?? "date",
+    addressOnly: url.params.get("convAddress") === "true",
+    followedOnly: url.params.get("convFollowed") === "true",
+    tokenId: url.params.get("convToken") || undefined,
+    eventId: url.params.get("convEvent") || undefined,
   });
+  const filters = decoded.success
+    ? decoded.data
+    : conversationFilters.parse({});
+  const setFilters = (next: ConversationFilters) =>
+    url.patch({
+      convText: next.text,
+      convSort: next.sort,
+      convAddress: String(next.addressOnly),
+      convFollowed: String(next.followedOnly),
+      convToken: next.tokenId ?? null,
+      convEvent: next.eventId ?? null,
+    });
   if (id !== demoConversationId)
     return (
       <section className="panel">
@@ -73,6 +91,12 @@ export function Conversations({ id }: { id: string }) {
   const quotes = selected.filter((p) => role(p, id) === "quote");
   return (
     <section className="conversation-page" aria-label="Conversation fictive">
+      {!decoded.success && (
+        <p role="alert">
+          Filtres de conversation invalides : les valeurs par défaut sont
+          utilisées.
+        </p>
+      )}
       <p className="notice">
         DÉMO hors ligne : Nébula Mobile, publications et comptes entièrement
         inventés. Instantané du 15 janvier 2026. Aucun appel à X et aucune
@@ -376,12 +400,11 @@ function PostCard({ post }: { post: ConversationPost }) {
         {post.metrics.reposts ?? "inconnues"} · Citations :{" "}
         {post.metrics.quotes ?? "inconnues"}
       </p>
+      <OpenX id={post.id} origin={post.dataOrigin} />
       {post.dataOrigin === "DEMO" ? (
         <span>Publication fictive : {postUrl}</span>
       ) : (
-        <a href={postUrl} target="_blank" rel="noopener noreferrer">
-          Ouvrir sur X
-        </a>
+        <span>Publication : x.com</span>
       )}
       {addresses.length > 0 && (
         <p className="address-candidate">

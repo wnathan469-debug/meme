@@ -307,6 +307,27 @@ try {
     await sourceX.getByLabel("Activer X", { exact: true }).isChecked(),
     false,
   );
+  await page.goto("memeradar://app/index.html#page=watch");
+  const navigation = page.getByRole("navigation", {
+    name: "Navigation principale",
+  });
+  assert.equal(await navigation.getByRole("link").count(), 9);
+  const watch = page.getByRole("region", {
+    name: "Veille X locale",
+    exact: true,
+  });
+  await watch.waitFor();
+  await watch.getByLabel("Hashtag exact").fill("NebulaProduit");
+  assert.match(page.url(), /tag=NebulaProduit/);
+  assert.ok((await watch.getByRole("article").count()) > 0);
+  await page.reload();
+  assert.equal(
+    await watch.getByLabel("Hashtag exact").inputValue(),
+    "NebulaProduit",
+  );
+  await watch.getByLabel("État de la veille démo").selectOption("quota");
+  assert.match(await watch.textContent(), /Quota X fictif épuisé/);
+  assert.equal(await watch.getByRole("article").count(), 0);
   console.log(
     "PASS: Electron sandbox, IPC validation, persistent preferences across restart, clipboard, deep link and blocked main/renderer network.",
   );

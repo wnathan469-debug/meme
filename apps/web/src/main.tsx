@@ -1,3 +1,9 @@
+import { matchesControls } from "./control-filters";
+import { routeParams } from "./navigation";
+import { navigation, readRoute, pageHref, type Page } from "./navigation";
+import { Navigation } from "./Navigation";
+import { PageBoundary } from "./PageBoundary";
+import { WatchPage, DashboardV2 } from "./WatchPage";
 import { SourcesV2 } from "./SourcesV2";
 import { AlertsV2 } from "./AlertsV2";
 import { OpenChart } from "./TokenLink";
@@ -44,51 +50,6 @@ const TokenAnalysis = React.lazy(() =>
   import("./TokenAnalysis").then((m) => ({ default: m.TokenAnalysis })),
 );
 
-type Page =
-  | "dashboard"
-  | "events"
-  | "tokens"
-  | "alerts"
-  | "sources"
-  | "settings"
-  | "people"
-  | "conversations"
-  | "analysis";
-const navigation: { id: Page; icon: string; label: string }[] = [
-  { id: "dashboard", icon: "◈", label: "Tableau de bord" },
-  { id: "events", icon: "◎", label: "Événements" },
-  { id: "tokens", icon: "⬡", label: "Tokens détectés" },
-  { id: "analysis", icon: "▥", label: "Analyse token" },
-  { id: "alerts", icon: "♧", label: "Alertes" },
-  { id: "conversations", icon: "◌", label: "Conversations" },
-  { id: "people", icon: "♙", label: "Personnes suivies" },
-  { id: "sources", icon: "◫", label: "Sources et API" },
-  { id: "settings", icon: "⚙", label: "Paramètres" },
-];
-function readRoute() {
-  const hash = location.hash.slice(1);
-  const params = new URLSearchParams(
-    hash.startsWith("/tokens") ? (hash.split("?")[1] ?? "") : hash,
-  );
-  const raw = params.get("page");
-  const chartPath = location.hash.slice(1).startsWith("/tokens")
-    ? location.hash.slice(1).split("?")[0]
-    : null;
-  return {
-    chartPath,
-    page: chartPath
-      ? ("analysis" as Page)
-      : navigation.some((n) => n.id === raw)
-        ? (raw as Page)
-        : "dashboard",
-    query: params.get("q") ?? "",
-    chain: params.get("chain") ?? "Toutes",
-    confidence: params.get("confidence") ?? "Tous",
-    event: chartPath ? null : params.get("event"),
-    token: chartPath ? null : params.get("token"),
-    conversation: chartPath ? null : params.get("conversation"),
-  };
-}
 function Badge({
   children,
   tone = "neutral",
@@ -175,7 +136,7 @@ function Money({ metric, minute }: { metric: Metric; minute: number }) {
   );
 }
 function App() {
-  const [route, setRoute] = useState(readRoute);
+  const [route, setRoute] = useState(() => readRoute(location.hash));
   const [saved, setSaved] = useState<SavedState>(defaultState);
   const [ready, setReady] = useState(false),
     [warning, setWarning] = useState(""),
@@ -198,7 +159,7 @@ function App() {
     });
   }, []);
   useEffect(() => {
-    const listener = () => setRoute(readRoute());
+    const listener = () => setRoute(readRoute(location.hash));
     addEventListener("hashchange", listener);
     return () => removeEventListener("hashchange", listener);
   }, []);
@@ -220,9 +181,17 @@ function App() {
     );
     return () => clearInterval(id);
   }, [playing]);
+  useEffect(() => {
+    if (!ready) return;
+    const label =
+      route.page === "analysis"
+        ? "Analyse token"
+        : navigation.find((n) => n.id === route.page)?.label;
+    document.title = `${label ?? "Page inconnue"} · MemeRadar · Démo`;
+    document.getElementById("page-title")?.focus();
+  }, [route.page, route.chartPath, ready]);
   const go = (page: Page, extra: Record<string, string> = {}) => {
-    const params = new URLSearchParams({ page, ...extra });
-    location.hash = params.toString();
+    location.hash = pageHref(page, location.hash, extra);
   };
   const filter = (key: string, value: string) => {
     if (route.chartPath) {
@@ -307,7 +276,13 @@ function App() {
         .toLowerCase()
         .includes(route.query.toLowerCase()) &&
       (route.chain === "Toutes" || t.chain === route.chain) &&
-      (route.confidence === "Tous" || associate(t).level === route.confidence),
+      (route.confidence === "Tous" ||
+        associate(t).level === route.confidence) &&
+      matchesControls(
+        t.risks.map((r) => r.status),
+        routeParams(location.hash).get("risk") ?? "all",
+        routeParams(location.hash).get("tokenQuality") ?? "all",
+      ),
   );
   const socialDisabled = saved.disabledSources.includes("social");
   const chartValues = events[0].mentions.map((_, i) =>
@@ -403,7 +378,32 @@ function App() {
       </div>
     );
   return (
-    <div className="app-shell">
+    <div
+      className="app-shell"
+      onClickCapture={(event) => {
+        const target =
+          event.target instanceof Element
+            ? event.target.closest("a[href]")
+            : null;
+        const href = target?.getAttribute("href");
+        if (href && !href.startsWith("#")) {
+          event.preventDefault();
+          setNotice(
+            "Les liens externes sont désactivés dans cette démonstration hors ligne.",
+          );
+        }
+      }}
+    >
+      <a
+        className="skip-link"
+        href="#main"
+        onClick={(e) => {
+          e.preventDefault();
+          document.getElementById("main")?.focus();
+        }}
+      >
+        Aller au contenu principal
+      </a>
       <aside className="sidebar">
         <a href="#page=dashboard" className="brand">
           <span className="brand-mark">◉</span>
@@ -420,29 +420,14 @@ function App() {
           <span className="right">⌄</span>
         </div>
         <p className="nav-label">EXPLORER</p>
-        <nav aria-label="Navigation principale">
-          {navigation.map((n) => (
-            <a
-              key={n.id}
-              href={`#page=${n.id}`}
-              aria-current={route.page === n.id ? "page" : undefined}
-              className={route.page === n.id ? "active" : ""}
-            >
-              <span aria-hidden>{n.icon}</span>
-              {n.label}
-              {n.id === "alerts" && (
-                <span className="nav-count">
-                  {
-                    allAlerts.filter(
-                      (a) =>
-                        !a.suppressed && !saved.dismissedAlerts.includes(a.id),
-                    ).length
-                  }
-                </span>
-              )}
-            </a>
-          ))}
-        </nav>
+        <Navigation
+          page={route.page}
+          alertCount={
+            allAlerts.filter(
+              (a) => !a.suppressed && !saved.dismissedAlerts.includes(a.id),
+            ).length
+          }
+        />
         <div className="sidebar-bottom">
           <div className="private">
             <span>▣</span>
@@ -468,7 +453,9 @@ function App() {
           <div className="breadcrumb">
             Observatoire <span>/</span>{" "}
             <strong>
-              {navigation.find((n) => n.id === route.page)?.label}
+              {route.page === "analysis"
+                ? "Analyse token"
+                : navigation.find((n) => n.id === route.page)?.label}
             </strong>
           </div>
           <div className="row">
@@ -490,29 +477,35 @@ function App() {
             <span className="avatar">MR</span>
           </div>
         </header>
-        <main id="main">
+        <main id="main" tabIndex={-1}>
           <div className="page-heading">
             <div>
               <p className="eyebrow">VEILLE & ANALYSE EXPLICABLE</p>
-              <h1>{navigation.find((n) => n.id === route.page)?.label}</h1>
+              <h1 tabIndex={-1} id="page-title">
+                {route.page === "analysis"
+                  ? "Analyse token"
+                  : navigation.find((n) => n.id === route.page)?.label}
+              </h1>
               <p className="subtitle">
                 {route.page === "dashboard"
                   ? "Les tendances se propagent. Gardez une trace des faits."
-                  : route.page === "conversations"
-                    ? "Reliez les réponses et gardez les limites de couverture visibles."
-                    : route.page === "people"
-                      ? "Suivez des identités, conservez vos notes privées et distinguez les observations."
-                      : route.page === "events"
-                        ? "De l’actualité aux associations : retracez chaque source."
-                        : route.page === "tokens"
-                          ? "Une identité, des preuves et des limites pour chaque token."
-                          : route.page === "analysis"
-                            ? "Prix, liquidité et mentions : des observations datées, avec leurs limites."
-                            : route.page === "alerts"
-                              ? "Des déclenchements documentés, sans recommandations financières."
-                              : route.page === "sources"
-                                ? "Comprenez la couverture et la provenance des données."
-                                : "Personnalisez votre observatoire sur cet appareil."}
+                  : route.page === "watch"
+                    ? "Parcourez les publications observées et leurs limites de couverture."
+                    : route.page === "conversations"
+                      ? "Reliez les réponses et gardez les limites de couverture visibles."
+                      : route.page === "people"
+                        ? "Suivez des identités, conservez vos notes privées et distinguez les observations."
+                        : route.page === "events"
+                          ? "De l’actualité aux associations : retracez chaque source."
+                          : route.page === "tokens"
+                            ? "Une identité, des preuves et des limites pour chaque token."
+                            : route.page === "analysis"
+                              ? "Prix, liquidité et mentions : des observations datées, avec leurs limites."
+                              : route.page === "alerts"
+                                ? "Des déclenchements documentés, sans recommandations financières."
+                                : route.page === "sources"
+                                  ? "Comprenez la couverture et la provenance des données."
+                                  : "Personnalisez votre observatoire sur cet appareil."}
               </p>
             </div>
             <Badge tone="demo">Environnement fictif</Badge>
@@ -569,671 +562,795 @@ function App() {
               }}
             />
           </section>
-          {route.page === "analysis" &&
-            (route.chartPath ? (
-              <React.Suspense
-                fallback={<p role="status">Chargement du graphique local…</p>}
-              >
-                <TokenAnalysis
-                  path={route.chartPath}
-                  minute={minute}
-                  zone={saved.timezone}
-                  theme={saved.theme}
-                  socialDisabled={socialDisabled}
-                  indexerDisabled={saved.disabledSources.includes("indexer")}
-                />
-              </React.Suspense>
+          <PageBoundary key={route.page + (route.chartPath ?? "")}>
+            {route.error ? (
+              <section className="panel" role="alert">
+                <h2>Lien invalide</h2>
+                <p>{route.error}</p>
+                <a href="#page=dashboard">Revenir au tableau de bord</a>
+              </section>
             ) : (
-              <section className="panel">
-                <h2>Choisissez un token à analyser</h2>
-                <p>
-                  Ouvrez son graphique depuis une carte ou une mention ; la
-                  chaîne et l’adresse identifient la fiche.
-                </p>
-                <a href="#page=tokens">Voir les tokens détectés</a>
-              </section>
-            ))}
-          {route.page === "dashboard" && (
-            <>
-              <div className="stats">
-                <Stat
-                  label="Événements suivis"
-                  value="03"
-                  note="Trois scénarios entièrement fictifs"
-                  icon="◎"
-                />
-                <Stat
-                  label="Tokens associés"
-                  value="08"
-                  note="Aucun lien officiel confirmé"
-                  icon="⬡"
-                />
-                <Stat
-                  label="Mentions observées"
-                  value={
-                    socialDisabled
-                      ? "Partielles"
-                      : new Intl.NumberFormat("fr-CA").format(totalMentions)
-                  }
-                  note="Cumul du rejeu • données fictives"
-                  icon="〰"
-                />
-                <Stat
-                  label="Alertes visibles"
-                  value={String(
-                    allAlerts.filter((a) => !a.suppressed).length,
-                  ).padStart(2, "0")}
-                  note={`${allAlerts.filter((a) => a.suppressed).length} déclenchements supprimés`}
-                  icon="♧"
-                />
-              </div>
-              <div className="dashboard-grid">
-                <section className="panel">
-                  <div className="section-heading">
-                    <div>
-                      <h2>Évolution de l’attention</h2>
-                      <p>Mentions par tranche de 5 minutes · calculé</p>
-                    </div>
-                    <Badge>3 scénarios</Badge>
-                  </div>
-                  {socialDisabled ? (
-                    <Empty
-                      title="Source sociale exclue"
-                      text="Réactivez-la dans Sources pour afficher cette série fictive."
-                    />
-                  ) : (
-                    <Chart values={chartValues} minute={minute} />
-                  )}
-                  <div className="chart-legend">
-                    <i className="dot" /> Mentions observées{" "}
-                    <span className="muted right">
-                      Source : jeu local ·{" "}
-                      <Time iso={at(minute)} zone={saved.timezone} />
-                    </span>
-                  </div>
-                </section>
-                <section className="panel guide">
-                  <span className="guide-icon">⌕</span>
-                  <h2>Un lien n’est pas une preuve.</h2>
-                  <p>
-                    Le nom d’un token ne suffit jamais à démontrer une
-                    association officielle. Consultez les sources et les
-                    contre-indications.
-                  </p>
-                  <div className="guide-divider" />
-                  <span className="small muted">TROIS NIVEAUX DE LECTURE</span>
-                  <div className="row wrap">
-                    <Badge>◉ Observé</Badge>
-                    <Badge>∑ Calculé</Badge>
-                    <Badge>◇ Interprété</Badge>
-                  </div>
-                </section>
-              </div>
-              <section>
-                <div className="section-heading">
-                  <div>
-                    <h2>
-                      Événements en observation <span className="count">3</span>
-                    </h2>
-                    <p>
-                      Fiabilité des sources et popularité sont évaluées
-                      séparément.
-                    </p>
-                  </div>
-                  <button className="text-button" onClick={() => go("events")}>
-                    Tous les événements ↗
-                  </button>
-                </div>
-                <div className="event-grid">
-                  {events.map(eventCard)}
-                  <EventFeatureCard query="" />
-                </div>
-                <p className="small muted">
-                  Les indicateurs agrégés couvrent les trois scénarios d’origine
-                  ; Nébula Mobile présente ses mesures distinctes dans sa fiche.
-                </p>
-              </section>
-              <section className="panel">
-                <div className="section-heading">
-                  <div>
-                    <h2>Derniers signaux</h2>
-                    <p>Alertes issues de scénarios fictifs</p>
-                  </div>
-                  <button className="text-button" onClick={() => go("alerts")}>
-                    Voir l’historique →
-                  </button>
-                </div>
-                {allAlerts
-                  .filter((a) => !a.suppressed)
-                  .slice(0, 3)
-                  .map(alertCard)}
-                {!allAlerts.some((a) => !a.suppressed) && (
-                  <Empty
-                    title="Aucun déclenchement à cet instant"
-                    text="Avancez le rejeu ou adaptez les seuils dans Alertes."
+              <>
+                {route.page === "watch" && (
+                  <WatchPage
+                    minute={minute}
+                    zone={saved.timezone}
+                    socialDisabled={socialDisabled}
                   />
                 )}
-              </section>
-            </>
-          )}
-          {route.page === "events" && (
-            <>
-              <Filters query={route.query} onQuery={(v) => filter("q", v)} />
-              <div className="event-grid">
-                {filteredEvents.map(eventCard)}
-                <EventFeatureCard query={route.query} />
-              </div>
-              <EventInsights
-                id={route.event}
-                minute={minute}
-                zone={saved.timezone}
-                socialDisabled={socialDisabled}
-                indexerDisabled={saved.disabledSources.includes("indexer")}
-                pressDisabled={saved.disabledSources.includes("press")}
-              />
-              {!filteredEvents.length &&
-                !V2_EVENT_TITLE.toLowerCase().includes(
-                  route.query.toLowerCase(),
-                ) && (
-                  <Empty
-                    title="Aucun événement correspondant"
-                    text="Essayez un autre mot-clé."
-                  />
-                )}
-            </>
-          )}
-          {route.page === "tokens" && (
-            <>
-              <SocialProofs
-                minute={minute}
-                zone={saved.timezone}
-                socialDisabled={socialDisabled}
-                indexerDisabled={saved.disabledSources.includes("indexer")}
-                query={route.query}
-                chain={route.chain}
-                confidence={route.confidence}
-                selected={
-                  route.token?.startsWith("00000000-0000-4000-8000-00000000007")
-                    ? route.token
-                    : null
-                }
-              />
-              <Filters query={route.query} onQuery={(v) => filter("q", v)}>
-                <label>
-                  Chaîne
-                  <select
-                    value={route.chain}
-                    onChange={(e) => filter("chain", e.target.value)}
-                  >
-                    {["Toutes", "Base", "Solana"].map((v) => (
-                      <option key={v}>{v}</option>
-                    ))}
-                  </select>
-                </label>
-                <label>
-                  Association
-                  <select
-                    value={route.confidence}
-                    onChange={(e) => filter("confidence", e.target.value)}
-                  >
-                    <option value="Tous">Tous les niveaux</option>
-                    {(["PLAUSIBLE", "WEAK", "INSUFFICIENT_DATA"] as const).map(
-                      (v) => (
-                        <option key={v} value={v}>
-                          {LABELS[v]}
-                        </option>
-                      ),
-                    )}
-                  </select>
-                </label>
-              </Filters>
-              <div className="panel table-wrap">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Token / identité</th>
-                      <th>Chaîne</th>
-                      <th>Association</th>
-                      <th>Liquidité fictive</th>
-                      <th>Contrôles</th>
-                      <th>
-                        <span className="sr-only">Détails</span>
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredTokens.map((t) => (
-                      <tr key={t.id}>
-                        <td>
-                          <button
-                            className="token-name"
-                            onClick={() => go("tokens", { token: t.id })}
-                          >
-                            {t.name}
-                          </button>
-                          <div className="row small">
-                            <Origin />
-                            <span className="muted">{t.symbol}</span>
-                          </div>
-                        </td>
-                        <td>
-                          {t.chain}
-                          <OpenChart chain={t.chain} address={t.address} />
-                        </td>
-                        <td>
-                          <Badge
-                            tone={
-                              associate(t).impersonation ? "risk" : "neutral"
-                            }
-                          >
-                            {associate(t).impersonation
-                              ? "⚠ Imitateur potentiel"
-                              : LABELS[associate(t).level]}
-                          </Badge>
-                        </td>
-                        <td>
-                          {saved.disabledSources.includes("indexer") ? (
-                            <span className="missing">Non disponible</span>
-                          ) : (
-                            <Money metric={t.liquidity} minute={minute} />
-                          )}
-                        </td>
-                        <td>
-                          {t.risks.some((r) => r.severity === "high") ? (
-                            <Badge tone="risk">! Signal élevé</Badge>
-                          ) : (
-                            <Badge>Données insuffisantes</Badge>
-                          )}
-                        </td>
-                        <td>
-                          <button
-                            className="text-button"
-                            aria-label={`Ouvrir ${t.name}`}
-                            onClick={() => go("tokens", { token: t.id })}
-                          >
-                            →
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                {!filteredTokens.length && (
-                  <Empty
-                    title="Aucun token correspondant"
-                    text="Modifiez la recherche ou les filtres."
-                  />
-                )}
-              </div>
-              <p className="small muted">
-                Métriques observées à T+60 min · source : indexeur fictif local.
-                Les prix ne servent pas de classement.
-              </p>
-            </>
-          )}
-          {route.page === "alerts" && (
-            <>
-              <AlertsV2 />
-              <EventAlertDrafts />
-              <div className="tabs">
-                <button
-                  className={tab === "history" ? "selected" : ""}
-                  onClick={() => setTab("history")}
-                >
-                  Historique <span>{allAlerts.length}</span>
-                </button>
-                <button
-                  className={tab === "rules" ? "selected" : ""}
-                  onClick={() => setTab("rules")}
-                >
-                  Ma règle d’attention
-                </button>
-              </div>
-              {tab === "history" ? (
-                <section className="panel">
-                  <div className="section-heading">
-                    <h2>Historique du rejeu</h2>
-                    <label className="checkbox">
-                      <input
-                        type="checkbox"
-                        checked={showSuppressed}
-                        onChange={(e) => setShowSuppressed(e.target.checked)}
-                      />{" "}
-                      Inclure les alertes supprimées
-                    </label>
-                  </div>
-                  {visibleAlerts.map(alertCard)}
-                  {!visibleAlerts.length && (
-                    <Empty
-                      title="Aucune alerte à cet instant"
-                      text="Avancez le temps simulé. Les alertes sont recalculées de façon déterministe."
-                    />
-                  )}
-                </section>
-              ) : (
-                <section className="panel form-panel">
-                  <h2>Configurer le seuil</h2>
-                  <p>
-                    Cette règle s’applique aux trois séries fictives. Son
-                    historique est recalculé à chaque modification. Les trois
-                    alertes pédagogiques du scénario Tesla restent distinctes.
-                  </p>
-                  <form
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      const result = ruleSchema.safeParse(ruleDraft);
-                      if (!result.success) {
-                        setNotice(
-                          "Vérifiez les seuils : réarmement inférieur au déclenchement, délai entre 0 et 1 440 minutes.",
-                        );
-                        return;
+                {route.page === "analysis" &&
+                  (route.chartPath ? (
+                    <React.Suspense
+                      fallback={
+                        <p role="status">Chargement du graphique local…</p>
                       }
-                      change({ ...saved, rule: result.data });
-                    }}
-                  >
-                    <label>
-                      Nom de la règle
-                      <input
-                        value={ruleDraft.name}
-                        maxLength={100}
-                        required
-                        onChange={(e) =>
-                          setRuleDraft({ ...ruleDraft, name: e.target.value })
-                        }
-                      />
-                    </label>
-                    <div className="form-grid">
-                      <label>
-                        Déclencher à partir de (mentions / 5 min)
-                        <input
-                          type="number"
-                          min="2"
-                          max="1000"
-                          required
-                          value={ruleDraft.threshold}
-                          onChange={(e) =>
-                            setRuleDraft({
-                              ...ruleDraft,
-                              threshold: Number(e.target.value),
-                            })
-                          }
-                        />
-                      </label>
-                      <label>
-                        Réarmer en dessous de
-                        <input
-                          type="number"
-                          min="0"
-                          max="999"
-                          required
-                          value={ruleDraft.resetBelow}
-                          onChange={(e) =>
-                            setRuleDraft({
-                              ...ruleDraft,
-                              resetBelow: Number(e.target.value),
-                            })
-                          }
-                        />
-                      </label>
-                      <label>
-                        Délai de récupération (minutes)
-                        <input
-                          type="number"
-                          min="0"
-                          max="1440"
-                          required
-                          value={ruleDraft.cooldown}
-                          onChange={(e) =>
-                            setRuleDraft({
-                              ...ruleDraft,
-                              cooldown: Number(e.target.value),
-                            })
-                          }
-                        />
-                      </label>
-                    </div>
-                    <label className="checkbox">
-                      <input
-                        type="checkbox"
-                        checked={ruleDraft.enabled}
-                        onChange={(e) =>
-                          setRuleDraft({
-                            ...ruleDraft,
-                            enabled: e.target.checked,
-                          })
-                        }
-                      />{" "}
-                      Règle activée
-                    </label>
-                    <button className="primary" type="submit">
-                      Enregistrer la règle
-                    </button>
-                  </form>
-                  <div className="info-box">
-                    Les courriels et webhooks sont indisponibles dans cette
-                    édition hors ligne.
-                  </div>
-                </section>
-              )}
-            </>
-          )}
-          {route.page === "sources" && (
-            <>
-              <SourcesV2 zone={saved.timezone} />
-              <div className="info-box">
-                Les connecteurs ci-dessous lisent uniquement les fixtures
-                locales. Les interrupteurs filtrent les publications affichées ;
-                ils n’activent aucune collecte réelle.
-              </div>
-              <div className="source-grid">
-                {sources.map((s) => (
-                  <section className="panel" key={s.id}>
-                    <div className="row">
-                      <span className="source-icon">◫</span>
-                      <Badge>Niveau {s.tier}</Badge>
-                      <Origin />
-                    </div>
-                    <h2>{s.name}</h2>
-                    <p>{s.type}</p>
-                    <div className="source-meta">
-                      <span>Statut</span>
-                      <strong>
-                        {saved.disabledSources.includes(s.id)
-                          ? "Exclue de la vue"
-                          : "Fixture disponible"}
-                      </strong>
-                      <span>Dernière observation</span>
-                      <Time
-                        iso={at(Math.min(minute, 60))}
+                    >
+                      <TokenAnalysis
+                        path={route.chartPath}
+                        minute={minute}
                         zone={saved.timezone}
+                        theme={saved.theme}
+                        socialDisabled={socialDisabled}
+                        indexerDisabled={saved.disabledSources.includes(
+                          "indexer",
+                        )}
                       />
-                      <span>Quota / CGU fournisseur</span>
-                      <span>Sans objet — source inventée</span>
-                    </div>
-                    <label className="checkbox">
-                      <input
-                        type="checkbox"
-                        checked={!saved.disabledSources.includes(s.id)}
-                        onChange={(e) =>
-                          change({
-                            ...saved,
-                            disabledSources: e.target.checked
-                              ? saved.disabledSources.filter(
-                                  (id) => id !== s.id,
-                                )
-                              : [...saved.disabledSources, s.id],
-                          })
-                        }
-                      />{" "}
-                      Inclure dans les vues de sources
-                    </label>
-                    <DemoLink
-                      url={`https://demo.memeradar.invalid/sources/${s.id}`}
+                    </React.Suspense>
+                  ) : (
+                    <section className="panel">
+                      <h2>Choisissez un token à analyser</h2>
+                      <p>
+                        Ouvrez son graphique depuis une carte ou une mention ;
+                        la chaîne et l’adresse identifient la fiche.
+                      </p>
+                      <a href="#page=tokens">Voir les tokens détectés</a>
+                    </section>
+                  ))}
+                {route.page === "dashboard" && (
+                  <>
+                    <DashboardV2
+                      minute={minute}
+                      zone={saved.timezone}
+                      socialDisabled={socialDisabled}
                     />
-                  </section>
-                ))}
-              </div>
-            </>
-          )}
-          {route.page === "conversations" && (
-            <Conversations
-              key={route.conversation}
-              id={route.conversation ?? demoConversationId}
-            />
-          )}
-          {route.page === "people" && <People />}
-          {route.page === "settings" && (
-            <div className="settings-grid">
-              <section className="panel form-panel">
-                <h2>Préférences locales</h2>
-                <label>
-                  Apparence
-                  <select
-                    value={saved.theme}
-                    onChange={(e) =>
-                      change({
-                        ...saved,
-                        theme: e.target.value as SavedState["theme"],
-                      })
-                    }
-                  >
-                    <option value="dark">Sombre</option>
-                    <option value="light">Clair</option>
-                  </select>
-                </label>
-                <label>
-                  Fuseau horaire
-                  <select
-                    value={saved.timezone}
-                    onChange={(e) =>
-                      change({
-                        ...saved,
-                        timezone: e.target.value as SavedState["timezone"],
-                      })
-                    }
-                  >
-                    {["America/Toronto", "Europe/Paris", "UTC"].map((v) => (
-                      <option key={v}>{v}</option>
-                    ))}
-                  </select>
-                </label>
-                <label>
-                  Mode de fonctionnement
-                  <input readOnly value="Démonstration hors ligne" />
-                </label>
-                <div className="info-box">
-                  Le mode réel n’est pas livré dans cette version. Aucune clé
-                  API, aucun compte et aucun portefeuille ne sont nécessaires.
-                </div>
-              </section>
-              <section className="panel form-panel">
-                <h2>Ma liste de suivi</h2>
-                <p>
-                  Mots-clés personnels, conservés localement. Cliquez sur un
-                  mot-clé pour rechercher les événements correspondants.
-                </p>
-                <form
-                  className="row"
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    const term = newWatch.trim();
-                    if (
-                      term &&
-                      !saved.watchlist.includes(term) &&
-                      saved.watchlist.length < 50
-                    ) {
-                      change({
-                        ...saved,
-                        watchlist: [...saved.watchlist, term],
-                      });
-                      setNewWatch("");
-                    }
-                  }}
-                >
-                  <input
-                    aria-label="Nouveau mot-clé"
-                    maxLength={80}
-                    value={newWatch}
-                    onChange={(e) => setNewWatch(e.target.value)}
-                    placeholder="Entreprise, sujet, mot-clé…"
-                  />
-                  <button
-                    className="primary"
-                    disabled={saved.watchlist.length >= 50}
-                    type="submit"
-                  >
-                    Ajouter
-                  </button>
-                </form>
-                <div className="watchlist">
-                  {saved.watchlist.map((word) => (
-                    <div key={word}>
-                      <button onClick={() => go("events", { q: word })}>
-                        {word}
+                    <div className="stats">
+                      <Stat
+                        label="Événements suivis"
+                        value="03"
+                        note="Trois scénarios entièrement fictifs"
+                        icon="◎"
+                      />
+                      <Stat
+                        label="Tokens associés"
+                        value="08"
+                        note="Aucun lien officiel confirmé"
+                        icon="⬡"
+                      />
+                      <Stat
+                        label="Mentions observées"
+                        value={
+                          socialDisabled
+                            ? "Partielles"
+                            : new Intl.NumberFormat("fr-CA").format(
+                                totalMentions,
+                              )
+                        }
+                        note="Cumul du rejeu • données fictives"
+                        icon="〰"
+                      />
+                      <Stat
+                        label="Alertes visibles"
+                        value={String(
+                          allAlerts.filter((a) => !a.suppressed).length,
+                        ).padStart(2, "0")}
+                        note={`${allAlerts.filter((a) => a.suppressed).length} déclenchements supprimés`}
+                        icon="♧"
+                      />
+                    </div>
+                    <div className="dashboard-grid">
+                      <section className="panel">
+                        <div className="section-heading">
+                          <div>
+                            <h2>Évolution de l’attention</h2>
+                            <p>Mentions par tranche de 5 minutes · calculé</p>
+                          </div>
+                          <Badge>3 scénarios</Badge>
+                        </div>
+                        {socialDisabled ? (
+                          <Empty
+                            title="Source sociale exclue"
+                            text="Réactivez-la dans Sources pour afficher cette série fictive."
+                          />
+                        ) : (
+                          <Chart values={chartValues} minute={minute} />
+                        )}
+                        <div className="chart-legend">
+                          <i className="dot" /> Mentions observées{" "}
+                          <span className="muted right">
+                            Source : jeu local ·{" "}
+                            <Time iso={at(minute)} zone={saved.timezone} />
+                          </span>
+                        </div>
+                      </section>
+                      <section className="panel guide">
+                        <span className="guide-icon">⌕</span>
+                        <h2>Un lien n’est pas une preuve.</h2>
+                        <p>
+                          Le nom d’un token ne suffit jamais à démontrer une
+                          association officielle. Consultez les sources et les
+                          contre-indications.
+                        </p>
+                        <div className="guide-divider" />
+                        <span className="small muted">
+                          TROIS NIVEAUX DE LECTURE
+                        </span>
+                        <div className="row wrap">
+                          <Badge>◉ Observé</Badge>
+                          <Badge>∑ Calculé</Badge>
+                          <Badge>◇ Interprété</Badge>
+                        </div>
+                      </section>
+                    </div>
+                    <section>
+                      <div className="section-heading">
+                        <div>
+                          <h2>
+                            Événements en observation{" "}
+                            <span className="count">3</span>
+                          </h2>
+                          <p>
+                            Fiabilité des sources et popularité sont évaluées
+                            séparément.
+                          </p>
+                        </div>
+                        <button
+                          className="text-button"
+                          onClick={() => go("events")}
+                        >
+                          Tous les événements ↗
+                        </button>
+                      </div>
+                      <div className="event-grid">
+                        {events.map(eventCard)}
+                        <EventFeatureCard query="" />
+                      </div>
+                      <p className="small muted">
+                        Les indicateurs agrégés couvrent les trois scénarios
+                        d’origine ; Nébula Mobile présente ses mesures
+                        distinctes dans sa fiche.
+                      </p>
+                    </section>
+                    <section className="panel">
+                      <div className="section-heading">
+                        <div>
+                          <h2>Derniers signaux</h2>
+                          <p>Alertes issues de scénarios fictifs</p>
+                        </div>
+                        <button
+                          className="text-button"
+                          onClick={() => go("alerts")}
+                        >
+                          Voir l’historique →
+                        </button>
+                      </div>
+                      {allAlerts
+                        .filter((a) => !a.suppressed)
+                        .slice(0, 3)
+                        .map(alertCard)}
+                      {!allAlerts.some((a) => !a.suppressed) && (
+                        <Empty
+                          title="Aucun déclenchement à cet instant"
+                          text="Avancez le rejeu ou adaptez les seuils dans Alertes."
+                        />
+                      )}
+                    </section>
+                  </>
+                )}
+                {route.page === "events" && (
+                  <>
+                    <Filters
+                      query={route.query}
+                      onQuery={(v) => filter("q", v)}
+                    />
+                    <div className="event-grid">
+                      {filteredEvents.map(eventCard)}
+                      <EventFeatureCard query={route.query} />
+                    </div>
+                    <EventInsights
+                      id={route.event}
+                      minute={minute}
+                      zone={saved.timezone}
+                      socialDisabled={socialDisabled}
+                      indexerDisabled={saved.disabledSources.includes(
+                        "indexer",
+                      )}
+                      pressDisabled={saved.disabledSources.includes("press")}
+                    />
+                    {!filteredEvents.length &&
+                      !V2_EVENT_TITLE.toLowerCase().includes(
+                        route.query.toLowerCase(),
+                      ) && (
+                        <Empty
+                          title="Aucun événement correspondant"
+                          text="Essayez un autre mot-clé."
+                        />
+                      )}
+                  </>
+                )}
+                {route.page === "tokens" && (
+                  <>
+                    <div
+                      className="panel form-grid token-control-filters"
+                      aria-label="Filtres des contrôles token"
+                    >
+                      <label>
+                        État des contrôles de risque
+                        <select
+                          value={
+                            routeParams(location.hash).get("risk") ?? "all"
+                          }
+                          onChange={(e) => filter("risk", e.target.value)}
+                        >
+                          <option value="all">Tous les états</option>
+                          <option value="signal">
+                            Au moins un signal détecté
+                          </option>
+                          <option value="unknown">
+                            Contrôles incomplets ou échoués
+                          </option>
+                          <option value="clear">
+                            Aucun signal dans les contrôles disponibles
+                          </option>
+                        </select>
+                      </label>
+                      <label>
+                        Qualité des contrôles token
+                        <select
+                          value={
+                            routeParams(location.hash).get("tokenQuality") ??
+                            "all"
+                          }
+                          onChange={(e) =>
+                            filter("tokenQuality", e.target.value)
+                          }
+                        >
+                          <option value="all">Toutes les qualités</option>
+                          <option value="complete">
+                            Résultats disponibles pour tous les contrôles
+                            applicables
+                          </option>
+                          <option value="incomplete">
+                            Au moins un contrôle manquant ou échoué
+                          </option>
+                        </select>
+                      </label>
+                      <p>
+                        Ces filtres portent sur les contrôles observés, sans
+                        score global de risque ou garantie de sécurité. Les
+                        données anciennes restent inconnues. Les filtres de
+                        personne et de période concernent la page Veille X.
+                      </p>
+                    </div>
+
+                    <SocialProofs
+                      minute={minute}
+                      zone={saved.timezone}
+                      socialDisabled={socialDisabled}
+                      indexerDisabled={saved.disabledSources.includes(
+                        "indexer",
+                      )}
+                      query={route.query}
+                      chain={route.chain}
+                      confidence={route.confidence}
+                      selected={
+                        route.token?.startsWith(
+                          "00000000-0000-4000-8000-00000000007",
+                        )
+                          ? route.token
+                          : null
+                      }
+                    />
+                    <Filters
+                      query={route.query}
+                      onQuery={(v) => filter("q", v)}
+                    >
+                      <label>
+                        Chaîne
+                        <select
+                          value={route.chain}
+                          onChange={(e) => filter("chain", e.target.value)}
+                        >
+                          {["Toutes", "Base", "Solana"].map((v) => (
+                            <option key={v}>{v}</option>
+                          ))}
+                        </select>
+                      </label>
+                      <label>
+                        Association
+                        <select
+                          value={route.confidence}
+                          onChange={(e) => filter("confidence", e.target.value)}
+                        >
+                          <option value="Tous">Tous les niveaux</option>
+                          {(
+                            ["PLAUSIBLE", "WEAK", "INSUFFICIENT_DATA"] as const
+                          ).map((v) => (
+                            <option key={v} value={v}>
+                              {LABELS[v]}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                    </Filters>
+                    <div className="panel table-wrap">
+                      <table>
+                        <thead>
+                          <tr>
+                            <th>Token / identité</th>
+                            <th>Chaîne</th>
+                            <th>Association</th>
+                            <th>Liquidité fictive</th>
+                            <th>Contrôles</th>
+                            <th>
+                              <span className="sr-only">Détails</span>
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {filteredTokens.map((t) => (
+                            <tr key={t.id}>
+                              <td>
+                                <button
+                                  className="token-name"
+                                  onClick={() => go("tokens", { token: t.id })}
+                                >
+                                  {t.name}
+                                </button>
+                                <div className="row small">
+                                  <Origin />
+                                  <span className="muted">{t.symbol}</span>
+                                </div>
+                              </td>
+                              <td>
+                                {t.chain}
+                                <OpenChart
+                                  chain={t.chain}
+                                  address={t.address}
+                                />
+                              </td>
+                              <td>
+                                <Badge
+                                  tone={
+                                    associate(t).impersonation
+                                      ? "risk"
+                                      : "neutral"
+                                  }
+                                >
+                                  {associate(t).impersonation
+                                    ? "⚠ Imitateur potentiel"
+                                    : LABELS[associate(t).level]}
+                                </Badge>
+                              </td>
+                              <td>
+                                {saved.disabledSources.includes("indexer") ? (
+                                  <span className="missing">
+                                    Non disponible
+                                  </span>
+                                ) : (
+                                  <Money metric={t.liquidity} minute={minute} />
+                                )}
+                              </td>
+                              <td>
+                                {t.risks.some((r) => r.severity === "high") ? (
+                                  <Badge tone="risk">! Signal élevé</Badge>
+                                ) : (
+                                  <Badge>Données insuffisantes</Badge>
+                                )}
+                              </td>
+                              <td>
+                                <button
+                                  className="text-button"
+                                  aria-label={`Ouvrir ${t.name}`}
+                                  onClick={() => go("tokens", { token: t.id })}
+                                >
+                                  →
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                      {!filteredTokens.length && (
+                        <Empty
+                          title="Aucun token correspondant"
+                          text="Modifiez la recherche ou les filtres."
+                        />
+                      )}
+                    </div>
+                    <p className="small muted">
+                      Métriques observées à T+60 min · source : indexeur fictif
+                      local. Les prix ne servent pas de classement.
+                    </p>
+                  </>
+                )}
+                {route.page === "alerts" && (
+                  <>
+                    <AlertsV2 />
+                    <EventAlertDrafts />
+                    <div className="tabs">
+                      <button
+                        className={tab === "history" ? "selected" : ""}
+                        onClick={() => setTab("history")}
+                      >
+                        Historique <span>{allAlerts.length}</span>
                       </button>
                       <button
-                        aria-label={`Retirer ${word}`}
-                        onClick={() =>
-                          change({
-                            ...saved,
-                            watchlist: saved.watchlist.filter(
-                              (v) => v !== word,
-                            ),
-                          })
-                        }
+                        className={tab === "rules" ? "selected" : ""}
+                        onClick={() => setTab("rules")}
                       >
-                        ×
+                        Ma règle d’attention
                       </button>
                     </div>
-                  ))}
-                </div>
-                {!saved.watchlist.length && <p>Aucun sujet suivi.</p>}
-              </section>
-              <section className="panel">
-                <h2>Stockage et confidentialité</h2>
-                <p>
-                  Seuls vos préférences, mots-clés, règle et signalements sont
-                  enregistrés. Les scénarios fictifs sont intégrés à
-                  l’application. Le rejeu redémarre à T+60 min à chaque
-                  lancement.
-                </p>
-                <p className="small muted">
-                  Windows : %APPDATA%\MemeRadar\preferences-v1.json. En
-                  prévisualisation navigateur : stockage local du navigateur.
-                  Aucun envoi de télémétrie ni mise à jour automatique.
-                </p>
-                <button
-                  className="secondary"
-                  onClick={async () => {
-                    try {
-                      await persistState(defaultState);
-                      setWarning("");
-                      setSaved(defaultState);
-                      setRuleDraft(defaultState.rule);
-                      setNotice("Préférences réinitialisées.");
-                    } catch {
-                      setNotice(
-                        "Réinitialisation impossible : vérifiez les droits du dossier de données.",
-                      );
-                    }
-                  }}
-                >
-                  Réinitialiser les préférences
-                </button>
-              </section>
-              <section className="panel">
-                <h2>Couverture de cette édition</h2>
-                <p>
-                  Application de démonstration, pas un service de surveillance
-                  réel. Les cinq indicateurs sont pédagogiques ; les
-                  fournisseurs, analyses RPC, comptes serveur, SMTP et webhooks
-                  restent hors de cette édition.
-                </p>
-                <Badge>Version 0.1.0 · Windows x64</Badge>
-              </section>
-            </div>
-          )}
-          <footer>
+                    {tab === "history" ? (
+                      <section className="panel">
+                        <div className="section-heading">
+                          <h2>Historique du rejeu</h2>
+                          <label className="checkbox">
+                            <input
+                              type="checkbox"
+                              checked={showSuppressed}
+                              onChange={(e) =>
+                                setShowSuppressed(e.target.checked)
+                              }
+                            />{" "}
+                            Inclure les alertes supprimées
+                          </label>
+                        </div>
+                        {visibleAlerts.map(alertCard)}
+                        {!visibleAlerts.length && (
+                          <Empty
+                            title="Aucune alerte à cet instant"
+                            text="Avancez le temps simulé. Les alertes sont recalculées de façon déterministe."
+                          />
+                        )}
+                      </section>
+                    ) : (
+                      <section className="panel form-panel">
+                        <h2>Configurer le seuil</h2>
+                        <p>
+                          Cette règle s’applique aux trois séries fictives. Son
+                          historique est recalculé à chaque modification. Les
+                          trois alertes pédagogiques du scénario Tesla restent
+                          distinctes.
+                        </p>
+                        <form
+                          onSubmit={(e) => {
+                            e.preventDefault();
+                            const result = ruleSchema.safeParse(ruleDraft);
+                            if (!result.success) {
+                              setNotice(
+                                "Vérifiez les seuils : réarmement inférieur au déclenchement, délai entre 0 et 1 440 minutes.",
+                              );
+                              return;
+                            }
+                            change({ ...saved, rule: result.data });
+                          }}
+                        >
+                          <label>
+                            Nom de la règle
+                            <input
+                              value={ruleDraft.name}
+                              maxLength={100}
+                              required
+                              onChange={(e) =>
+                                setRuleDraft({
+                                  ...ruleDraft,
+                                  name: e.target.value,
+                                })
+                              }
+                            />
+                          </label>
+                          <div className="form-grid">
+                            <label>
+                              Déclencher à partir de (mentions / 5 min)
+                              <input
+                                type="number"
+                                min="2"
+                                max="1000"
+                                required
+                                value={ruleDraft.threshold}
+                                onChange={(e) =>
+                                  setRuleDraft({
+                                    ...ruleDraft,
+                                    threshold: Number(e.target.value),
+                                  })
+                                }
+                              />
+                            </label>
+                            <label>
+                              Réarmer en dessous de
+                              <input
+                                type="number"
+                                min="0"
+                                max="999"
+                                required
+                                value={ruleDraft.resetBelow}
+                                onChange={(e) =>
+                                  setRuleDraft({
+                                    ...ruleDraft,
+                                    resetBelow: Number(e.target.value),
+                                  })
+                                }
+                              />
+                            </label>
+                            <label>
+                              Délai de récupération (minutes)
+                              <input
+                                type="number"
+                                min="0"
+                                max="1440"
+                                required
+                                value={ruleDraft.cooldown}
+                                onChange={(e) =>
+                                  setRuleDraft({
+                                    ...ruleDraft,
+                                    cooldown: Number(e.target.value),
+                                  })
+                                }
+                              />
+                            </label>
+                          </div>
+                          <label className="checkbox">
+                            <input
+                              type="checkbox"
+                              checked={ruleDraft.enabled}
+                              onChange={(e) =>
+                                setRuleDraft({
+                                  ...ruleDraft,
+                                  enabled: e.target.checked,
+                                })
+                              }
+                            />{" "}
+                            Règle activée
+                          </label>
+                          <button className="primary" type="submit">
+                            Enregistrer la règle
+                          </button>
+                        </form>
+                        <div className="info-box">
+                          Les courriels et webhooks sont indisponibles dans
+                          cette édition hors ligne.
+                        </div>
+                      </section>
+                    )}
+                  </>
+                )}
+                {route.page === "sources" && (
+                  <>
+                    <SourcesV2 zone={saved.timezone} />
+                    <div className="info-box">
+                      Les connecteurs ci-dessous lisent uniquement les fixtures
+                      locales. Les interrupteurs filtrent les publications
+                      affichées ; ils n’activent aucune collecte réelle.
+                    </div>
+                    <div className="source-grid">
+                      {sources.map((s) => (
+                        <section className="panel" key={s.id}>
+                          <div className="row">
+                            <span className="source-icon">◫</span>
+                            <Badge>Niveau {s.tier}</Badge>
+                            <Origin />
+                          </div>
+                          <h2>{s.name}</h2>
+                          <p>{s.type}</p>
+                          <div className="source-meta">
+                            <span>Statut</span>
+                            <strong>
+                              {saved.disabledSources.includes(s.id)
+                                ? "Exclue de la vue"
+                                : "Fixture disponible"}
+                            </strong>
+                            <span>Dernière observation</span>
+                            <Time
+                              iso={at(Math.min(minute, 60))}
+                              zone={saved.timezone}
+                            />
+                            <span>Quota / CGU fournisseur</span>
+                            <span>Sans objet — source inventée</span>
+                          </div>
+                          <label className="checkbox">
+                            <input
+                              type="checkbox"
+                              checked={!saved.disabledSources.includes(s.id)}
+                              onChange={(e) =>
+                                change({
+                                  ...saved,
+                                  disabledSources: e.target.checked
+                                    ? saved.disabledSources.filter(
+                                        (id) => id !== s.id,
+                                      )
+                                    : [...saved.disabledSources, s.id],
+                                })
+                              }
+                            />{" "}
+                            Inclure dans les vues de sources
+                          </label>
+                          <DemoLink
+                            url={`https://demo.memeradar.invalid/sources/${s.id}`}
+                          />
+                        </section>
+                      ))}
+                    </div>
+                  </>
+                )}
+                {route.page === "conversations" && (
+                  <Conversations
+                    key={route.conversation}
+                    id={route.conversation ?? demoConversationId}
+                  />
+                )}
+                {route.page === "people" && <People />}
+                {route.page === "settings" && (
+                  <div className="settings-grid">
+                    <section className="panel form-panel">
+                      <h2>Préférences locales</h2>
+                      <label>
+                        Apparence
+                        <select
+                          value={saved.theme}
+                          onChange={(e) =>
+                            change({
+                              ...saved,
+                              theme: e.target.value as SavedState["theme"],
+                            })
+                          }
+                        >
+                          <option value="dark">Sombre</option>
+                          <option value="light">Clair</option>
+                        </select>
+                      </label>
+                      <label>
+                        Fuseau horaire
+                        <select
+                          value={saved.timezone}
+                          onChange={(e) =>
+                            change({
+                              ...saved,
+                              timezone: e.target
+                                .value as SavedState["timezone"],
+                            })
+                          }
+                        >
+                          {["America/Toronto", "Europe/Paris", "UTC"].map(
+                            (v) => (
+                              <option key={v}>{v}</option>
+                            ),
+                          )}
+                        </select>
+                      </label>
+                      <label>
+                        Mode de fonctionnement
+                        <input readOnly value="Démonstration hors ligne" />
+                      </label>
+                      <div className="info-box">
+                        Le mode réel n’est pas livré dans cette version. Aucune
+                        clé API, aucun compte et aucun portefeuille ne sont
+                        nécessaires.
+                      </div>
+                    </section>
+                    <section className="panel form-panel">
+                      <h2>Ma liste de suivi</h2>
+                      <p>
+                        Mots-clés personnels, conservés localement. Cliquez sur
+                        un mot-clé pour rechercher les événements
+                        correspondants.
+                      </p>
+                      <form
+                        className="row"
+                        onSubmit={(e) => {
+                          e.preventDefault();
+                          const term = newWatch.trim();
+                          if (
+                            term &&
+                            !saved.watchlist.includes(term) &&
+                            saved.watchlist.length < 50
+                          ) {
+                            change({
+                              ...saved,
+                              watchlist: [...saved.watchlist, term],
+                            });
+                            setNewWatch("");
+                          }
+                        }}
+                      >
+                        <input
+                          aria-label="Nouveau mot-clé"
+                          maxLength={80}
+                          value={newWatch}
+                          onChange={(e) => setNewWatch(e.target.value)}
+                          placeholder="Entreprise, sujet, mot-clé…"
+                        />
+                        <button
+                          className="primary"
+                          disabled={saved.watchlist.length >= 50}
+                          type="submit"
+                        >
+                          Ajouter
+                        </button>
+                      </form>
+                      <div className="watchlist">
+                        {saved.watchlist.map((word) => (
+                          <div key={word}>
+                            <button onClick={() => go("events", { q: word })}>
+                              {word}
+                            </button>
+                            <button
+                              aria-label={`Retirer ${word}`}
+                              onClick={() =>
+                                change({
+                                  ...saved,
+                                  watchlist: saved.watchlist.filter(
+                                    (v) => v !== word,
+                                  ),
+                                })
+                              }
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                      {!saved.watchlist.length && <p>Aucun sujet suivi.</p>}
+                    </section>
+                    <section className="panel">
+                      <h2>Stockage et confidentialité</h2>
+                      <p>
+                        Seuls vos préférences, mots-clés, règle et signalements
+                        sont enregistrés. Les scénarios fictifs sont intégrés à
+                        l’application. Le rejeu redémarre à T+60 min à chaque
+                        lancement.
+                      </p>
+                      <p className="small muted">
+                        Windows : %APPDATA%\MemeRadar\preferences-v1.json. En
+                        prévisualisation navigateur : stockage local du
+                        navigateur. Aucun envoi de télémétrie ni mise à jour
+                        automatique.
+                      </p>
+                      <button
+                        className="secondary"
+                        onClick={async () => {
+                          try {
+                            await persistState(defaultState);
+                            setWarning("");
+                            setSaved(defaultState);
+                            setRuleDraft(defaultState.rule);
+                            setNotice("Préférences réinitialisées.");
+                          } catch {
+                            setNotice(
+                              "Réinitialisation impossible : vérifiez les droits du dossier de données.",
+                            );
+                          }
+                        }}
+                      >
+                        Réinitialiser les préférences
+                      </button>
+                    </section>
+                    <section className="panel">
+                      <h2>Couverture de cette édition</h2>
+                      <p>
+                        Application de démonstration, pas un service de
+                        surveillance réel. Les cinq indicateurs sont
+                        pédagogiques ; les fournisseurs, analyses RPC, comptes
+                        serveur, SMTP et webhooks restent hors de cette édition.
+                      </p>
+                      <Badge>Version 0.1.0 · Windows x64</Badge>
+                    </section>
+                  </div>
+                )}
+              </>
+            )}
+          </PageBoundary>
+          <footer role="contentinfo" aria-label="Avertissement financier">
             <span className="footer-icon">ⓘ</span>
             <p>{WARNING}</p>
           </footer>

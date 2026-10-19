@@ -1,3 +1,6 @@
+import { matchesControls } from "./control-filters";
+import { demoRiskReport } from "../../../packages/risks/demo-data";
+import { useUrlFilters } from "./useUrlFilters";
 import { OpenChart } from "./TokenLink";
 import React, { useState } from "react";
 import { demoSocialSnapshot } from "../../../packages/social/demo-data";
@@ -23,13 +26,23 @@ export function SocialProofs({
   confidence?: string;
   selected?: string | null;
 }) {
-  const [method, setMethod] = useState("all");
+  const url = useUrlFilters(),
+    method = url.params.get("mentionMethod") ?? "all",
+    setMethod = (v: string) => url.set("mentionMethod", v);
   const snapshots = demoSocialSnapshot(
     minute,
     socialDisabled,
     indexerDisabled,
   ).filter(
     (s) =>
+      matchesControls(
+        demoRiskReport(
+          { origin: "DEMO", chain: s.token.chain, address: s.token.address },
+          minute,
+        ).map((r) => r.status),
+        url.params.get("risk") ?? "all",
+        url.params.get("tokenQuality") ?? "all",
+      ) &&
       (!selected || s.token.id === selected) &&
       (chain === "Toutes" || chain.toLowerCase() === s.token.chain) &&
       (confidence === "Tous" || confidence === s.level) &&

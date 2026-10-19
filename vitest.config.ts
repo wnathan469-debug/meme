@@ -5,6 +5,7 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       include: [
+        "apps/web/src/{navigation,watch-model,control-filters}.ts",
         "packages/core/domain.ts",
         "apps/desktop/preferences-v2.cjs",
         "packages/connectors/x/{client,contracts,control,stream-client}.ts",

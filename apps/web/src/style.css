@@ -1785,3 +1785,132 @@ footer p {
 .sources-v2 button {
   margin: 0.3rem;
 }
+
+/* Phase 12: visible navigation labels on small screens and keyboard landmarks. */
+.skip-link {
+  position: fixed;
+  left: 16px;
+  top: -100px;
+  z-index: 100;
+  padding: 12px 18px;
+  background: var(--panel);
+  color: var(--text);
+  border: 2px solid var(--accent);
+}
+.skip-link:focus {
+  top: 12px;
+}
+#page-title:focus,
+main:focus {
+  outline: none;
+}
+.watch-feed {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+  gap: 16px;
+  margin-block: 16px;
+}
+.watch-page .form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: 14px;
+  margin-block: 16px;
+}
+.watch-feed article {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.watch-feed h2 {
+  font-size: 17px;
+}
+.watch-feed .chart-open,
+.chart-open:disabled {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  font: inherit;
+  white-space: normal;
+}
+.watch-feed .chart-open:disabled {
+  cursor: default;
+  opacity: 0.8;
+}
+@media (max-width: 850px) {
+  .app-shell {
+    display: block;
+  }
+  .sidebar {
+    position: static;
+    width: 100%;
+    height: auto;
+    display: block;
+    padding: 10px;
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .sidebar .brand {
+    display: none;
+  }
+  .sidebar nav {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 5px;
+    margin: 0;
+    width: 100%;
+  }
+  .sidebar nav a {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 3px;
+    font-size: 11px;
+    padding: 8px 3px;
+    min-width: 0;
+    text-align: center;
+    height: auto;
+    min-height: 55px;
+    white-space: normal;
+  }
+  .sidebar nav a > span:first-child {
+    font-size: 18px;
+    margin: 0;
+  }
+  .sidebar nav .nav-count {
+    display: none;
+  }
+  .main-shell {
+    margin-left: 0;
+  }
+  .topbar {
+    gap: 8px;
+    padding-inline: 12px;
+  }
+  .breadcrumb {
+    overflow-wrap: anywhere;
+  }
+}
+.token-control-filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  gap: 16px;
+}
+.token-control-filters label {
+  min-width: 0;
+}
+.token-control-filters select {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+.token-control-filters p {
+  grid-column: 1 / -1;
+}
+@media (max-width: 850px) {
+  footer {
+    left: 0;
+    padding-inline: 16px;
+  }
+  main {
+    padding-bottom: 140px;
+  }
+}

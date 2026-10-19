@@ -161,3 +161,7 @@ Moteur déterministe séparé de V1, 12 types, états privés durables. Comparai
 ## Phase 11 — administration des fournisseurs et budget engagé
 
 Séparer les états observés de la présence d’une configuration. Journal technique sans texte fournisseur brut et consommation complète indépendante de la pagination du journal. Plafonds modifiables sous le même verrou que les réservations ; les nouvelles limites par fonctionnalité reprennent l’historique, avec remboursements attachés aux réservations d’origine. Test réseau explicite par nonce durable à usage unique, deux minutes, au plus une tentative sans retry automatique. Les secrets restent hors du renderer et des tables de gestion. Interface hors ligne dédiée jusqu’à la phase 12 ; voir [phase 11](V2_PHASE11.md).
+
+## Phase 12 — navigation et portée des filtres
+
+Neuf pages, fiche d’analyse rattachée aux tokens, anciens deep links conservés. Filtres dans l’URL avec contexte partagé explicite et contrôle privé des notes ; pas de score global de risque inventé. Nouvelle veille intégrée aux fixtures existantes, titres/focus clavier et erreur de vue isolée. Les liens externes restent désactivés dans l’édition DEMO, y compris les références documentaires par clic ordinaire ; aucun droit Electron élargi. Le raccordement serveur envisagé auparavant n’est pas livré par ce lot Navigation/UI ; son absence est documentée, sans annoncer une activation REAL dans la livraison démo. Voir [phase 12](V2_PHASE12.md).
