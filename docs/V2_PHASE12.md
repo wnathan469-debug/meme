@@ -61,6 +61,11 @@ Le premier build Windows a révélé un conflit de résolution entre `Navigation
 
 Les essais intermédiaires ont permis de corriger la mise à jour immédiate des cases contrôlées par l’URL et la largeur d’un sélecteur sur petit écran. Aucun scénario supprimé, seuil réduit, timeout augmenté ou retry ajouté. Pas de nouvelle migration ni modification des services PostgreSQL/Redis ; leurs vérifications de non-régression sont conservées en CI.
 
-Validation GitHub Linux/Windows : en cours, liens consignés après réussite.
+Validations GitHub réussies sur le commit **04b7f043a8590ceb32758ca880dafc2958507f4b** :
+
+- [Linux — compilation, format, contrats, migrations SQL, PostgreSQL, Redis, diagnostics sans réseau et audit](https://github.com/wnathan469-debug/meme/actions/runs/39179574203).
+- [Windows — compilation, tests, installateur NSIS et ZIP vérifié après extraction](https://github.com/wnathan469-debug/meme/actions/runs/39179574116).
+
+Les deux workflows sont terminés avec succès. Les 104 contrôles PostgreSQL et sept contrôles Redis supplémentaires portent le total à **410 tests TypeScript distincts**, en plus des 51 contrôles SQL V1, 17 parcours navigateur et du parcours Electron. L’artefact Windows CI est conservé pendant 14 jours ; sa fabrication et son contrôle SHA-256 ne constituent pas un essai d’installation sur le PC utilisateur. La publication conserve les fichiers immuables de la release publique 0.1.0 : ces anciens téléchargements ne contiennent pas la phase 12.
 
 Il reste **deux phases : 13 — démo étendue et cohérente ; 14 — validation et livraison finales**. Aucune de ces phases n’est commencée ici.
