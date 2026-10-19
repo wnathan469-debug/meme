@@ -1543,3 +1543,110 @@ test("démo unifiée : session corrompue conservée, commandes verrouillées", a
     ),
   ).toBe("{invalid-preserved");
 });
+
+test("boutons locaux lisibles avec les thèmes sombre et clair", async ({
+  page,
+}) => {
+  // UI-only bridge: no provider access or real credentials in this regression test.
+  await page.addInitScript(() => {
+    Object.defineProperty(window, "memeradar", {
+      value: {
+        local: {
+          command: async () => ({
+            state: {
+              stopped: true,
+              busy: false,
+              hasKey: false,
+              secureStorage: true,
+              settings: null,
+              verifiedAt: null,
+              lastCollection: null,
+              nextCollection: null,
+              error: null,
+              partial: false,
+              people: [],
+              posts: [],
+              usage: {
+                dayReservedUsd: "0.000000",
+                monthReservedUsd: "0.000000",
+                requestsDay: 0,
+                warning: false,
+              },
+            },
+          }),
+        },
+      },
+    });
+  });
+  await page.goto("/");
+  const sources = page.getByRole("button", {
+    name: "Sources et accès",
+    exact: true,
+  });
+  await expect(sources).toBeVisible();
+  const checkContrast = async (selector: string) => {
+    const ratios = await page.locator(selector).evaluateAll((buttons) => {
+      const luminance = (color: string) => {
+        const channels = color
+          .match(/[\d.]+/g)!
+          .slice(0, 3)
+          .map(Number)
+          .map((v) => {
+            const n = v / 255;
+            return n <= 0.04045 ? n / 12.92 : ((n + 0.055) / 1.055) ** 2.4;
+          });
+        return (
+          channels[0] * 0.2126 + channels[1] * 0.7152 + channels[2] * 0.0722
+        );
+      };
+      return buttons.map((button) => {
+        const style = getComputedStyle(button);
+        const fg = luminance(style.color),
+          bg = luminance(style.backgroundColor);
+        return {
+          text: button.textContent,
+          ratio: (Math.max(fg, bg) + 0.05) / (Math.min(fg, bg) + 0.05),
+          opacity: style.opacity,
+        };
+      });
+    });
+    expect(ratios.length).toBeGreaterThan(0);
+    for (const result of ratios) {
+      expect(result.ratio, result.text ?? "button").toBeGreaterThanOrEqual(4.5);
+      expect(result.opacity).toBe("1");
+    }
+  };
+  for (const theme of ["dark", "light"]) {
+    await page.evaluate(
+      (value) => document.documentElement.setAttribute("data-theme", value),
+      theme,
+    );
+    await checkContrast(".local-app button");
+    await sources.click();
+    await expect(sources).toHaveAttribute("aria-pressed", "true");
+    await sources.hover();
+    await checkContrast(".local-app button");
+    await sources.focus();
+    await page.keyboard.press("Shift+Tab");
+    await page.keyboard.press("Tab");
+    await expect(sources).toBeFocused();
+    await expect(sources).toHaveCSS("outline-style", "solid");
+  }
+  await page
+    .getByRole("button", { name: "Ouvrir la démonstration", exact: true })
+    .click();
+  const back = page.getByRole("button", {
+    name: "Utiliser sur mon PC",
+    exact: true,
+  });
+  await expect(back).toBeVisible();
+  for (const theme of ["dark", "light"]) {
+    await page.evaluate(
+      (value) => document.documentElement.setAttribute("data-theme", value),
+      theme,
+    );
+    await checkContrast(".local-mode-button");
+  }
+  await back.click();
+  await expect(sources).toBeVisible();
+});

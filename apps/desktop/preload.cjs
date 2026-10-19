@@ -7,5 +7,5 @@ contextBridge.exposeInMainWorld("memeradar", {
     command: (command, input) =>
       ipcRenderer.invoke("local:command", command, input),
   },
-  version: "0.3.1",
+  version: "0.3.2",
 });

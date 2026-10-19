@@ -1,4 +1,6 @@
-# MemeRadar 0.3.1 — Windows autonome
+# MemeRadar 0.3.2 — boutons lisibles sur Windows
+
+Correction du fond blanc des boutons du mode local et du bouton « Utiliser sur mon PC ». Les textes, les états sélectionnés, le survol, le focus clavier et les boutons désactivés utilisent les couleurs du thème. Aucun changement des données, des clés, des budgets ou de la collecte.
 
 Moteur local intégré : SQLite, configuration X, clé protégée par Windows, profils publics et veille horaire de dix publications par profil (trois profils maximum). Plafonds durables, autorisation explicite et arrêt de collecte. Aucun serveur à louer ni outil de développement à installer. La collecte démarre désactivée et reste arrêtée après redémarrage. Un accès X autorisé, ses tarifs et les frais éventuels restent à la charge de l’utilisateur ; aucun accès fourni ou appel réel validé dans les tests.
 

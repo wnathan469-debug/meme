@@ -1,6 +1,6 @@
 {
   "name": "memeradar",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "private": true,
   "description": "MemeRadar — veille locale sur Windows, données réelles configurables et démo séparée",
   "author": "MemeRadar",

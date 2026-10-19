@@ -1915,6 +1915,35 @@ main:focus {
     padding-bottom: 140px;
   }
 }
+/* Explicit surfaces prevent light native Windows buttons with inherited light text. */
+.local-app button,
+.local-mode-button {
+  appearance: none;
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--muted);
+  border-radius: 6px;
+  padding: 9px 14px;
+  line-height: 1.4;
+}
+.local-app button:hover:not(:disabled),
+.local-mode-button:hover:not(:disabled) {
+  background: var(--panel-hover);
+  border-color: var(--accent);
+}
+.local-app button[aria-pressed="true"] {
+  background: var(--accent-bg);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+.local-app button:disabled,
+.local-mode-button:disabled {
+  background: var(--panel);
+  color: var(--muted);
+  border-color: var(--border);
+  opacity: 1;
+  cursor: not-allowed;
+}
 .local-app main {
   max-width: 1100px;
   margin: auto;
