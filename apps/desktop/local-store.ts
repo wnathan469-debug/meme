@@ -89,6 +89,9 @@ export class LocalStore implements ControlStore {
       this.set("stopped", true);
       this.set("settings", settings);
       this.set("verifiedAt", this.now());
+      this.db
+        .prepare("DELETE FROM local_kv WHERE key LIKE 'capability:%'")
+        .run();
     });
   }
   balance(period: string) {

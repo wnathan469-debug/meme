@@ -84,6 +84,6 @@ API séparée, sessions opaques et mots de passe Argon2id natifs ; SQL sans supe
 
 API conteneurisée non privilégiée, système de fichiers en lecture seule, rôle SQL restreint ; aucun port PostgreSQL/Redis publié. Secrets montés séparément de l’image. Sauvegardes CMS AES-256-GCM, clé privée de restauration conservée hors serveur ; vérification d’intégrité obligatoire avant usage. Voir [les limites et procédures](REAL_DATA_STEP4_HOSTING.md) : aucune production Internet ou supervision extérieure livrée à ce stade.
 
-## Mode Windows autonome 0.3.0
+## Mode Windows autonome 0.3.1
 
 Choix utilisateur remplaçant le stockage de clés côté serveur : jeton local protégé par safeStorage Windows, jamais retourné par IPC. SQLite natif, collection arrêtée à chaque lancement, consentement explicite, budget exact réservé avant transport, tarifs inconnus ou périmés refusés. L’IPC accepte seulement des commandes bornées depuis la fenêtre principale de l’origine interne. Le transport Node conserve le TLS et le contrôle DNS/SSRF ; le renderer reste privé de réseau. Voir [le guide et ses limites](LOCAL_WINDOWS.md) : protection du profil Windows, données hors clé non chiffrées, plafonds par installation, conservation et absence de collecte réelle vérifiée.

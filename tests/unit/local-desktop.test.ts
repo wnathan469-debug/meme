@@ -131,6 +131,28 @@ function ticket(
   };
 }
 describe("Moteur Windows local sans serveur", () => {
+  it("une clé remplacée permet de revérifier les droits sans effacer les dépenses", async () => {
+    const f = fixture();
+    try {
+      await configure(f);
+      f.setStatus(401);
+      await started(f);
+      expect(f.runtime.snapshot().error).toBe("ACCESS_DENIED");
+      const before = f.runtime.snapshot().usage.dayReservedUsd;
+      f.setStatus(200);
+      f.advance(3600001);
+      await f.runtime.command("key", token);
+      expect(f.runtime.snapshot().usage.dayReservedUsd).toBe(before);
+      expect(f.calls).toHaveLength(1);
+      await started(f);
+      expect(f.calls).toHaveLength(3);
+      expect(f.runtime.snapshot().posts).toHaveLength(1);
+      expect(f.runtime.snapshot().error).toBe(null);
+    } finally {
+      await f.cleanup();
+    }
+  });
+
   it("refuse l’appel avant envoi si SQLite ne peut plus accueillir sa réponse", async () => {
     const f = fixture();
     try {

@@ -1,21 +1,21 @@
-# MemeRadar pour Windows — édition autonome 0.3.0
+# MemeRadar pour Windows — édition autonome 0.3.1
 
 ## Installer
 
-Cible : Windows 10/11, processeur x64. L'installateur prévu est `MemeRadar-0.3.0-Windows-x64.exe`. Aucune installation de Node.js, Docker, PostgreSQL ou Redis n'est nécessaire pour cette édition.
+Cible : Windows 10/11, processeur x64. L'installateur prévu est `MemeRadar-0.3.1-Windows-x64.exe`. Aucune installation de Node.js, Docker, PostgreSQL ou Redis n'est nécessaire pour cette édition.
 
-1. [Télécharger le ZIP de l’installateur depuis GitHub](https://github.com/wnathan469-debug/meme/releases/download/v0.3.0/MemeRadar-0.3.0-Windows-x64-installer.zip).
+1. [Télécharger le ZIP de l’installateur depuis GitHub](https://github.com/wnathan469-debug/meme/releases/download/v0.3.1/MemeRadar-0.3.1-Windows-x64-installer.zip).
 2. Dans l’Explorateur Windows : clic droit sur le ZIP → **Extraire tout**.
-3. Ouvrir `MemeRadar-0.3.0-Windows-x64.exe` dans le dossier extrait et suivre l’assistant.
+3. Ouvrir `MemeRadar-0.3.1-Windows-x64.exe` dans le dossier extrait et suivre l’assistant.
 4. Lancer MemeRadar depuis le menu Démarrer ou le raccourci du bureau.
 
-[Page de publication de secours](https://github.com/wnathan469-debug/meme/releases/tag/v0.3.0) : ouvrir la section **Assets** et sélectionner le fichier se terminant par `-installer.zip`. Les liens `/workspace/...` désignent le disque cloud et ne sont pas des téléchargements publics.
+[Page de publication de secours](https://github.com/wnathan469-debug/meme/releases/tag/v0.3.1) : ouvrir la section **Assets** et sélectionner le fichier se terminant par `-installer.zip`. Les liens `/workspace/...` désignent le disque cloud et ne sont pas des téléchargements publics.
 
 L’application fournit un mode local X configurable et une démonstration séparée. Elle n’a pas de certificat de signature d’éditeur. Windows peut signaler un éditeur inconnu. Ne désactivez pas vos protections ; faites vérifier le paquet si votre politique d'entreprise exige un logiciel signé. La signature d’éditeur n’est pas disponible ; les tests automatisés de Windows Server CI ne remplacent pas une vérification sur votre PC Windows 10/11.
 
 ## Mode autonome local X
 
-Le [guide local 0.3.0](LOCAL_WINDOWS.md) décrit SQLite, la clé protégée par Windows, les tarifs à vérifier et l’autorisation de collecte. Le PC doit rester allumé et l’application ouverte. Aucun serveur cloud n’est requis. Le mode démarre vide et arrêté ; aucun accès fournisseur n’est fourni. Les autres modules réels restent non raccordés.
+Le [guide local 0.3.1](LOCAL_WINDOWS.md) décrit SQLite, la clé protégée par Windows, les tarifs à vérifier et l’autorisation de collecte. Le PC doit rester allumé et l’application ouverte. Aucun serveur cloud n’est requis. Le mode démarre vide et arrêté ; aucun accès fournisseur n’est fourni. Les autres modules réels restent non raccordés.
 
 ## Mode démonstration hérité
 

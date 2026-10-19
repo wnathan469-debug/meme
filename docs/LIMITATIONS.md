@@ -1,4 +1,4 @@
-# Limites actuelles — version 0.3.0
+# Limites actuelles — version 0.3.1
 
 Le choix utilisateur est désormais un moteur local Windows, sans hébergement. La veille X peut être configurée et exécutée sur le PC ; les clés sont protégées par Windows et les plafonds persistés dans SQLite. Aucun appel réel n’a été validé avec un compte fournisseur dans le banc. Les tests de collecte utilisent des réponses synthétiques. Voir [le guide autonome](LOCAL_WINDOWS.md).
 

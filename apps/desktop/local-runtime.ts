@@ -129,6 +129,9 @@ export class LocalRuntime {
       this.store.transaction(() => {
         this.store.set("stopped", true);
         this.store.set("encryptedKey", encrypted.toString("base64"));
+        this.store.db
+          .prepare("DELETE FROM local_kv WHERE key LIKE 'capability:%'")
+          .run();
       });
     }
     if (command === "start") {

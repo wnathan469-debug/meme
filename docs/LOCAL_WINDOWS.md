@@ -1,10 +1,10 @@
-# MemeRadar 0.3.0 — fonctionnement autonome sur Windows
+# MemeRadar 0.3.1 — fonctionnement autonome sur Windows
 
 Le choix utilisateur remplace l’hébergement cloud par un moteur intégré à l’application. **Aucun serveur à louer, aucun Node.js, Docker, PostgreSQL ou Redis à installer sur le PC.** Le moteur utilise SQLite inclus dans Electron. Les anciens travaux cloud restent disponibles dans le dépôt mais ne sont ni démarrés ni requis. Aucun abonnement Railway n’a été souscrit.
 
 ## Installer et démarrer
 
-Télécharger le ZIP Windows 0.3.0 depuis [la publication GitHub](https://github.com/wnathan469-debug/meme/releases/tag/v0.3.0), l’extraire puis ouvrir l’installateur `.exe`. L’application est non signée ; les règles de sécurité Windows restent applicables. Ne pas désactiver les protections pour l’installer. Pour remplacer une ancienne version : fermer MemeRadar, sauvegarder son dossier de données, puis utiliser le même compte Windows et le même dossier d’installation. L’upgrade sur votre PC particulier n’est pas présumé testé.
+Télécharger le ZIP Windows 0.3.1 depuis [la publication GitHub](https://github.com/wnathan469-debug/meme/releases/tag/v0.3.1), l’extraire puis ouvrir l’installateur `.exe`. L’application est non signée ; les règles de sécurité Windows restent applicables. Ne pas désactiver les protections pour l’installer. Pour remplacer une ancienne version : fermer MemeRadar, sauvegarder son dossier de données, puis utiliser le même compte Windows et le même dossier d’installation. L’upgrade sur votre PC particulier n’est pas présumé testé.
 
 L’écran initial est **« MemeRadar — sur mon PC »**, vide et collecte arrêtée. L’ancienne démonstration se trouve derrière **« Ouvrir la démonstration »** ; **« Utiliser sur mon PC »** revient au moteur local. Le mode choisi est conservé. Il n’existe aucun remplissage automatique des vues locales avec le scénario Nébula.
 

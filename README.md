@@ -1,14 +1,14 @@
 # MemeRadar
 
-Application de veille en français pour Windows 10/11 x64. **Version 0.3.0 autonome sur le PC** : moteur SQLite intégré, accès X configurable, clé protégée par Windows, collecte horaire explicite et plafonds durables. Aucun hébergement, Node.js, PostgreSQL ou Redis à installer. Aucun accès X fourni ni appel payant activé par défaut. La démo historique reste séparée. Voir [le guide local et ses limites](docs/LOCAL_WINDOWS.md).
+Application de veille en français pour Windows 10/11 x64. **Version 0.3.1 autonome sur le PC** : moteur SQLite intégré, accès X configurable, clé protégée par Windows, collecte horaire explicite et plafonds durables. Aucun hébergement, Node.js, PostgreSQL ou Redis à installer. Aucun accès X fourni ni appel payant activé par défaut. La démo historique reste séparée. Voir [le guide local et ses limites](docs/LOCAL_WINDOWS.md).
 
 ## Installer sur Windows
 
-[Télécharger MemeRadar 0.3.0 pour Windows (ZIP de l’installateur)](https://github.com/wnathan469-debug/meme/releases/download/v0.3.0/MemeRadar-0.3.0-Windows-x64-installer.zip)
+[Télécharger MemeRadar 0.3.1 pour Windows (ZIP de l’installateur)](https://github.com/wnathan469-debug/meme/releases/download/v0.3.1/MemeRadar-0.3.1-Windows-x64-installer.zip)
 
-Dans Chrome, télécharger le ZIP, choisir **Extraire tout** dans l’Explorateur Windows, puis ouvrir `MemeRadar-0.3.0-Windows-x64.exe`. Suivre l’assistant et lancer MemeRadar depuis le bureau ou le menu Démarrer. Aucun outil de développement à installer. Un accès X autorisé et ses tarifs doivent être configurés pour collecter ; la démo ne demande pas de clé.
+Dans Chrome, télécharger le ZIP, choisir **Extraire tout** dans l’Explorateur Windows, puis ouvrir `MemeRadar-0.3.1-Windows-x64.exe`. Suivre l’assistant et lancer MemeRadar depuis le bureau ou le menu Démarrer. Aucun outil de développement à installer. Un accès X autorisé et ses tarifs doivent être configurés pour collecter ; la démo ne demande pas de clé.
 
-[Page de téléchargement et empreintes](https://github.com/wnathan469-debug/meme/releases/tag/v0.3.0) · [Vérifications du téléchargement](docs/DOWNLOAD_VERIFICATION.md)
+[Page de téléchargement et empreintes](https://github.com/wnathan469-debug/meme/releases/tag/v0.3.1) · [Vérifications du téléchargement](docs/DOWNLOAD_VERIFICATION.md)
 
 Consultez [le guide Windows](docs/DESKTOP.md) pour les étapes, le stockage local et les limites de signature/validation. Le raccordement local concerne la veille X ; les autres modules réels restent à livrer. Voir [LIMITATIONS.md](docs/LIMITATIONS.md).
 

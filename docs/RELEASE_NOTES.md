@@ -1,4 +1,4 @@
-# MemeRadar 0.3.0 — Windows autonome
+# MemeRadar 0.3.1 — Windows autonome
 
 Moteur local intégré : SQLite, configuration X, clé protégée par Windows, profils publics et veille horaire de dix publications par profil (trois profils maximum). Plafonds durables, autorisation explicite et arrêt de collecte. Aucun serveur à louer ni outil de développement à installer. La collecte démarre désactivée et reste arrêtée après redémarrage. Un accès X autorisé, ses tarifs et les frais éventuels restent à la charge de l’utilisateur ; aucun accès fourni ou appel réel validé dans les tests.
 
