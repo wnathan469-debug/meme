@@ -443,7 +443,7 @@ function App() {
             </div>
           </div>
           <div className="version">
-            MemeRadar 0.1.0 <span>Édition démo</span>
+            MemeRadar 0.2.0 <span>Édition démo</span>
           </div>
         </div>
       </aside>
@@ -1357,7 +1357,7 @@ function App() {
                         pédagogiques ; les fournisseurs, analyses RPC, comptes
                         serveur, SMTP et webhooks restent hors de cette édition.
                       </p>
-                      <Badge>Version 0.1.0 · Windows x64</Badge>
+                      <Badge>Version 0.2.0 · Windows x64</Badge>
                     </section>
                   </div>
                 )}

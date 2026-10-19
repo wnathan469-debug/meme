@@ -1,4 +1,10 @@
-# Limites de la livraison actuelle
+# Limites — version Windows 0.2.0
+
+La livraison actuelle inclut les phases V2 1–14 pour une **démonstration hors ligne**. La matrice à jour est [FEATURE_MATRIX.md](FEATURE_MATRIX.md), et le guide d’installation [DESKTOP.md](DESKTOP.md). Le backend HTTP authentifié et le raccordement REAL restent non livrés ; aucune API réelle n’a été validée.
+
+Les sections suivantes sont des constats historiques, complétés à chaque phase ; les mentions d’absence de paquet V2 et de vues à venir décrivent leur jalon, pas la version 0.2.0.
+
+## Historique des limites
 
 Cette livraison ajoute une application de bureau de démonstration après les phases 1 à 3. Elle n'annonce pas l'achèvement des quinze phases du cahier des charges.
 

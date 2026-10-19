@@ -1,6 +1,6 @@
 {
   "name": "memeradar",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "MemeRadar — veille explicable, démonstration hors ligne",
   "author": "MemeRadar",
@@ -73,7 +73,9 @@
       "THIRD_PARTY_NOTICES.md",
       "docs/INDICATORS.md",
       "docs/SECURITY.md",
-      "licenses/**/*"
+      "licenses/**/*",
+      "docs/FEATURE_MATRIX.md",
+      "docs/RELEASE_NOTES.md"
     ],
     "asar": true,
     "win": {

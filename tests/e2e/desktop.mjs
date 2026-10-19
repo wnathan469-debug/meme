@@ -14,8 +14,18 @@ try {
   await mkdir(path.join(dir, "config"), { recursive: true });
   const launch = () =>
     electron.launch({
-      executablePath: path.join(root, "node_modules/electron/dist/electron"),
-      args: ["--no-sandbox", root],
+      executablePath:
+        process.env.MEMERADAR_EXECUTABLE ||
+        path.join(
+          root,
+          "node_modules/electron/dist",
+          process.platform === "win32" ? "electron.exe" : "electron",
+        ),
+      args: [
+        ...(process.platform === "linux" ? ["--no-sandbox"] : []),
+        `--user-data-dir=${path.join(dir, "profile")}`,
+        ...(process.env.MEMERADAR_EXECUTABLE ? [] : [root]),
+      ],
       env: {
         ...process.env,
         XDG_CONFIG_HOME: path.join(dir, "config"),
@@ -79,6 +89,11 @@ try {
     .selectOption("light");
   await page.getByRole("status").filter({ hasText: "enregistrées" }).waitFor();
   const statePath = await app.evaluate(({ app }) => app.getPath("userData"));
+  assert.equal(path.relative(dir, statePath).startsWith(".."), false);
+  assert.equal(
+    await page.evaluate(() => window.memeradar.version),
+    JSON.parse(await readFile(path.join(root, "package.json"), "utf8")).version,
+  );
   const stored = JSON.parse(
     await readFile(path.join(statePath, "preferences-v1.json"), "utf8"),
   );

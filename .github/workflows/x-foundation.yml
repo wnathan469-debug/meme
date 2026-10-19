@@ -1,7 +1,6 @@
 name: Socle X V2 sans appel fournisseur
 on:
-  push:
-    branches: [main]
+  workflow_call:
   pull_request:
 permissions:
   contents: read

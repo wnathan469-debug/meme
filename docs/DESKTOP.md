@@ -1,34 +1,35 @@
-# MemeRadar pour Windows — édition démo 0.1.0
+# MemeRadar pour Windows — édition démo 0.2.0
 
 ## Installer
 
-Cible : Windows 10/11, processeur x64. L'installateur prévu est `MemeRadar-0.1.0-Windows-x64.exe`. Aucune installation de Node.js, Docker, PostgreSQL ou Redis n'est nécessaire pour cette édition.
+Cible : Windows 10/11, processeur x64. L'installateur prévu est `MemeRadar-0.2.0-Windows-x64.exe`. Aucune installation de Node.js, Docker, PostgreSQL ou Redis n'est nécessaire pour cette édition.
 
-1. [Télécharger le ZIP de l’installateur depuis GitHub](https://github.com/wnathan469-debug/meme/releases/download/v0.1.0/MemeRadar-0.1.0-Windows-x64-installer.zip).
+1. [Télécharger le ZIP de l’installateur depuis GitHub](https://github.com/wnathan469-debug/meme/releases/download/v0.2.0/MemeRadar-0.2.0-Windows-x64-installer.zip).
 2. Dans l’Explorateur Windows : clic droit sur le ZIP → **Extraire tout**.
-3. Ouvrir `MemeRadar-0.1.0-Windows-x64.exe` dans le dossier extrait et suivre l’assistant.
+3. Ouvrir `MemeRadar-0.2.0-Windows-x64.exe` dans le dossier extrait et suivre l’assistant.
 4. Lancer MemeRadar depuis le menu Démarrer ou le raccourci du bureau.
 
-[Page de publication de secours](https://github.com/wnathan469-debug/meme/releases/tag/v0.1.0) : ouvrir la section **Assets** et sélectionner le fichier se terminant par `-installer.zip`. Les liens `/workspace/...` désignent le disque cloud et ne sont pas des téléchargements publics.
+[Page de publication de secours](https://github.com/wnathan469-debug/meme/releases/tag/v0.2.0) : ouvrir la section **Assets** et sélectionner le fichier se terminant par `-installer.zip`. Les liens `/workspace/...` désignent le disque cloud et ne sont pas des téléchargements publics.
 
-L'application est une première édition de démonstration, sans certificat de signature d'éditeur. Windows peut signaler un éditeur inconnu. Ne désactivez pas vos protections ; faites vérifier le paquet si votre politique d'entreprise exige un logiciel signé. Un certificat et une validation sur une machine Windows restent nécessaires avant une diffusion publique.
+L'application est une édition de démonstration, sans certificat de signature d'éditeur. Windows peut signaler un éditeur inconnu. Ne désactivez pas vos protections ; faites vérifier le paquet si votre politique d'entreprise exige un logiciel signé. La signature d’éditeur n’est pas disponible ; les tests automatisés de Windows Server CI ne remplacent pas une vérification sur votre PC Windows 10/11.
 
 ## Ce qui fonctionne localement
 
-- Six vues françaises : tableau de bord, événements, tokens, alertes, sources et paramètres.
-- Trois scénarios intégrés, huit tokens factices, sources datées, risques simulés et chronologies.
-- Scénario Tesla strictement fictif, avec quatre cas d'association et trois alertes pédagogiques dont une supprimée.
-- Cinq indicateurs indépendants avec panneau d'explication et entrées manquantes.
-- Rejeu de T+0 à T+120 minutes, pas de cinq minutes et lecture accélérée ×300.
-- Recherche et filtres par chaîne/niveau d'association dans l'URL interne.
-- Règle d'attention modifiable : seuil, réarmement, délai et activation ; historique recalculé de manière déterministe.
-- Signalement de faux positifs, mots-clés suivis et recherche depuis la liste.
-- Thème clair/sombre et fuseau Toronto/Paris/UTC.
-- Enregistrement des préférences sur l'appareil, sans télémétrie, inscription ou clé API.
+- Neuf pages françaises : tableau de bord, veille, personnes, conversations, événements, tokens, alertes, sources et paramètres.
+- Scénario Nébula : 63 publications fictives, quatre tokens, trois profils suivables et une conversation partielle (35 réponses observées sur 120 annoncées). Les huit tokens historiques restent des exemples distincts.
+- Horloge commune conservée après navigation/redémarrage, de T+0 à trois jours, avec rejeu ×300. Les prix fictifs ne couvrent que T+8 à T+120 ; les périodes absentes restent vides.
+- Analyse par chaîne/adresse, bougies, pools et marqueurs ; 17 contrôles de risque avec preuves, états inconnus et contradictions.
+- Alertes locales persistantes ; mots-clés et personnes utilisent les publications du scénario. Les autres types restent des cas pédagogiques préenregistrés.
+- Sources et API simulées : quota, budget, déconnexion, données partielles et reprise. Aucun coût réel, appel fournisseur ou saisie de secret.
+- Thème, fuseau, notes privées et filtres. Voir la [matrice fonctionnelle](FEATURE_MATRIX.md).
+
+## Mise à niveau depuis 0.1.0
+
+Fermer MemeRadar puis exécuter le nouvel installateur, dans le même compte Windows et le même dossier. Le nom d’application et les formats existants sont conservés ; les nouvelles vues ajoutent leurs stockages locaux sans effacer les anciens réglages. Avant mise à niveau, sauvegarder tout le dossier `%APPDATA%\MemeRadar` après fermeture. Cette conservation est testée au redémarrage ; une mise à niveau complète 0.1.0 → 0.2.0 n’est pas encore testée sur votre PC. Aucune mise à jour automatique.
 
 ## Données locales
 
-Les fixtures sont incluses dans l'application. Le fichier `%APPDATA%\MemeRadar\preferences-v1.json` contient uniquement les préférences, la liste de suivi, la règle et les identifiants d'alertes signalées. Un fichier invalide est conservé, avec un avertissement ; la réinitialisation explicite permet de le remplacer. La désinstallation conserve les préférences ; supprimer le dossier après fermeture permet de les effacer manuellement.
+Les fixtures sont incluses dans l'application. Le dossier `%APPDATA%\MemeRadar` contient `preferences-v1.json` et les stockages Chromium des personnes, notes, alertes, sources et session démo. Sauvegarder le dossier complet, pas seulement le fichier de préférences. Un fichier invalide est conservé, avec un avertissement ; la réinitialisation explicite permet de le remplacer. La désinstallation conserve les préférences ; supprimer le dossier après fermeture permet de les effacer manuellement.
 
 Aucun secret ne doit être ajouté à ce fichier. L'accès à l'édition de bureau repose sur la session Windows ; il n'existe pas de compte serveur dans cette version autonome. Un autre utilisateur ayant accès à votre profil Windows peut lire ce fichier.
 
@@ -36,9 +37,7 @@ Aucun secret ne doit être ajouté à ce fichier. L'accès à l'édition de bure
 
 Le shell Electron charge uniquement les ressources intégrées sous `memeradar://app/` ; les requêtes externes, fenêtres sortantes, téléchargements et permissions non nécessaires sont bloqués. Les URLs fictives .invalid sont affichées sans lien navigable. Le navigateur intégré n'a pas accès à Node ; un preload isolé expose uniquement des opérations locales validées. Aucune mise à jour automatique.
 
-Les valeurs de marché et contrôles de risque sont disponibles à T+60 min. Les contrôles et indicateurs de cette édition sont des règles pédagogiques documentées dans INDICATORS.md ; ils ne constituent pas les futures analyses live. Le catalogue de tokens préchargé reste consultable indépendamment de la position du rejeu ; le curseur rejoue les observations d'attention, de marché et les alertes, pas une découverte exhaustive en temps réel.
-
-Les interrupteurs Sources filtrent des vues locales et signalent la couverture partielle ; aucune ingestion externe n'est démarrée. Le schéma PostgreSQL serveur livré en phase 3 reste indépendant de cette démonstration et n'est pas requis par l'installateur. Le mode réel, les connecteurs fournisseurs et workers serveur restent à développer.
+Les valeurs de marché et risques sont fictifs ; une mention n’est pas un soutien officiel. Les bases privées PostgreSQL/Redis et adaptateurs testés séparément ne sont pas raccordés à cette application. Aucun mode REAL, serveur HTTP authentifié, collecte live ou livraison externe d’alertes n’est disponible. Aucun portefeuille ni transaction.
 
 ## Développer et reconstruire
 

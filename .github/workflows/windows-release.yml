@@ -9,6 +9,8 @@ concurrency:
   group: memeradar-windows-release
   cancel-in-progress: false
 jobs:
+  validation:
+    uses: ./.github/workflows/x-foundation.yml
   windows:
     runs-on: windows-latest
     timeout-minutes: 25
@@ -22,7 +24,28 @@ jobs:
       - run: npm run build
       - run: npm test -- --coverage
       - run: npm run format:check
+      - run: npx playwright install chromium
+      - run: npm run test:e2e
       - run: npm run dist:win
+      - name: Installer et tester l’application native Windows
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $version = (Get-Content package.json -Raw | ConvertFrom-Json).version
+          $installer = (Resolve-Path "release/MemeRadar-$version-Windows-x64.exe").Path
+          $installDir = Join-Path $env:RUNNER_TEMP 'MemeRadar-installed'
+          $process = Start-Process -FilePath $installer -ArgumentList '/S', "/D=$installDir" -Wait -PassThru
+          if ($process.ExitCode -ne 0) { throw "Installation échouée : $($process.ExitCode)" }
+          $env:MEMERADAR_EXECUTABLE = Join-Path $installDir 'MemeRadar.exe'
+          if (!(Test-Path $env:MEMERADAR_EXECUTABLE)) { throw 'Exécutable installé absent' }
+          npm run test:desktop
+          if ($LASTEXITCODE -ne 0) { throw 'Test de l’application installée échoué' }
+          $uninstaller = Join-Path $installDir 'Uninstall MemeRadar.exe'
+          if (!(Test-Path $uninstaller)) { throw 'Désinstalleur absent' }
+          Start-Process -FilePath $uninstaller -ArgumentList '/S' -Wait
+          $deadline = (Get-Date).AddSeconds(30)
+          while ((Test-Path $env:MEMERADAR_EXECUTABLE) -and (Get-Date) -lt $deadline) { Start-Sleep -Milliseconds 500 }
+          if (Test-Path $env:MEMERADAR_EXECUTABLE) { throw 'Désinstallation incomplète' }
       - name: Créer et vérifier le ZIP de l'installateur
         shell: pwsh
         run: |
@@ -43,6 +66,7 @@ jobs:
           '@ | Set-Content release/staging/LIRE-MOI.txt -Encoding utf8
           "$hash  $base.exe" | Set-Content release/staging/SHA256SUMS.txt -Encoding ascii
           Copy-Item docs/DESKTOP.md release/staging/Guide-MemeRadar.md
+          Copy-Item docs/FEATURE_MATRIX.md release/staging/FEATURE_MATRIX.md
           Compress-Archive -Path release/staging/* -DestinationPath "release/$base-installer.zip" -CompressionLevel NoCompression -Force
           Expand-Archive "release/$base-installer.zip" release/verify -Force
           $verified = (Get-FileHash "release/verify/$base.exe" -Algorithm SHA256).Hash.ToLowerInvariant()
@@ -60,7 +84,7 @@ jobs:
             release/MemeRadar-*-Windows-x64-installer.zip
             release/SHA256SUMS.txt
   publish:
-    needs: windows
+    needs: [windows, validation]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
