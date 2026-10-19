@@ -65,6 +65,11 @@ Validation locale :
 
 Le test d’erreur de module accepte désormais le paramètre de cache de Vite et vérifie qu’un chargement a effectivement été bloqué ; le défaut simulé ne peut plus être contourné par une URL horodatée du serveur de développement. Aucun test supprimé, assertion affaiblie, timeout augmenté ou retry ajouté.
 
-Construction et validation Linux/Windows : en cours sur GitHub, liens consignés après réussite.
+Validations GitHub réussies sur le commit **86ce16874c43c76bbe258ceef3aecb8508e06ed0** :
+
+- [Linux — compilation, format, contrats, 51 contrôles SQL V1, PostgreSQL, Redis, diagnostics et audit](https://github.com/wnathan469-debug/meme/actions/runs/39182738897).
+- [Windows — compilation native, tests, installateur NSIS et ZIP vérifié après extraction](https://github.com/wnathan469-debug/meme/actions/runs/39182738907).
+
+Les deux workflows sont terminés avec succès. L’artefact Windows CI est conservé pendant 14 jours ; sa fabrication et ses empreintes vérifiées ne constituent pas un essai d’installation sur le PC utilisateur. La publication a conservé les fichiers immuables de la release publique 0.1.0, déjà existante : ces anciens téléchargements ne contiennent pas la phase 13.
 
 Il reste **une phase : 14 — validation finale, documentation de livraison et nouvel installateur public Windows**. Elle n’est pas commencée ici.
