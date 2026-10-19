@@ -7,7 +7,7 @@ permissions:
   contents: read
 concurrency:
   group: memeradar-windows-release
-  cancel-in-progress: true
+  cancel-in-progress: false
 jobs:
   validation:
     uses: ./.github/workflows/x-foundation.yml

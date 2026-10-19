@@ -1147,6 +1147,19 @@ test("navigation V2 : neuf pages, filtres URL, retour arrière, clavier et écra
     .getByRole("button", { name: "Changer de thème", exact: true })
     .click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  await page.setViewportSize({ width: 1024, height: 600 });
+  await nav.getByRole("link", { name: "Paramètres", exact: true }).click();
+  await expect(
+    page.getByRole("heading", { name: "Paramètres", exact: true, level: 1 }),
+  ).toBeVisible();
+  await nav.getByRole("link", { name: "Tableau de bord", exact: true }).click();
+  await expect(
+    page.getByRole("heading", {
+      name: "Tableau de bord",
+      exact: true,
+      level: 1,
+    }),
+  ).toBeVisible();
   expect(external).toEqual([]);
   expect(errors).toEqual([]);
 });
