@@ -20,6 +20,10 @@ Consultez [le guide Windows](docs/DESKTOP.md) pour les étapes, le stockage loca
 - Recherche, filtres dans l'URL interne, mots-clés suivis, thème clair/sombre et fuseau horaire.
 - Préférences conservées sur le PC ; pas de portefeuille, transaction, télémétrie ou appel fournisseur.
 
+## Passage aux données réelles
+
+Le nouveau programme suit douze étapes, avec validation à chaque étape. [Inventaire et risques — étape 1](docs/REAL_DATA_STEP1_AUDIT.md) : audit du logiciel existant, en attente de validation utilisateur. Le téléchargement 0.2.0 reste une démonstration ; aucun serveur connecté ou nouveau paquet réel n’est livré par cet inventaire.
+
 ## Développer
 
 Node 24 et npm requis. Depuis la racine :
