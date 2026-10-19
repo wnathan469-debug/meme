@@ -1,5 +1,7 @@
 # Offre proposée — Railway Pro pour le pilote MemeRadar
 
+**Choix remplacé par l’utilisateur : fonctionnement autonome sur PC, sans hébergement.** Document cloud conservé comme historique ; aucune souscription nécessaire. Voir [le guide Windows local](LOCAL_WINDOWS.md).
+
 Proposition du 19 octobre 2026, à la demande de l’utilisateur sans compte d’hébergement. **Aucun achat ni déploiement autorisé par cette proposition.** Les approbations financières restent inchangées. Windows 0.2.0 reste en démo.
 
 ## Recommandation concrète

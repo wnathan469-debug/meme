@@ -37,6 +37,8 @@
     "packages/sources",
     "packages/people",
     "apps/worker",
-    "vite.server.config.ts"
+    "vite.server.config.ts",
+    "vite.desktop.config.ts",
+    "apps/desktop/*.ts"
   ]
 }

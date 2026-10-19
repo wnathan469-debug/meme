@@ -47,6 +47,7 @@ declare global {
       saveState(state: unknown): Promise<void>;
       copyAddress(address: string): Promise<void>;
       version: string;
+      local?: import("../../desktop/local-model").LocalBridge;
     };
   }
 }

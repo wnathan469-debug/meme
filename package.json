@@ -1,8 +1,8 @@
 {
   "name": "memeradar",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
-  "description": "MemeRadar — veille explicable, démonstration hors ligne",
+  "description": "MemeRadar — veille locale sur Windows, données réelles configurables et démo séparée",
   "author": "MemeRadar",
   "license": "UNLICENSED",
   "main": "apps/desktop/main.cjs",
@@ -12,7 +12,7 @@
   },
   "scripts": {
     "dev": "vite --host 127.0.0.1",
-    "build": "tsc --noEmit && vite build",
+    "build": "tsc --noEmit && vite build && npm run desktop:build",
     "start": "npm run build && electron .",
     "test": "vitest run",
     "test:e2e": "playwright test",
@@ -33,7 +33,8 @@
     "api:build": "vite build --config vite.server.config.ts",
     "api:start": "node server-dist/server.js",
     "api:admin:built": "node server-dist/admin.js",
-    "test:deploy": "node scripts/test-deployment.mjs"
+    "test:deploy": "node scripts/test-deployment.mjs",
+    "desktop:build": "vite build --config vite.desktop.config.ts"
   },
   "dependencies": {
     "drizzle-orm": "0.45.4",
@@ -81,7 +82,9 @@
       "docs/SECURITY.md",
       "licenses/**/*",
       "docs/FEATURE_MATRIX.md",
-      "docs/RELEASE_NOTES.md"
+      "docs/RELEASE_NOTES.md",
+      "desktop-dist/**/*",
+      "docs/LOCAL_WINDOWS.md"
     ],
     "asar": true,
     "win": {

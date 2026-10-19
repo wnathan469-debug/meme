@@ -6,6 +6,7 @@ const {
   protocol,
   net,
   clipboard,
+  safeStorage,
 } = require("electron");
 const path = require("node:path");
 const fs = require("node:fs/promises");
@@ -21,6 +22,7 @@ app.setName("MemeRadar");
 app.setAppUserModelId("local.memeradar.desktop");
 let window;
 let writeQueue = Promise.resolve();
+let localRuntime;
 function trusted(event) {
   return (
     event.sender === window?.webContents &&
@@ -42,6 +44,28 @@ else {
   app
     .whenReady()
     .then(async () => {
+      try {
+        await fs.mkdir(app.getPath("userData"), { recursive: true });
+        const {
+          LocalRuntime,
+        } = require("../../desktop-dist/local-runtime.cjs");
+        localRuntime = new LocalRuntime(
+          path.join(app.getPath("userData"), "local-data-v1.sqlite"),
+          {
+            available: () =>
+              safeStorage.isEncryptionAvailable() &&
+              (process.platform !== "linux" ||
+                safeStorage.getSelectedStorageBackend() !== "basic_text"),
+            encrypt: (value) => safeStorage.encryptString(value),
+            decrypt: (value) => safeStorage.decryptString(value),
+          },
+        );
+      } catch {
+        // Preserve an unreadable database; never substitute demonstration records.
+        console.error(
+          "Moteur local indisponible ; données existantes conservées.",
+        );
+      }
       const dist = path.resolve(__dirname, "../../dist");
       protocol.handle("memeradar", async (request) => {
         const url = new URL(request.url);
@@ -114,6 +138,22 @@ else {
               };
         }
       });
+      ipcMain.handle("local:command", async (event, command, input) => {
+        if (!trusted(event)) throw new Error("Accès refusé");
+        if (!localRuntime)
+          return {
+            error:
+              "Stockage local indisponible. Données conservées ; aucune collecte possible.",
+          };
+        try {
+          return { state: await localRuntime.command(command, input) };
+        } catch {
+          return {
+            error:
+              "Opération refusée. Vérifiez la configuration, la protection Windows et l’arrêt de la collecte.",
+          };
+        }
+      });
       ipcMain.handle("clipboard:address", async (event, address) => {
         if (
           !trusted(event) ||
@@ -179,6 +219,8 @@ app.on("before-quit", (event) => {
   if (!quitting) {
     event.preventDefault();
     quitting = true;
-    writeQueue.catch(() => {}).finally(() => app.quit());
+    Promise.allSettled([writeQueue, localRuntime?.close()]).finally(() =>
+      app.quit(),
+    );
   }
 });

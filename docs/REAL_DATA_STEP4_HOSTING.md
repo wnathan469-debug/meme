@@ -1,5 +1,7 @@
 # Données réelles — étape 4 : préparation de l’hébergement
 
+**Choix remplacé par l’utilisateur : fonctionnement autonome sur PC, sans hébergement.** Document cloud conservé comme historique ; aucune souscription nécessaire. Voir [le guide Windows local](LOCAL_WINDOWS.md).
+
 La validation utilisateur porte sur le serveur local de l’étape 3 et autorise la préparation de l’hébergement. **Elle ne valide pas le budget de 60 USD/mois, un hébergeur, un abonnement, un domaine ou des appels payants.** Aucun compte de production, certificat public ou accès hébergeur utilisable n’est fourni dans cet environnement. Les secrets ne doivent jamais être envoyés dans la conversation.
 
 **Ce lot prépare et teste le déploiement ; il ne clôt pas l’étape 4.** Le critère demandé inclut une adresse HTTPS depuis Internet, une restauration chez l’hébergeur et une alerte de panne. La répétition locale avec certificats temporaires ne remplace pas ces preuves. Windows 0.2.0 reste une démo et aucun nouvel installateur connecté n’est publié.

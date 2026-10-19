@@ -1,19 +1,23 @@
-# MemeRadar pour Windows — édition démo 0.2.0
+# MemeRadar pour Windows — édition autonome 0.3.0
 
 ## Installer
 
-Cible : Windows 10/11, processeur x64. L'installateur prévu est `MemeRadar-0.2.0-Windows-x64.exe`. Aucune installation de Node.js, Docker, PostgreSQL ou Redis n'est nécessaire pour cette édition.
+Cible : Windows 10/11, processeur x64. L'installateur prévu est `MemeRadar-0.3.0-Windows-x64.exe`. Aucune installation de Node.js, Docker, PostgreSQL ou Redis n'est nécessaire pour cette édition.
 
-1. [Télécharger le ZIP de l’installateur depuis GitHub](https://github.com/wnathan469-debug/meme/releases/download/v0.2.0/MemeRadar-0.2.0-Windows-x64-installer.zip).
+1. [Télécharger le ZIP de l’installateur depuis GitHub](https://github.com/wnathan469-debug/meme/releases/download/v0.3.0/MemeRadar-0.3.0-Windows-x64-installer.zip).
 2. Dans l’Explorateur Windows : clic droit sur le ZIP → **Extraire tout**.
-3. Ouvrir `MemeRadar-0.2.0-Windows-x64.exe` dans le dossier extrait et suivre l’assistant.
+3. Ouvrir `MemeRadar-0.3.0-Windows-x64.exe` dans le dossier extrait et suivre l’assistant.
 4. Lancer MemeRadar depuis le menu Démarrer ou le raccourci du bureau.
 
-[Page de publication de secours](https://github.com/wnathan469-debug/meme/releases/tag/v0.2.0) : ouvrir la section **Assets** et sélectionner le fichier se terminant par `-installer.zip`. Les liens `/workspace/...` désignent le disque cloud et ne sont pas des téléchargements publics.
+[Page de publication de secours](https://github.com/wnathan469-debug/meme/releases/tag/v0.3.0) : ouvrir la section **Assets** et sélectionner le fichier se terminant par `-installer.zip`. Les liens `/workspace/...` désignent le disque cloud et ne sont pas des téléchargements publics.
 
-L'application est une édition de démonstration, sans certificat de signature d'éditeur. Windows peut signaler un éditeur inconnu. Ne désactivez pas vos protections ; faites vérifier le paquet si votre politique d'entreprise exige un logiciel signé. La signature d’éditeur n’est pas disponible ; les tests automatisés de Windows Server CI ne remplacent pas une vérification sur votre PC Windows 10/11.
+L’application fournit un mode local X configurable et une démonstration séparée. Elle n’a pas de certificat de signature d’éditeur. Windows peut signaler un éditeur inconnu. Ne désactivez pas vos protections ; faites vérifier le paquet si votre politique d'entreprise exige un logiciel signé. La signature d’éditeur n’est pas disponible ; les tests automatisés de Windows Server CI ne remplacent pas une vérification sur votre PC Windows 10/11.
 
-## Ce qui fonctionne localement
+## Mode autonome local X
+
+Le [guide local 0.3.0](LOCAL_WINDOWS.md) décrit SQLite, la clé protégée par Windows, les tarifs à vérifier et l’autorisation de collecte. Le PC doit rester allumé et l’application ouverte. Aucun serveur cloud n’est requis. Le mode démarre vide et arrêté ; aucun accès fournisseur n’est fourni. Les autres modules réels restent non raccordés.
+
+## Mode démonstration hérité
 
 - Neuf pages françaises : tableau de bord, veille, personnes, conversations, événements, tokens, alertes, sources et paramètres.
 - Scénario Nébula : 63 publications fictives, quatre tokens, trois profils suivables et une conversation partielle (35 réponses observées sur 120 annoncées). Les huit tokens historiques restent des exemples distincts.
@@ -23,7 +27,7 @@ L'application est une édition de démonstration, sans certificat de signature d
 - Sources et API simulées : quota, budget, déconnexion, données partielles et reprise. Aucun coût réel, appel fournisseur ou saisie de secret.
 - Thème, fuseau, notes privées et filtres. Voir la [matrice fonctionnelle](FEATURE_MATRIX.md).
 
-## Mise à niveau depuis 0.1.0
+## Mise à niveau depuis une version précédente
 
 Fermer MemeRadar puis exécuter le nouvel installateur, dans le même compte Windows et le même dossier. Le nom d’application et les formats existants sont conservés ; les nouvelles vues ajoutent leurs stockages locaux sans effacer les anciens réglages. Avant mise à niveau, sauvegarder tout le dossier `%APPDATA%\MemeRadar` après fermeture. Cette conservation est testée au redémarrage ; une mise à niveau complète 0.1.0 → 0.2.0 n’est pas encore testée sur votre PC. Aucune mise à jour automatique.
 

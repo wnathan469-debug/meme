@@ -1,3 +1,13 @@
+# Limites actuelles — version 0.3.0
+
+Le choix utilisateur est désormais un moteur local Windows, sans hébergement. La veille X peut être configurée et exécutée sur le PC ; les clés sont protégées par Windows et les plafonds persistés dans SQLite. Aucun appel réel n’a été validé avec un compte fournisseur dans le banc. Les tests de collecte utilisent des réponses synthétiques. Voir [le guide autonome](LOCAL_WINDOWS.md).
+
+Le mode local est limité à trois comptes publics, une page de dix publications par compte et par heure. Il ne collecte pas lorsque l’application est fermée, le PC éteint ou en veille. Aucun rattrapage exhaustif, notification système, flux permanent, recherche globale ou reprise automatique au lancement. Tarifs et droits vérifiés par l’utilisateur, accès X et autorisation explicite requis. Les plafonds de cette installation ne couvrent pas d’autres utilisateurs ou applications du compte fournisseur.
+
+Marché, graphiques, risques, conversations, événements et alertes automatiques ne sont pas encore raccordés au moteur local : aucune donnée fictive ne les remplace dans ce mode. L’ancienne interface est accessible en mode démonstration distinct. Le logiciel reste non signé, sans mise à jour automatique ; validation supplémentaire sur le PC Windows de destination nécessaire.
+
+# Historique des limites de la démonstration 0.2.0
+
 # Limites — version Windows 0.2.0
 
 La livraison actuelle inclut les phases V2 1–14 pour une **démonstration hors ligne**. La matrice à jour est [FEATURE_MATRIX.md](FEATURE_MATRIX.md), et le guide d’installation [DESKTOP.md](DESKTOP.md). Le backend HTTP authentifié et le raccordement REAL restent non livrés ; aucune API réelle n’a été validée.

@@ -10,6 +10,7 @@ export default defineConfig({
         "packages/demo/*.ts",
         "packages/connectors/x/demo{,-stream}.ts",
         "apps/desktop/preferences-v2.cjs",
+        "apps/desktop/local-{model,store,runtime}.ts",
         "packages/connectors/x/{client,contracts,control,stream-client}.ts",
         "packages/collection/{collector,contracts,feed,query}.ts",
         "packages/people/*.ts",

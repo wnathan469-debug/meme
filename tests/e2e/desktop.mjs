@@ -38,6 +38,111 @@ try {
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page
+    .getByRole("heading", { name: "MemeRadar — sur mon PC", exact: true })
+    .waitFor();
+  await page
+    .getByText("Aucune donnée réelle collectée.", { exact: false })
+    .waitFor();
+  assert.equal(
+    await page
+      .getByRole("button", { name: "Démarrer la collecte", exact: true })
+      .isDisabled(),
+    true,
+  );
+  await page
+    .getByRole("button", { name: "Sources et accès", exact: true })
+    .click();
+  await page
+    .getByRole("button", {
+      name: "Configurer les profils et budgets",
+      exact: true,
+    })
+    .click();
+  await page
+    .getByLabel("Profils publics X, séparés par une virgule", { exact: true })
+    .fill("test_public");
+  for (const label of [
+    "Coût maximal par requête USD",
+    "Coût maximal par publication retournée USD",
+    "Coût maximal par profil retourné USD",
+  ])
+    await page.getByLabel(label, { exact: true }).fill("0.01");
+  await page
+    .getByLabel(
+      "J’ai vérifié les droits de lecture, de conservation et les bornes de facturation dans mon compte X.",
+      { exact: true },
+    )
+    .check();
+  await page
+    .getByRole("button", {
+      name: "Enregistrer la configuration locale",
+      exact: true,
+    })
+    .click();
+  await page
+    .getByText("Configuration enregistrée sur ce PC ; collecte arrêtée.", {
+      exact: true,
+    })
+    .waitFor();
+  const localState = await page.evaluate(() =>
+    window.memeradar.local.command("status"),
+  );
+  assert.equal(localState.state.stopped, true);
+  assert.equal(localState.state.usage.requestsDay, 0);
+  assert.equal(localState.state.posts.length, 0);
+  const testKey = "TEST_LOCAL_KEY_DO_NOT_USE_12345";
+  if (localState.state.secureStorage) {
+    await page.getByLabel("Jeton Bearer X", { exact: true }).fill(testKey);
+    await page
+      .getByRole("button", { name: "Enregistrer la clé", exact: true })
+      .click();
+    await page
+      .getByText("Clé protégée enregistrée ; aucun appel X effectué.", {
+        exact: true,
+      })
+      .waitFor();
+    assert.equal(
+      await page.getByLabel("Jeton Bearer X", { exact: true }).inputValue(),
+      "",
+    );
+    assert.equal(
+      JSON.stringify(
+        await page.evaluate(() => window.memeradar.local.command("status")),
+      ).includes(testKey),
+      false,
+    );
+    const secure = await app.evaluate(({ app, safeStorage }, value) => {
+      const { DatabaseSync } = require("node:sqlite");
+      const db = new DatabaseSync(
+        require("node:path").join(
+          app.getPath("userData"),
+          "local-data-v1.sqlite",
+        ),
+        { readOnly: true },
+      );
+      const row = db
+        .prepare("SELECT value FROM local_kv WHERE key='encryptedKey'")
+        .get();
+      db.close();
+      return (
+        safeStorage.decryptString(
+          Buffer.from(JSON.parse(row.value), "base64"),
+        ) === value
+      );
+    }, testKey);
+    assert.equal(secure, true);
+  } else {
+    assert.equal(
+      await page
+        .getByRole("button", { name: "Enregistrer la clé", exact: true })
+        .isDisabled(),
+      true,
+    );
+  }
+  await page
+    .getByRole("button", { name: "Ouvrir la démonstration", exact: true })
+    .click();
+  await page
     .getByRole("heading", { name: "Tableau de bord", exact: true })
     .waitFor();
   assert.equal(await page.evaluate(() => typeof window.require), "undefined");
@@ -128,6 +233,13 @@ try {
   await app.close();
   app = await launch();
   page = await app.firstWindow();
+  const restartedLocal = await page.evaluate(() =>
+    window.memeradar.local.command("status"),
+  );
+  assert.equal(restartedLocal.state.stopped, true);
+  assert.equal(restartedLocal.state.usage.requestsDay, 0);
+  assert.deepEqual(restartedLocal.state.settings.usernames, ["test_public"]);
+  assert.equal(restartedLocal.state.hasKey, localState.state.secureStorage);
   await page
     .getByRole("heading", { name: "Tableau de bord", exact: true })
     .waitFor();

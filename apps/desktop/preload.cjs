@@ -3,5 +3,9 @@ contextBridge.exposeInMainWorld("memeradar", {
   loadState: () => ipcRenderer.invoke("preferences:load"),
   saveState: (state) => ipcRenderer.invoke("preferences:save", state),
   copyAddress: (address) => ipcRenderer.invoke("clipboard:address", address),
-  version: "0.2.0",
+  local: {
+    command: (command, input) =>
+      ipcRenderer.invoke("local:command", command, input),
+  },
+  version: "0.3.0",
 });

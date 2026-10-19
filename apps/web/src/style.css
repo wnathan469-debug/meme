@@ -1915,3 +1915,40 @@ main:focus {
     padding-bottom: 140px;
   }
 }
+.local-app main {
+  max-width: 1100px;
+  margin: auto;
+  padding: 24px;
+}
+.local-app nav,
+.local-app .actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 16px 0;
+}
+.local-app label {
+  display: block;
+  margin: 14px 0;
+}
+.local-app label > input:not([type="checkbox"]) {
+  display: block;
+  width: min(100%, 600px);
+  margin-top: 6px;
+}
+.local-app .card {
+  margin: 18px 0;
+  padding: 20px;
+}
+.local-app footer {
+  margin-top: 32px;
+}
+.local-app article {
+  overflow-wrap: anywhere;
+}
+.local-mode-button {
+  position: fixed;
+  bottom: 12px;
+  right: 16px;
+  z-index: 100;
+}

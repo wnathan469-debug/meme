@@ -10,6 +10,7 @@ coverage/
 tests/e2e/*.png
 
 server-dist/
+desktop-dist/
 deploy/.secrets/
 deploy/.env
 deploy/backups/

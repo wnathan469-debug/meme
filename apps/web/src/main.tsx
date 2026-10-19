@@ -51,6 +51,7 @@ import type {
 import { defaultState, loadState, persistState, ruleSchema } from "./state";
 import type { SavedState } from "./state";
 import "./style.css";
+import { LocalApp } from "./LocalApp";
 const TokenAnalysis = React.lazy(() =>
   import("./TokenAnalysis").then((m) => ({ default: m.TokenAnalysis })),
 );
@@ -1824,8 +1825,26 @@ function Empty({ title, text }: { title: string; text: string }) {
     </div>
   );
 }
-createRoot(document.getElementById("root")!).render(
-  <DemoSessionProvider>
-    <App />
-  </DemoSessionProvider>,
-);
+function DesktopEntry() {
+  const [local, setLocal] = useState(
+    () =>
+      !!window.memeradar?.local &&
+      localStorage.getItem("memeradar-display-mode-v1") !== "demo",
+  );
+  function choose(value: boolean) {
+    localStorage.setItem("memeradar-display-mode-v1", value ? "local" : "demo");
+    setLocal(value);
+  }
+  if (local) return <LocalApp demo={() => choose(false)} />;
+  return (
+    <DemoSessionProvider>
+      {window.memeradar?.local && (
+        <button className="local-mode-button" onClick={() => choose(true)}>
+          Utiliser sur mon PC
+        </button>
+      )}
+      <App />
+    </DemoSessionProvider>
+  );
+}
+createRoot(document.getElementById("root")!).render(<DesktopEntry />);

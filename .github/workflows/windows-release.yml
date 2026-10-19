@@ -80,8 +80,9 @@ jobs:
           @'
           MemeRadar — Windows 10/11 x64
           Extraire le ZIP puis ouvrir le fichier .exe et suivre l'assistant.
-          Aucun outil de développement, Node.js, Docker ou clé API requis.
-          Démonstration hors ligne : données entièrement fictives.
+          Aucun outil de développement, Node.js, Docker ou serveur à installer.
+          Mode local X : accès API et tarifs à configurer, appels désactivés au départ.
+          Démonstration distincte : données entièrement fictives.
           Ce paquet n'est pas signé par un certificat d'éditeur.
           '@ | Set-Content release/staging/LIRE-MOI.txt -Encoding utf8
           "$hash  $base.exe" | Set-Content release/staging/SHA256SUMS.txt -Encoding ascii
@@ -130,6 +131,6 @@ jobs:
           fi
           gh release create "v$version" \
             --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
-            --title "MemeRadar $version — démonstration Windows" \
+            --title "MemeRadar $version — Windows autonome" \
             --notes-file docs/RELEASE_NOTES.md \
             downloads/*.exe downloads/*-installer.zip downloads/SHA256SUMS.txt

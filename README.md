@@ -1,16 +1,16 @@
 # MemeRadar
 
-Application de veille et d'analyse explicable, en français. Édition de bureau V2 **démo hors ligne** pour Windows 10/11 x64 : neuf pages, scénario Nébula de 63 publications et quatre tokens fictifs, graphiques, indicateurs et alertes. Aucune donnée réelle ni recommandation financière.
+Application de veille en français pour Windows 10/11 x64. **Version 0.3.0 autonome sur le PC** : moteur SQLite intégré, accès X configurable, clé protégée par Windows, collecte horaire explicite et plafonds durables. Aucun hébergement, Node.js, PostgreSQL ou Redis à installer. Aucun accès X fourni ni appel payant activé par défaut. La démo historique reste séparée. Voir [le guide local et ses limites](docs/LOCAL_WINDOWS.md).
 
 ## Installer sur Windows
 
-[Télécharger MemeRadar 0.2.0 pour Windows (ZIP de l’installateur)](https://github.com/wnathan469-debug/meme/releases/download/v0.2.0/MemeRadar-0.2.0-Windows-x64-installer.zip)
+[Télécharger MemeRadar 0.3.0 pour Windows (ZIP de l’installateur)](https://github.com/wnathan469-debug/meme/releases/download/v0.3.0/MemeRadar-0.3.0-Windows-x64-installer.zip)
 
-Dans Chrome, télécharger le ZIP, choisir **Extraire tout** dans l’Explorateur Windows, puis ouvrir `MemeRadar-0.2.0-Windows-x64.exe`. Suivre l’assistant et lancer MemeRadar depuis le bureau ou le menu Démarrer. Aucun Node.js, Docker, compte ou clé API nécessaire pour l’utiliser.
+Dans Chrome, télécharger le ZIP, choisir **Extraire tout** dans l’Explorateur Windows, puis ouvrir `MemeRadar-0.3.0-Windows-x64.exe`. Suivre l’assistant et lancer MemeRadar depuis le bureau ou le menu Démarrer. Aucun outil de développement à installer. Un accès X autorisé et ses tarifs doivent être configurés pour collecter ; la démo ne demande pas de clé.
 
-[Page de téléchargement et empreintes](https://github.com/wnathan469-debug/meme/releases/tag/v0.2.0) · [Vérifications du téléchargement](docs/DOWNLOAD_VERIFICATION.md)
+[Page de téléchargement et empreintes](https://github.com/wnathan469-debug/meme/releases/tag/v0.3.0) · [Vérifications du téléchargement](docs/DOWNLOAD_VERIFICATION.md)
 
-Consultez [le guide Windows](docs/DESKTOP.md) pour les étapes, le stockage local et les limites de signature/validation. Le mode réel et les connecteurs du cahier des charges ne sont pas encore livrés : voir [LIMITATIONS.md](docs/LIMITATIONS.md).
+Consultez [le guide Windows](docs/DESKTOP.md) pour les étapes, le stockage local et les limites de signature/validation. Le raccordement local concerne la veille X ; les autres modules réels restent à livrer. Voir [LIMITATIONS.md](docs/LIMITATIONS.md).
 
 ## Fonctionnalités de la démo
 
@@ -22,7 +22,7 @@ Consultez [le guide Windows](docs/DESKTOP.md) pour les étapes, le stockage loca
 
 ## Passage aux données réelles
 
-Le nouveau programme suit douze étapes, avec validation à chaque étape. [Inventaire et risques — étape 1](docs/REAL_DATA_STEP1_AUDIT.md) : inventaire validé. [Fournisseurs, budget et pilote — étape 2](docs/REAL_DATA_STEP2_PROPOSAL.md) : proposition à valider, sans achat ni collecte réelle activée. Le téléchargement 0.2.0 reste une démonstration ; aucun serveur connecté ou nouveau paquet réel n’est livré par cet inventaire.
+**Choix utilisateur actuel : fonctionnement autonome sur PC, sans hébergement.** Les propositions cloud ci-dessous sont conservées comme historique non activé ; aucun abonnement Railway n’est nécessaire. Le programme initial suivait douze étapes avec validation à chaque étape. [Inventaire et risques — étape 1](docs/REAL_DATA_STEP1_AUDIT.md) : inventaire validé. [Fournisseurs, budget et pilote — étape 2](docs/REAL_DATA_STEP2_PROPOSAL.md) : proposition à valider, sans achat ni collecte réelle activée. Le téléchargement 0.2.0 reste une démonstration ; aucun serveur connecté ou nouveau paquet réel n’est livré par cet inventaire.
 
 [Serveur sécurisé — étape 3](docs/REAL_DATA_STEP3_SERVER.md) : API et contrôles testés localement, sans hébergement ni collecte activée. La reprise technique ne valide pas le budget proposé. Construction serveur séparée : npm run api:build ; démarrage avec configuration serveur sécurisée : npm run api:start.
 
