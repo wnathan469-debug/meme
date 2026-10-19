@@ -51,11 +51,13 @@ Le moteur local livré couvre **configuration X, profils publics et veille des p
 
 ## Vérification
 
-Tests unitaires/contrats sur Node avec SQLite réel et transport X synthétique ; aucun appel fournisseur effectué. Le parcours Electron vérifie l’écran local vide, l’enregistrement sans appel, les compteurs, l’isolation du renderer, la conservation après redémarrage et, lorsque le coffre du système est disponible, le chiffrement réel via safeStorage sans retour de clé. Le banc Windows teste aussi l’application installée et sa désinstallation. Les résultats CI et la vérification des artefacts sont consignés après exécution ; aucune collecte réelle sur un compte X n’est annoncée ici.
+Tests unitaires/contrats sur Node avec SQLite réel et transport X synthétique ; aucun appel fournisseur effectué. Le parcours Electron vérifie l’écran local vide, l’enregistrement sans appel, les compteurs, l’isolation du renderer, la conservation après redémarrage et, lorsque le coffre du système est disponible, le chiffrement réel via safeStorage sans retour de clé. Le banc Windows teste aussi l’application installée et sa désinstallation. Validation réussie sur la [CI de la version publiée](https://github.com/wnathan469-debug/meme/actions/runs/39271272337), source `cc98528babdba1856f7f45edf55df71337fc3a98` : 337 tests unitaires/contrats dont 21 nouveaux pour le moteur local, 124 tests PostgreSQL/API et sept tests Redis supplémentaires (468 tests TypeScript distincts), vingt tests navigateur et parcours Windows natif installation/lancement/redémarrage/désinstallation. Le contrôle Windows impose un coffre disponible, vérifie le déchiffrement réel dans le processus principal et l’absence de clé dans les réponses IPC. Couverture unité/contrat : lignes 95,74 %, branches 91,36 %, seuils 80 % conservés. Les contrôles SQL et de déploiement historiques passent aussi, mais ne sont pas requis sur le PC.
+
+Les deux fichiers publics 0.3.1 ont été téléchargés entièrement avec HTTP 200 et leurs SHA-256 correspondent au manifeste publié ; CRC du ZIP valides et empreinte de l’EXE à l’intérieur identique. Voir [le rapport de téléchargement](DOWNLOAD_VERIFICATION.md). Aucune collecte réelle sur un compte X n’est annoncée ici. Les tests automatisés du runner Windows ne remplacent pas une vérification sur le PC Windows 10/11 de destination.
 
 | Fonction | Statut |
 |---|---|
-| Moteur SQLite et interface locale | Code écrit, non raccordé |
+| Moteur SQLite, interface locale et protection Windows | Réel et vérifié |
 | Client X local, profils et publications | Réel non vérifié |
 | Données de la démonstration distincte | Simulé (démo) |
 | Marché, risques, conversations, événements et alertes en mode local | Non commencé |

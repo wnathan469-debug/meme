@@ -1,3 +1,20 @@
+# Vérification du téléchargement — Windows autonome 0.3.1
+
+Contrôle du 19 octobre 2026 : fichiers téléchargés entièrement depuis leurs liens publics, HTTP 200, SHA-256 comparés au manifeste. ZIP contrôlé par CRC et contenu EXE comparé au téléchargement direct.
+
+Publication construite et testée depuis `cc98528babdba1856f7f45edf55df71337fc3a98` : [CI réussie](https://github.com/wnathan469-debug/meme/actions/runs/39271272337). Le pipeline ultérieur de documentation conserve les fichiers immuables de cette publication.
+
+| Fichier | Octets | SHA-256 |
+|---|---:|---|
+| [MemeRadar-0.3.1-Windows-x64.exe](https://github.com/wnathan469-debug/meme/releases/download/v0.3.1/MemeRadar-0.3.1-Windows-x64.exe) | 114460700 | `ba5c454dc74d4dc219246a301616f4a29d89f5891e2789ddb55be53fd6770208` |
+| [MemeRadar-0.3.1-Windows-x64-installer.zip](https://github.com/wnathan469-debug/meme/releases/download/v0.3.1/MemeRadar-0.3.1-Windows-x64-installer.zip) | 114471288 | `e1ac7dec26c001839a4bbe5aba87be768aa2fe79293027a3e451ac9a4d5af731` |
+
+[Page de publication et téléchargements](https://github.com/wnathan469-debug/meme/releases/tag/v0.3.1) · [Guide du mode local et limites](LOCAL_WINDOWS.md).
+
+Aucun outil de développement à installer. La collecte X exige un accès fournisseur, des tarifs vérifiés et une autorisation explicite dans l’application. Aucun appel réel validé avec un compte X pendant cette recette. Les autres modules restent non raccordés au mode local. Installateur non signé.
+
+## Historique des vérifications précédentes
+
 # Vérification du téléchargement MemeRadar 0.2.0
 
 [Télécharger le ZIP Windows](https://github.com/wnathan469-debug/meme/releases/download/v0.2.0/MemeRadar-0.2.0-Windows-x64-installer.zip) · [EXE direct](https://github.com/wnathan469-debug/meme/releases/download/v0.2.0/MemeRadar-0.2.0-Windows-x64.exe) · [Page de publication](https://github.com/wnathan469-debug/meme/releases/tag/v0.2.0) · [Empreintes publiées](https://github.com/wnathan469-debug/meme/releases/download/v0.2.0/SHA256SUMS.txt)

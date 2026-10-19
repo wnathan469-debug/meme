@@ -1,3 +1,9 @@
+# Validation Windows autonome 0.3.1
+
+Le [guide local](LOCAL_WINDOWS.md#vérification) consigne les tests du moteur SQLite, du coffre Windows réel et du parcours installé. La [vérification des téléchargements](DOWNLOAD_VERIFICATION.md) fournit les tailles et SHA-256 des fichiers publics entièrement téléchargés. Source publiée cc98528, CI 39271272337 réussie. Aucune donnée fournisseur réelle n’a été collectée dans cette recette : les réponses X des tests sont synthétiques.
+
+## Historique des validations précédentes
+
 # Résultats de validation
 
 ## Version 0.2.0 — phase 14
