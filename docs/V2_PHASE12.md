@@ -6,7 +6,7 @@ L’édition conserve son fonctionnement **local en démonstration hors ligne**.
 
 ## Navigation et composants
 
-La définition des pages et la construction des liens sont extraites dans `navigation.ts`, le menu dans `Navigation.tsx`, les paramètres de filtres dans `useUrlFilters.ts`, les liens de publications dans `PublicationLink.tsx`, la récupération des erreurs dans `PageBoundary.tsx` et les nouveaux parcours dans `WatchPage.tsx`. Les contrôles de routage et filtrage sont testables sans navigateur.
+La définition des pages et la construction des liens sont extraites dans `navigation.ts`, le menu dans `AppNavigation.tsx`, les paramètres de filtres dans `useUrlFilters.ts`, les liens de publications dans `PublicationLink.tsx`, la récupération des erreurs dans `PageBoundary.tsx` et les nouveaux parcours dans `WatchPage.tsx`. Les contrôles de routage et filtrage sont testables sans navigateur.
 
 Les liens du menu gardent les filtres globaux de mot-clé/chaîne/association et le contexte de veille ; les identifiants d’une ancienne fiche et les notes privées ne sont pas propagés. Les filtres propres à une page restent dans son URL et sont retrouvés par précédent/suivant ou rechargement. Les formulaires modifient leur état immédiatement, puis l’URL, pour conserver un comportement correct des cases au clavier.
 
@@ -46,16 +46,18 @@ Pas de migration SQL ou de nouveau format de préférences. Le schéma demeure �
 
 ## Fichiers et vérification
 
-Créés : `apps/web/src/{navigation,useUrlFilters,watch-model,control-filters}.ts`, `apps/web/src/{Navigation,PageBoundary,PublicationLink,WatchPage}.tsx`, `tests/unit/navigation.test.ts`, ce document.
+Créés : `apps/web/src/{navigation,useUrlFilters,watch-model,control-filters}.ts`, `apps/web/src/{AppNavigation,PageBoundary,PublicationLink,WatchPage}.tsx`, `tests/unit/navigation.test.ts`, ce document.
 
 Modifiés : `main.tsx`, styles, vues personnes/conversations/événement/preuves sociales, cibles de couverture, parcours navigateur/Electron, README et documentation de sécurité/décisions/limites/exploitation. Aucun fichier supprimé ; aucune donnée locale utilisateur modifiée pendant ces essais.
 
 Validation locale :
 
-- **298 tests unitaires/contrats**, dont dix nouveaux sur les neuf pages, anciens liens, contexte partagé, limites de l’URL, acquisition/déduplication, filtres exacts, ID stable, qualité inconnue et hausses documentées. Couverture globale lignes **95,99 %**, branches **91,70 %**, quatre seuils de 80 % conservés.
+- **299 tests unitaires/contrats**, dont onze nouveaux sur les neuf pages, anciens liens, contexte partagé, limites de l’URL, acquisition/déduplication, filtres exacts, ID stable, qualité inconnue et hausses documentées. Couverture globale lignes **95,99 %**, branches **91,70 %**, quatre seuils de 80 % conservés.
 - **17 parcours Chromium**, dont quatre nouveaux : navigation/filtres/précédent/rechargement, clavier et écran 390 px, personnes actives, états simulés, lien invalide, échec réel du chargement d’un module et récupération, référence externe bloquée sans nouvelle fenêtre ou requête. Le parcours d’erreur bloque volontairement un module local ; l’erreur de chargement attendue figure dans la console du banc.
 - Parcours **Electron sous Xvfb** : neuf liens, filtre de veille conservé dans l’URL après rechargement, quota simulé sans liste, anciens tests de préférences, notes, graphiques, sources et protections réseau/IPC.
 - Compilation/typecheck, format et `git diff --check` réussis ; audit des dépendances de production : zéro vulnérabilité signalée.
+
+Le premier build Windows a révélé un conflit de résolution entre `Navigation.tsx` et `navigation.ts` sur son système de fichiers insensible à la casse. Le composant est renommé `AppNavigation.tsx` et un test de portabilité prévient cette collision.
 
 Les essais intermédiaires ont permis de corriger la mise à jour immédiate des cases contrôlées par l’URL et la largeur d’un sélecteur sur petit écran. Aucun scénario supprimé, seuil réduit, timeout augmenté ou retry ajouté. Pas de nouvelle migration ni modification des services PostgreSQL/Redis ; leurs vérifications de non-régression sont conservées en CI.
 

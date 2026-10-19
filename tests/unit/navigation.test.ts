@@ -1,3 +1,4 @@
+import { readdirSync } from "node:fs";
 import { it, expect } from "vitest";
 import {
   navigation,
@@ -169,4 +170,11 @@ it("only reports attention rises with a documented non-zero baseline", () => {
   expect(
     attentionRises({ ...s, attention: { ...s.attention, baselineTotal: "0" } }),
   ).toEqual([]);
+});
+
+it("keeps module names unambiguous on the case-insensitive Windows filesystem", () => {
+  const names = readdirSync(new URL("../../apps/web/src", import.meta.url))
+    .filter((name) => /\.(?:tsx?|cjs)$/.test(name))
+    .map((name) => name.replace(/\.[^.]+$/, "").toLowerCase());
+  expect(new Set(names).size).toBe(names.length);
 });

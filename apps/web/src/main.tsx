@@ -1,7 +1,7 @@
 import { matchesControls } from "./control-filters";
 import { routeParams } from "./navigation";
 import { navigation, readRoute, pageHref, type Page } from "./navigation";
-import { Navigation } from "./Navigation";
+import { Navigation } from "./AppNavigation";
 import { PageBoundary } from "./PageBoundary";
 import { WatchPage, DashboardV2 } from "./WatchPage";
 import { SourcesV2 } from "./SourcesV2";
